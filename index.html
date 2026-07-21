@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Glue Club - Collage & Graffiti Edition</title>
+    <title>Glue Club - Ultimate Collage Mix</title>
     
     <!-- Google Fonts : Syne, Inter, Playfair -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
             --font-serif: 'Playfair Display', serif;
         }
 
-        /* VERROUILLAGE GLOBAL & FOND COLLAGE GRAFFITI */
+        /* VERROUILLAGE GLOBAL & FOND INTÉGRAL DE COLLAGE BRUT (0012dd4013c5c9a464147e60b9053cf5_3.jpg) */
         body, html {
             margin: 0;
             padding: 0;
@@ -39,18 +39,17 @@
             overflow: hidden; 
             
             background-color: var(--white);
-            /* Votre image de collage de tags noir et blanc / gribouillis rouges en fond */
             background-image: url('0012dd4013c5c9a464147e60b9053cf5_3.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
 
-        /* --- POP-UPS COLLAGE STYLE --- */
+        /* --- POP-UPS DANS LE STYLE COLLAGE / PUNK --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
             z-index: 999;
             display: flex;
@@ -62,14 +61,14 @@
 
         .poster-modal {
             background: var(--white);
-            border: 5px solid var(--black);
+            border: 6px solid var(--black);
             padding: 40px;
             width: 550px;
             max-width: 100%;
             display: none;
             flex-direction: column;
             position: relative;
-            box-shadow: 15px 15px 0 var(--riso-red);
+            box-shadow: 18px 18px 0 var(--riso-red);
         }
 
         .poster-modal.active { display: flex; }
@@ -132,7 +131,7 @@
         .btn-bold:hover {
             background-color: var(--swiss-yellow);
             color: var(--black);
-            box-shadow: 4px 4px 0 var(--black);
+            box-shadow: 5px 5px 0 var(--black);
         }
 
         /* --- APP LAYOUT (SPLIT SCREEN STRICT) --- */
@@ -192,11 +191,12 @@
             white-space: nowrap;
         }
 
-        /* ZONE MENU : À DROITE (STYLE AFFICHE SUISSE & BLOCS) */
+        /* ZONE MENU : À DROITE (STYLE COLLAGE/GRAPHIQUE) */
         #control-panel {
             width: 450px; 
             height: 100%;
-            background-color: var(--white);
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
             border-left: 6px solid var(--black);
             padding: 35px 25px;
             overflow-y: auto; 
@@ -206,9 +206,8 @@
             box-sizing: border-box;
             -webkit-overflow-scrolling: touch; 
             position: relative;
-            /* Fond légèrement texturé façon sérigraphie */
-            background-image: radial-gradient(rgba(0,0,0,0.05) 15%, transparent 16%);
-            background-size: 8px 8px;
+            background-image: radial-gradient(rgba(224, 36, 27, 0.12) 15%, transparent 16%);
+            background-size: 10px 10px;
         }
 
         .control-group {
@@ -274,7 +273,7 @@
             appearance: none;
             width: 18px;
             height: 18px;
-            background: var(--swiss-yellow);
+            background: var(--riso-red);
             border: 3px solid var(--black);
             cursor: pointer;
             border-radius: 0;
@@ -327,7 +326,7 @@
         }
         .bg-thumb:hover, .bg-thumb.active { 
             filter: grayscale(0%) contrast(100%);
-            border-color: var(--riso-green);
+            border-color: var(--riso-red);
         }
 
         .btn-ui {
@@ -348,7 +347,7 @@
         }
 
         .btn-export {
-            background: var(--riso-green);
+            background: var(--riso-red);
             color: var(--white);
             font-family: var(--font-display);
             font-weight: 800;
@@ -365,7 +364,7 @@
         .btn-export:hover {
             transform: translate(-2px, -2px);
             box-shadow: 8px 8px 0 var(--black);
-            background: var(--riso-red);
+            background: var(--riso-green);
         }
 
         /* --- MEDIA QUERY MOBILE --- */
@@ -421,7 +420,7 @@
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
                 <h1 class="modal-title">G L U E<br>C L U B</h1>
-                <div class="modal-highlight">VOL. 01 — GRAFFITI MIX</div>
+                <div class="modal-highlight">VOL. 01 — COLLAGE MIX</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
