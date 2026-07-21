@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Glue Club - Ultimate Mix 3 Styles</title>
+    <title>Glue Club - Collage & Graffiti Edition</title>
     
     <!-- Google Fonts : Syne, Inter, Playfair -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
             --font-serif: 'Playfair Display', serif;
         }
 
-        /* VERROUILLAGE GLOBAL & FOND MÉLANGÉ (Collage + Gribouillis roses) */
+        /* VERROUILLAGE GLOBAL & FOND COLLAGE GRAFFITI */
         body, html {
             margin: 0;
             padding: 0;
@@ -39,21 +39,18 @@
             overflow: hidden; 
             
             background-color: var(--white);
-            /* Superposition des deux images de fond que vous avez envoyées */
-            background-image: 
-                url('db9e33eacb1625b33e4698956d249e67_4.webp'),
-                url('0012dd4013c5c9a464147e60b9053cf5_2.jpg');
-            background-size: cover, cover;
-            background-position: center, center;
-            background-repeat: no-repeat, no-repeat;
-            background-blend-mode: overlay;
+            /* Votre image de collage de tags noir et blanc / gribouillis rouges en fond */
+            background-image: url('0012dd4013c5c9a464147e60b9053cf5_3.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        /* --- POP-UPS STYLE ÉDITORIAL & COLLAGE --- */
+        /* --- POP-UPS COLLAGE STYLE --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             z-index: 999;
             display: flex;
@@ -72,7 +69,7 @@
             display: none;
             flex-direction: column;
             position: relative;
-            box-shadow: 15px 15px 0 var(--swiss-yellow);
+            box-shadow: 15px 15px 0 var(--riso-red);
         }
 
         .poster-modal.active { display: flex; }
@@ -195,7 +192,7 @@
             white-space: nowrap;
         }
 
-        /* ZONE MENU : À DROITE (STYLE AFFICHE SUISSE & BLOCS JAUNES) */
+        /* ZONE MENU : À DROITE (STYLE AFFICHE SUISSE & BLOCS) */
         #control-panel {
             width: 450px; 
             height: 100%;
@@ -209,6 +206,9 @@
             box-sizing: border-box;
             -webkit-overflow-scrolling: touch; 
             position: relative;
+            /* Fond légèrement texturé façon sérigraphie */
+            background-image: radial-gradient(rgba(0,0,0,0.05) 15%, transparent 16%);
+            background-size: 8px 8px;
         }
 
         .control-group {
@@ -421,7 +421,7 @@
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
                 <h1 class="modal-title">G L U E<br>C L U B</h1>
-                <div class="modal-highlight">VOL. 01 — TRIPLE MIX</div>
+                <div class="modal-highlight">VOL. 01 — GRAFFITI MIX</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
