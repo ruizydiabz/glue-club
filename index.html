@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glue Club - Éditorial</title>
+    <title>Glue Club - Riso Zine Edition</title>
     
-    <!-- Google Fonts pour le style Suisse/Éditorial -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Syne (pour l'effet large/étiré), Inter (pour la lisibilité), Playfair (pour le côté éditorial) -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -16,16 +16,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* CSS Variables - Palette Suisse */
+        /* CSS Variables - Palette Riso + Swiss */
         :root {
-            --poster-yellow: #F4C522; /* Le jaune moutarde de l'affiche */
+            --riso-red: #e0241b;    /* Rouge vif texturé */
+            --riso-green: #3ea055;  /* Vert peinture */
+            --swiss-yellow: #f4c522;/* Jaune moutarde */
             --white: #ffffff;
             --black: #050505;
-            --gray: #e0e0e0;
             
             /* Polices */
-            --font-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            --font-serif: 'Playfair Display', 'Times New Roman', Times, serif;
+            --font-display: 'Syne', sans-serif; /* Police large et moderne */
+            --font-sans: 'Inter', sans-serif;   /* Police suisse stricte */
+            --font-serif: 'Playfair Display', serif;
         }
 
         body, html {
@@ -33,16 +35,24 @@
             padding: 0;
             height: 100%;
             font-family: var(--font-sans);
-            background-color: var(--white);
             color: var(--black);
             overflow: hidden;
+            
+            /* Motif Halftone (Points rouges façon impression Risograph) */
+            background-color: var(--white);
+            background-image: 
+                radial-gradient(var(--riso-red) 15%, transparent 16%), 
+                radial-gradient(var(--riso-red) 15%, transparent 16%);
+            background-size: 8px 8px;
+            background-position: 0 0, 4px 4px;
         }
 
-        /* --- POP-UPS FAÇON AFFICHE --- */
+        /* --- POP-UPS FAÇON ZINE --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
             z-index: 999;
             display: flex;
             align-items: center;
@@ -51,100 +61,78 @@
 
         .poster-modal {
             background: var(--white);
-            border: 2px solid var(--black);
+            border: 4px solid var(--black);
             padding: 40px;
-            width: 500px;
+            width: 550px;
             max-width: 90%;
             display: none;
             flex-direction: column;
             position: relative;
+            box-shadow: 15px 15px 0 var(--riso-green);
         }
 
         .poster-modal.active {
             display: flex;
         }
 
-        .huge-bg-text {
-            position: absolute;
-            top: -20px;
-            left: -20px;
-            font-size: 8rem;
-            font-weight: 900;
-            color: var(--black);
-            opacity: 0.05;
-            z-index: 0;
-            pointer-events: none;
-            letter-spacing: -5px;
-        }
-
         .modal-content {
             position: relative;
             z-index: 1;
+            text-align: left;
         }
 
         .modal-title {
-            font-family: var(--font-sans);
-            font-weight: 900;
-            font-size: 3rem;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 4.5rem;
             text-transform: uppercase;
-            letter-spacing: -2px;
-            margin: 0 0 10px 0;
+            letter-spacing: 0.1em;
+            margin: 0 0 5px 0;
+            line-height: 1;
         }
 
         .modal-highlight {
-            background-color: var(--poster-yellow);
+            background-color: var(--riso-red);
+            color: var(--white);
             display: inline-block;
             padding: 5px 15px;
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
             margin-bottom: 30px;
+            text-transform: uppercase;
         }
 
         .modal-italic {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
         }
 
         .modal-buttons {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
-        .btn-yellow {
-            background-color: var(--poster-yellow);
-            color: var(--black);
-            border: none;
-            padding: 12px 25px;
-            font-family: var(--font-sans);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-yellow:hover {
+        .btn-bold {
             background-color: var(--black);
             color: var(--white);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: var(--black);
             border: 2px solid var(--black);
-            padding: 10px 23px;
-            font-family: var(--font-sans);
+            padding: 12px 25px;
+            font-family: var(--font-display);
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 1rem;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-outline:hover {
-            background-color: var(--black);
-            color: var(--white);
+        .btn-bold:hover {
+            background-color: var(--white);
+            color: var(--black);
+            box-shadow: 4px 4px 0 var(--riso-red);
         }
 
         /* --- APP LAYOUT --- */
@@ -169,16 +157,16 @@
             justify-content: center;
             padding: 20px;
             overflow: auto;
-            background-color: var(--gray); /* Légèrement gris pour faire ressortir l'image blanche */
         }
 
         #export-wrapper {
             position: relative;
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             aspect-ratio: 3/4;
             background-color: var(--white);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border: 5px solid var(--black);
+            box-shadow: 20px 20px 0 var(--black);
             overflow: hidden;
         }
 
@@ -206,28 +194,30 @@
             white-space: nowrap;
         }
 
-        /* CONTROL PANEL (RIGHT) - STYLE ARCHITECTURE */
+        /* CONTROL PANEL (RIGHT) - STYLE SWISS / RISO */
         #control-panel {
-            width: 400px;
+            width: 420px;
             background-color: var(--white);
-            border-left: 2px solid var(--black);
-            padding: 40px 30px;
+            border-left: 5px solid var(--black);
+            padding: 30px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 35px;
             position: relative;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
         }
 
-        /* Texte décoratif géant en fond de menu (comme "AUGUST" dans l'affiche) */
+        /* Texte décoratif géant façon affiche */
         .panel-bg-text {
             position: absolute;
-            top: 10px;
-            right: -20px;
+            top: -20px;
+            right: 10px;
             font-family: var(--font-sans);
             font-weight: 900;
-            font-size: 9rem;
-            color: rgba(0,0,0,0.03);
+            font-size: 7rem;
+            color: var(--black);
+            opacity: 0.04;
             writing-mode: vertical-rl;
             pointer-events: none;
             z-index: 0;
@@ -237,57 +227,55 @@
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             z-index: 1;
         }
 
-        /* Surlignage jaune caractéristique de l'affiche */
-        .yellow-label {
-            background-color: var(--poster-yellow);
-            color: var(--black);
+        /* Blocs de couleurs stricts */
+        .color-label {
             display: inline-table;
-            padding: 4px 10px;
-            font-family: var(--font-sans);
-            font-weight: 700;
-            font-size: 0.9rem;
+            padding: 6px 12px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.1rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            align-self: flex-start; /* S'adapte à la taille du texte */
+            letter-spacing: 2px;
+            align-self: flex-start;
+            border: 2px solid var(--black);
         }
+        .bg-yellow { background-color: var(--swiss-yellow); color: var(--black); }
+        .bg-red { background-color: var(--riso-red); color: var(--white); }
+        .bg-green { background-color: var(--riso-green); color: var(--white); }
+        .bg-black { background-color: var(--black); color: var(--white); }
 
-        /* Italique classique pour les descriptions */
         .serif-subtext {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 0.9rem;
-            color: #555;
+            font-size: 1rem;
+            color: var(--black);
             margin-bottom: 5px;
         }
 
-        /* Inputs, Selects et Sliders : Plats et anguleux */
+        /* Inputs & Selects : Bruts et géométriques */
         input[type="file"], select, input[type="text"] {
             font-family: var(--font-sans);
+            font-weight: 700;
             font-size: 1rem;
-            padding: 8px 10px;
-            border: 1px solid var(--black);
+            padding: 10px;
+            border: 2px solid var(--black);
             background: var(--white);
             color: var(--black);
-            border-radius: 0; /* Angles stricts */
+            border-radius: 0;
             width: 100%;
             box-sizing: border-box;
             outline: none;
         }
         
-        select {
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Sliders minimalistes */
+        /* Sliders */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 2px;
+            height: 4px;
             background: var(--black);
             outline: none;
             margin: 15px 0;
@@ -295,12 +283,12 @@
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 15px;
-            height: 15px;
-            background: var(--poster-yellow);
-            border: 2px solid var(--black);
+            width: 18px;
+            height: 18px;
+            background: var(--white);
+            border: 3px solid var(--black);
             cursor: pointer;
-            border-radius: 0; /* Curseur carré */
+            border-radius: 0;
         }
 
         .slider-row {
@@ -308,18 +296,20 @@
             justify-content: space-between;
             align-items: center;
             font-family: var(--font-sans);
-            font-weight: bold;
+            font-weight: 900;
             font-size: 0.85rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Checkbox carrées strictes */
+        /* Checkbox */
         input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             accent-color: var(--black);
             cursor: pointer;
             border-radius: 0;
+            border: 2px solid var(--black);
         }
         .checkbox-label {
             display: flex;
@@ -327,7 +317,7 @@
             gap: 10px;
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
         }
 
@@ -335,7 +325,7 @@
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
+            gap: 6px;
             max-height: 150px;
             overflow-y: auto;
         }
@@ -344,34 +334,57 @@
             aspect-ratio: 1;
             object-fit: cover;
             cursor: pointer;
-            border: 1px solid transparent;
-            filter: grayscale(100%); /* Esthétique affiche en vignette */
+            border: 2px solid var(--black);
+            filter: grayscale(100%) contrast(150%); /* Esthétique Riso/Photocopie */
             transition: all 0.2s;
         }
         .bg-thumb:hover, .bg-thumb.active { 
-            border-color: var(--black);
-            filter: grayscale(0%);
+            filter: grayscale(0%) contrast(100%);
+            border-color: var(--riso-red);
+        }
+
+        /* Boutons d'action UI */
+        .btn-ui {
+            background-color: var(--white);
+            color: var(--black);
+            border: 2px solid var(--black);
+            padding: 10px 15px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-ui:hover {
+            background-color: var(--black);
+            color: var(--white);
         }
 
         /* BIG EXPORT BUTTON */
         .btn-export {
-            background: var(--black);
+            background: var(--riso-red);
             color: var(--white);
-            font-family: var(--font-sans);
-            font-weight: 900;
-            font-size: 1.5rem;
-            padding: 15px;
-            margin-top: 20px;
-            border: none;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 2rem;
+            padding: 20px;
+            margin-top: 10px;
+            border: 4px solid var(--black);
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
             z-index: 1;
+            box-shadow: 6px 6px 0 var(--black);
         }
         .btn-export:hover {
-            background: var(--poster-yellow);
-            color: var(--black);
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0 var(--black);
+        }
+        .btn-export:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--black);
         }
 
         /* RESPONSIVE MOBILE */
@@ -383,7 +396,7 @@
                 width: 100%;
                 height: 50vh;
                 border-left: none;
-                border-top: 2px solid var(--black);
+                border-top: 5px solid var(--black);
             }
             #canvas-area {
                 height: 50vh;
@@ -415,28 +428,26 @@
     <div id="overlay">
         <!-- POP-UP 1 : ACCUEIL -->
         <div id="popup-1" class="poster-modal active">
-            <div class="huge-bg-text">GLUE</div>
             <div class="modal-content">
-                <h1 class="modal-title">GLUE<br>CLUB</h1>
-                <div class="modal-highlight">FA. 24 / INTERACTIVE DESIGN</div>
+                <h1 class="modal-title">G L U E<br>C L U B</h1>
+                <div class="modal-highlight">VOL. 01 — ARCHIVE</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 
                 <div class="modal-buttons">
-                    <button class="btn-yellow" id="btn-oui">OUI</button>
-                    <button class="btn-outline" id="btn-zappe">J'AI ZAPPÉ</button>
+                    <button class="btn-bold" id="btn-oui">OUI</button>
+                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black);">J'AI ZAPPÉ</button>
                 </div>
             </div>
         </div>
 
         <!-- POP-UP 2 : CONFIRMATION ABSURDE -->
         <div id="popup-2" class="poster-modal">
-            <div class="huge-bg-text">SURE?</div>
             <div class="modal-content">
-                <div class="modal-highlight">SYSTEM ALERT</div>
+                <div class="modal-highlight" style="background:var(--swiss-yellow); color:var(--black);">SYS. WARNING</div>
                 <div class="modal-italic">T'es sûr(e) ?</div>
                 <div class="modal-buttons">
-                    <button class="btn-yellow" id="btn-non1">NON</button>
-                    <button class="btn-outline" id="btn-non2">NON</button>
+                    <button class="btn-bold" id="btn-non1">NON</button>
+                    <button class="btn-bold" id="btn-non2">NON</button>
                 </div>
             </div>
         </div>
@@ -455,20 +466,20 @@
 
         <!-- CONTROL PANEL (RIGHT) -->
         <div id="control-panel">
-            <div class="panel-bg-text">EDITOR</div>
+            <div class="panel-bg-text">ZINE</div>
             
             <!-- 1. Importation & Détourage -->
             <div class="control-group">
-                <span class="yellow-label">STEP 1. IMPORT</span>
-                <div class="serif-subtext">Upload your image & remove background</div>
+                <span class="color-label bg-yellow">01. IMPORT</span>
+                <div class="serif-subtext">Charge ton image perso</div>
                 <input type="file" id="upload-user" accept="image/*">
-                <button class="btn-outline" id="btn-remove-bg" style="margin-top:5px; border-width: 1px;">Auto Cut-out</button>
+                <button class="btn-ui" id="btn-remove-bg" style="margin-top:5px;">Auto Cut-out (Détourage)</button>
             </div>
 
             <!-- 2. Bibliothèque -->
             <div class="control-group">
-                <span class="yellow-label">STEP 2. ARCHIVE</span>
-                <div class="serif-subtext">Select background (1-13)</div>
+                <span class="color-label bg-green">02. ARCHIVE</span>
+                <div class="serif-subtext">Sélectionne un fond texturé</div>
                 <div class="bg-grid" id="bg-library">
                     <!-- Généré par JS -->
                 </div>
@@ -476,79 +487,80 @@
 
             <!-- 3. Modes de fusion & Intensité -->
             <div class="control-group">
-                <span class="yellow-label">STEP 3. BLEND</span>
-                <div class="serif-subtext">Overlay algorithms</div>
+                <span class="color-label bg-red">03. BLEND</span>
+                <div class="serif-subtext">Algorithme de superposition</div>
                 <select id="blend-mode">
                     <option value="normal">NORMAL</option>
-                    <option value="multiply">MULTIPLY</option>
-                    <option value="screen">SCREEN</option>
-                    <option value="overlay">OVERLAY</option>
-                    <option value="darken">DARKEN</option>
-                    <option value="lighten">LIGHTEN</option>
-                    <option value="difference">DIFFERENCE</option>
+                    <option value="multiply">PRODUIT (MULTIPLY)</option>
+                    <option value="screen">SUPERPOSITION (SCREEN)</option>
+                    <option value="overlay">INCRUSTATION (OVERLAY)</option>
+                    <option value="darken">OBSCURCIR (DARKEN)</option>
+                    <option value="lighten">ÉCLAIRCIR (LIGHTEN)</option>
+                    <option value="difference">DIFFÉRENCE (DIFFERENCE)</option>
                     <option value="exclusion">EXCLUSION</option>
                 </select>
                 <div class="slider-row">
-                    <span>Opacity Level</span>
+                    <span>Opacité du masque</span>
                 </div>
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
             <!-- 4. Colorimétrie -->
             <div class="control-group">
-                <span class="yellow-label">ADJUSTMENTS</span>
+                <span class="color-label bg-black">04. COLORS</span>
                 
-                <div class="slider-row"><span>Brightness</span></div>
+                <div class="slider-row"><span>Luminosité</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
                 
-                <div class="slider-row"><span>Contrast</span></div>
+                <div class="slider-row"><span>Contraste</span></div>
                 <input type="range" id="cont-slider" min="0" max="200" value="100">
 
                 <div class="slider-row"><span>Saturation</span></div>
                 <input type="range" id="sat-slider" min="0" max="200" value="100">
                 
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bw-toggle"> Force Monochrome
+                    <input type="checkbox" id="bw-toggle"> Forcer le Monochrome
                 </label>
             </div>
 
             <!-- 5. Effets Destructifs -->
             <div class="control-group">
-                <span class="yellow-label">DEGRADATION</span>
+                <span class="color-label bg-yellow">05. DESTRUCTION</span>
                 
-                <div class="slider-row"><span>Pixelate / Blur</span></div>
+                <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Dither / Bitmap Effect
+                    <input type="checkbox" id="bitmap-toggle"> Effet Bitmap (Trame Riso)
                 </label>
                 
-                <div class="slider-row"><span>Bitmap Threshold</span></div>
+                <div class="slider-row"><span>Seuil du Bitmap</span></div>
                 <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
             </div>
 
             <!-- 6. Outils Créatifs & Textes -->
             <div class="control-group">
-                <span class="yellow-label">TYPE & COMPOSITION</span>
+                <span class="color-label bg-green">06. TYPOGRAPHY</span>
                 
                 <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-                    <input type="text" id="text-input" placeholder="Insert typography...">
+                    <input type="text" id="text-input" placeholder="Taper un texte...">
                     <select id="font-selector">
-                        <option value="var(--font-sans)">Sans-Serif (Inter)</option>
-                        <option value="var(--font-serif)">Serif (Playfair)</option>
+                        <option value="var(--font-display)">Syne (Étendu / Moderne)</option>
+                        <option value="var(--font-sans)">Inter (Suisse / Strict)</option>
+                        <option value="var(--font-serif)">Playfair (Éditorial / Italique)</option>
                     </select>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn-yellow" id="btn-add-text" style="flex:1;">Insert Text</button>
-                        <button class="btn-outline" id="btn-clear-text" style="flex:1; border-width:1px; color:#e04343; border-color:#e04343;">Clear</button>
+                        <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
+                        <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer tout</button>
                     </div>
                 </div>
                 
-                <button class="btn-outline" id="btn-crop" style="border-width: 1px;">Crop Image</button>
-                <button class="btn-yellow" id="btn-crop-validate" style="display:none;">Validate Crop</button>
+                <button class="btn-ui" id="btn-crop">Recadrer l'image</button>
+                <button class="btn-bold" id="btn-crop-validate" style="display:none; background:var(--swiss-yellow); color:var(--black);">Valider le recadrage</button>
             </div>
 
             <!-- EXPORT -->
-            <button class="btn-export" id="btn-export">EXPORT FILE</button>
+            <button class="btn-export" id="btn-export">PRINT / EXPORT</button>
         </div>
     </div>
 
@@ -589,7 +601,7 @@
 
         // 2. Détourage auto
         document.getElementById('btn-remove-bg').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Please import an image first.");
+            if(!userLayer.src) return alert("Importez une image d'abord !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
         });
@@ -601,6 +613,7 @@
             const img = document.createElement('img');
             img.className = 'bg-thumb';
             img.src = imgPath;
+            if(i === 1) img.classList.add('active'); // Sélection par défaut
             img.onclick = () => {
                 bgLayer.src = imgPath;
                 document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
@@ -650,8 +663,12 @@
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
             
-            // Si c'est du sans-serif, on le met en majuscules grasses (esthétique affiche)
-            if(fontSelected === 'var(--font-sans)') {
+            // Stylisation selon la police choisie
+            if(fontSelected === 'var(--font-display)') {
+                textDiv.style.fontWeight = '800';
+                textDiv.style.textTransform = 'uppercase';
+                textDiv.style.letterSpacing = '0.2em';
+            } else if(fontSelected === 'var(--font-sans)') {
                 textDiv.style.fontWeight = '900';
                 textDiv.style.textTransform = 'uppercase';
                 textDiv.style.letterSpacing = '-2px';
@@ -706,7 +723,7 @@
         const btnCropValidate = document.getElementById('btn-crop-validate');
 
         btnCrop.addEventListener('click', () => {
-            if(!userLayer.src) return alert("Import image first!");
+            if(!userLayer.src) return alert("Importez d'abord une image !");
             userLayer.style.mixBlendMode = 'normal';
             userLayer.style.filter = 'none';
             userLayer.style.opacity = 1;
@@ -734,7 +751,7 @@
                 scale: 2, useCORS: true, allowTaint: true, backgroundColor: null
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'glue-club-editorial.png';
+                link.download = 'glue-club-zine.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
