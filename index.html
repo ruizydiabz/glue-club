@@ -495,15 +495,18 @@
                 </label>
             </div>
 
+            <!-- SECTION DESTRUCT AVEC OPTION BITMAP -->
             <div class="control-group">
                 <span class="color-label">05. DESTRUCT</span>
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
+                
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Trame Pixellisée
+                    <input type="checkbox" id="bitmap-toggle"> Bitmap
                 </label>
-                <div class="slider-row"><span>Seuil</span></div>
-                <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
+
+                <div class="slider-row" style="margin-top:8px;"><span>Seuil Bitmap</span></div>
+                <input type="range" id="bitmap- intensity" min="100" max="500" value="100">
             </div>
 
             <div class="control-group">
@@ -646,15 +649,22 @@
             let filterString = `brightness(${briSlider.value}%) contrast(${contSlider.value}%) saturate(${satSlider.value}%) `;
             if (bwToggle.checked) filterString += "grayscale(100%) ";
             if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
+            
+            // Effet Bitmap pur (seuil 1-bit noir et blanc extrême)
+            if (bitmapToggle.checked) {
+                let contrastVal = bitmapIntensity.value;
+                filterString += `grayscale(100%) contrast(${contrastVal}%) brightness(110%)`;
+            }
+
             userLayer.style.filter = filterString;
         }
 
         [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', () => {
-            activePhotoFilter = null;
+            if(s !== bitmapIntensity && s !== pixelSlider) activePhotoFilter = null;
             updateFilters();
         }));
         [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', () => {
-            activePhotoFilter = null;
+            if(t !== bitmapToggle) activePhotoFilter = null;
             updateFilters();
         }));
 
