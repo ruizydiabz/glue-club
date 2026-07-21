@@ -65,13 +65,16 @@
         .poster-modal {
             background: var(--white);
             border: 6px solid var(--black);
-            padding: 40px;
+            padding: 30px;
             width: 550px;
-            max-width: 100%;
+            max-width: 92vw;
+            max-height: 90dvh;
+            overflow-y: auto;
             display: none;
             flex-direction: column;
             position: relative;
-            box-shadow: 18px 18px 0 var(--riso-red);
+            box-shadow: 14px 14px 0 var(--riso-red);
+            box-sizing: border-box;
         }
 
         .poster-modal.active { display: flex; }
@@ -86,7 +89,7 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
         }
         #sticker-modal-canvas.active { display: flex; }
@@ -94,13 +97,13 @@
         .drawing-popup-box {
             background: var(--white);
             border: 6px solid var(--black);
-            padding: 25px;
-            width: 450px;
+            padding: 20px;
+            width: 420px;
             max-width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            box-shadow: 15px 15px 0 var(--riso-red);
+            gap: 12px;
+            box-shadow: 12px 12px 0 var(--riso-red);
             box-sizing: border-box;
         }
 
@@ -122,7 +125,7 @@
 
         .drawing-tools {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
@@ -137,7 +140,7 @@
         .modal-title {
             font-family: var(--font-syne);
             font-weight: 800;
-            font-size: 4rem;
+            font-size: clamp(2.5rem, 10vw, 4rem);
             text-transform: uppercase;
             letter-spacing: -2px;
             margin: 0 0 10px 0;
@@ -149,10 +152,10 @@
             color: var(--black);
             display: inline-block;
             padding: 5px 15px;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             font-weight: 900;
             letter-spacing: 1px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-transform: uppercase;
             border: 2px solid var(--black);
         }
@@ -160,13 +163,13 @@
         .modal-italic {
             font-family: var(--font-playfair);
             font-style: italic;
-            font-size: 1.4rem;
-            margin-bottom: 25px;
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            margin-bottom: 20px;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
@@ -174,7 +177,7 @@
             background-color: var(--black);
             color: var(--white);
             border: 3px solid var(--black);
-            padding: 12px 25px;
+            padding: 12px 20px;
             font-family: var(--font-syne);
             font-weight: 800;
             text-transform: uppercase;
@@ -186,9 +189,10 @@
         .btn-bold:hover {
             background-color: var(--swiss-yellow);
             color: var(--black);
-            box-shadow: 5px 5px 0 var(--black);
+            box-shadow: 4px 4px 0 var(--black);
         }
 
+        /* Responsive Layout Application */
         #app-container {
             display: flex;
             flex-direction: row; 
@@ -207,7 +211,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
             overflow: hidden; 
         }
@@ -219,7 +223,7 @@
             aspect-ratio: 3/4;
             background-color: var(--white);
             border: 6px solid var(--black);
-            box-shadow: 20px 20px 0 var(--black);
+            box-shadow: 16px 16px 0 var(--black);
             overflow: hidden;
         }
 
@@ -253,16 +257,16 @@
         }
 
         #control-panel {
-            width: 450px; 
+            width: 420px; 
             height: 100%;
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(4px);
             border-left: 6px solid var(--black);
-            padding: 35px 25px;
+            padding: 30px 20px;
             overflow-y: auto; 
             display: flex;
             flex-direction: column;
-            gap: 35px;
+            gap: 30px;
             box-sizing: border-box;
             -webkit-overflow-scrolling: touch; 
             position: relative;
@@ -278,7 +282,7 @@
             background: var(--white);
             padding: 15px;
             border: 3px solid var(--black);
-            box-shadow: 6px 6px 0 var(--black);
+            box-shadow: 5px 5px 0 var(--black);
         }
 
         .color-label {
@@ -411,57 +415,67 @@
             color: var(--white);
             font-family: var(--font-syne);
             font-weight: 800;
-            font-size: 1.8rem;
-            padding: 15px;
+            font-size: 1.6rem;
+            padding: 14px;
             margin-top: 5px;
             border: 4px solid var(--black);
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
-            box-shadow: 6px 6px 0 var(--black);
+            box-shadow: 5px 5px 0 var(--black);
             transition: all 0.2s;
         }
         .btn-export:hover {
             transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0 var(--black);
+            box-shadow: 7px 7px 0 var(--black);
             background: var(--riso-green);
         }
 
+        /* Adaptation ultra-précise pour Mobile et Tablettes */
         @media (max-width: 900px) {
-            #control-panel {
-                width: 55vw; 
-                min-width: 200px; 
-                padding: 25px 12px;
-                gap: 25px;
-                border-left: 4px solid var(--black);
+            body, html {
+                overflow: auto;
+                height: auto;
+                position: relative;
             }
-            #canvas-area { padding: 10px; }
+            #app-container {
+                flex-direction: column;
+                height: auto;
+                width: 100vw;
+                overflow-y: auto;
+            }
+            #canvas-area {
+                height: 60dvh;
+                min-height: 380px;
+                padding: 10px;
+                width: 100%;
+            }
             #export-wrapper {
-                border-width: 3px;
-                box-shadow: 6px 6px 0 var(--black);
+                max-width: 90vw;
+                box-shadow: 10px 10px 0 var(--black);
             }
-            .color-label { font-size: 0.75rem; padding: 4px 8px; margin-top: -22px;}
-            .serif-subtext, .slider-row, .checkbox-label { font-size: 0.75rem; }
-            input[type="file"], select, input[type="text"], .btn-ui {
-                font-size: 0.75rem;
-                padding: 6px;
+            #control-panel {
+                width: 100vw;
+                height: auto;
+                border-left: none;
+                border-top: 6px solid var(--black);
+                padding: 25px 15px;
+                gap: 25px;
             }
-            .bg-grid { grid-template-columns: repeat(2, 1fr); }
-            .btn-export {
-                font-size: 1.1rem;
-                padding: 12px;
-                box-shadow: 4px 4px 0 var(--black);
+            .poster-modal {
+                padding: 20px;
+                max-width: 95vw;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ONBOARDING OVERLAY -->
+    <!-- ONBOARDING OVERLAY (Titre corrigé "GLUE CLUB" sans faute et optimisé mobile) -->
     <div id="overlay">
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
-                <h1 class="modal-title">G L U E<br>C L U Б</h1>
+                <h1 class="modal-title">G L U E<br>C L U B</h1>
                 <div class="modal-highlight">VOL. 01 — COLLAGE MIX</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
@@ -486,17 +500,17 @@
     <!-- POPUP DE CRÉATION DE STICKER (ATELIER DESSIN) -->
     <div id="sticker-modal-canvas">
         <div class="drawing-popup-box">
-            <span style="font-family: var(--font-syne); font-weight: 800; font-size: 1.2rem; text-transform: uppercase;">Atelier Sticker Personnalisé</span>
+            <span style="font-family: var(--font-syne); font-weight: 800; font-size: 1.1rem; text-transform: uppercase;">Atelier Sticker Personnalisé</span>
             
             <div class="drawing-canvas-container">
                 <canvas id="paint-canvas"></canvas>
             </div>
 
             <div class="drawing-tools">
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-ui brush-btn active" data-brush="pen" style="background:var(--black); color:var(--white);">Pinceau Fin</button>
-                    <button class="btn-ui brush-btn" data-brush="marker">Marqueur Gras</button>
-                    <button class="btn-ui brush-btn" data-brush="spray">Spray</button>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn-ui brush-btn active" data-brush="pen" style="background:var(--black); color:var(--white); font-size:0.75rem; padding:8px;">Fin</button>
+                    <button class="btn-ui brush-btn" data-brush="marker" style="font-size:0.75rem; padding:8px;">Gras</button>
+                    <button class="btn-ui brush-btn" data-brush="spray" style="font-size:0.75rem; padding:8px;">Spray</button>
                 </div>
                 <div style="display:flex; gap:5px; align-items:center;">
                     <span style="font-size:0.75rem; font-weight:900;">Couleur :</span>
@@ -504,10 +518,10 @@
                 </div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-top:5px;">
-                <button class="btn-ui" id="btn-clear-drawing" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer</button>
-                <button class="btn-ui" id="btn-cancel-drawing" style="flex:1;">Annuler</button>
-                <button class="btn-bold" id="btn-save-drawing" style="flex:1; font-size:0.9rem; padding:10px;">Ajouter</button>
+            <div style="display:flex; gap:8px; margin-top:5px;">
+                <button class="btn-ui" id="btn-clear-drawing" style="flex:1; color:var(--riso-red); border-color:var(--riso-red); font-size:0.8rem;">Effacer</button>
+                <button class="btn-ui" id="btn-cancel-drawing" style="flex:1; font-size:0.8rem;">Annuler</button>
+                <button class="btn-bold" id="btn-save-drawing" style="flex:1; font-size:0.85rem; padding:8px;">Ajouter</button>
             </div>
         </div>
     </div>
@@ -541,7 +555,6 @@
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">Enlever le fond</button>
             </div>
 
-            <!-- CATÉGORIE STICKERS SEULEMENT AVEC "CRÉE TON STICKER" -->
             <div class="control-group">
                 <span class="color-label">02-BIS. STICKERS</span>
                 <div class="serif-subtext">Crée ton sticker personnalisé</div>
