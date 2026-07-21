@@ -186,7 +186,7 @@
             z-index: 3;
             font-size: 4rem;
             color: var(--black);
-            text-shadow: 3px 3px 0 var(--white);
+            /* Ombre blanche retirée ici */
             cursor: move;
             user-select: none;
             white-space: nowrap;
@@ -495,14 +495,13 @@
                 </label>
             </div>
 
-            <!-- SECTION DESTRUCT AVEC OPTION BITMAP FONCTIONNELLE -->
             <div class="control-group">
                 <span class="color-label">05. DESTRUCT</span>
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Bitmap (1-bit Noir & Blanc)
+                    <input type="checkbox" id="bitmap-toggle"> Bitmap
                 </label>
 
                 <div class="slider-row" style="margin-top:8px;"><span>Seuil Bitmap</span></div>
@@ -512,7 +511,14 @@
             <div class="control-group">
                 <span class="color-label">06. TYPO</span>
                 <input type="text" id="text-input" placeholder="Taper un texte...">
-                <select id="font-selector">
+                
+                <!-- Choix de couleur du texte -->
+                <div style="display:flex; gap:10px; align-items:center; margin-top:5px;">
+                    <span style="font-size: 0.8rem; font-weight:900;">Couleur texte :</span>
+                    <input type="color" id="text-color-picker" value="#050505" style="padding:0; height:32px; width:60px; cursor:pointer; border:2px solid var(--black);">
+                </div>
+
+                <select id="font-selector" style="margin-top:5px;">
                     <option value="'Inter', sans-serif">Inter (Suisse - Block)</option>
                     <option value="'Syne', sans-serif">Syne (Étendu)</option>
                     <option value="'Space Grotesk', sans-serif">Space Grotesk (Moderne)</option>
@@ -525,7 +531,7 @@
                     <option value="'Bungee', cursive">Bungee (Block Poster)</option>
                     <option value="'Abril Fatface', serif">Abril Fatface (Luxe & Rétro)</option>
                 </select>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:10px; margin-top:5px;">
                     <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
                     <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer</button>
                 </div>
@@ -633,7 +639,6 @@
         async function updateFilters() {
             if (!originalUserImageUrl) return;
 
-            // Si Bitmap actif, on génère l'effet pixel par pixel (vrai bitmap 1-bit)
             if (bitmapToggle.checked) {
                 const threshold = parseInt(bitmapIntensity.value);
                 userLayer.src = await generateBitmapDataUrl(originalUserImageUrl, threshold);
@@ -672,7 +677,6 @@
             updateFilters();
         }));
 
-        // Générateur de Bitmap 1-bit (Noir & Blanc pur via seuil)
         function generateBitmapDataUrl(srcUrl, threshold) {
             return new Promise(resolve => {
                 const img = new Image();
@@ -689,7 +693,7 @@
                     const data = imgData.data;
                     for (let i = 0; i < data.length; i += 4) {
                         let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
-                        let v = gray >= threshold ? 255 : 0; // Noir ou Blanc pur
+                        let v = gray >= threshold ? 255 : 0;
                         data[i]   = v;
                         data[i+1] = v;
                         data[i+2] = v;
@@ -761,12 +765,14 @@
         document.getElementById('btn-add-text').addEventListener('click', () => {
             const textVal = document.getElementById('text-input').value;
             const fontSelected = document.getElementById('font-selector').value;
+            const textColor = document.getElementById('text-color-picker').value;
             if(!textVal) return;
 
             const textDiv = document.createElement('div');
             textDiv.className = 'text-overlay';
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
+            textDiv.style.color = textColor; // Application directe de la couleur choisie
             
             if(fontSelected.includes('Inter') || fontSelected.includes('Space Grotesk')) {
                 textDiv.style.fontWeight = '900';
@@ -852,6 +858,7 @@
             }
         });
 
+        // EXPORTATION FIDÈLE (Sans contour blanc sur les textes)
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -899,14 +906,11 @@
                 
                 const computedStyle = window.getComputedStyle(el);
                 ctx.font = `${computedStyle.fontWeight} ${parseFloat(computedStyle.fontSize)}px ${el.style.fontFamily || 'Inter'}`;
-                ctx.fillStyle = computedStyle.color;
+                ctx.fillStyle = computedStyle.color; // Couleur personnalisée du texte
                 ctx.textAlign = 'center';
-            ;
                 ctx.textBaseline = 'middle';
 
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 4;
-                ctx.strokeText(el.innerText, 0, 0);
+                // Ombre blanche supprimée à l'exportation
                 ctx.fillText(el.innerText, 0, 0);
                 ctx.restore();
             });
