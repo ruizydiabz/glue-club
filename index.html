@@ -389,24 +389,6 @@
 </head>
 <body>
 
-    <!-- SVG Filtre pour la trame Riso / Bitmap -->
-    <svg style="display:none;">
-        <defs>
-            <filter id="bitmap-filter">
-                <feColorMatrix type="matrix" values="
-                    0.33 0.33 0.33 0 0
-                    0.33 0.33 0.33 0 0
-                    0.33 0.33 0.33 0 0
-                    0 0 0 1 0" />
-                <feComponentTransfer>
-                    <feFuncR type="discrete" tableValues="0 1"/>
-                    <feFuncG type="discrete" tableValues="0 1"/>
-                    <feFuncB type="discrete" tableValues="0 1"/>
-                </feComponentTransfer>
-            </filter>
-        </defs>
-    </svg>
-
     <!-- ONBOARDING OVERLAY -->
     <div id="overlay">
         <div id="popup-1" class="poster-modal active">
@@ -477,12 +459,11 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
-            <!-- EFFETS ARTISTIQUES : Cyanotype & Risographie avec choix de couleur d'aplat -->
             <div class="control-group">
                 <span class="color-label">03-BIS. EFFETS ART</span>
                 <div class="serif-subtext">Cyanotype & Risographie</div>
                 
-                <button class="btn-ui" id="btn-cyanotype" style="background:#0047ab; color:#fff; margin-bottom:5px;">💙 Cyanotype (Ton bleu UV)</button>
+                <button class="btn-ui" id="btn-cyanotype" style="background:#0f2b5c; color:#fff; margin-bottom:5px;">💙 Cyanotype (Ton Bleu UV)</button>
                 
                 <div style="display:flex; flex-direction:column; gap:5px; margin-top:5px; border-top: 2px dashed var(--black); padding-top:8px;">
                     <span style="font-size: 0.8rem; font-weight:900;">🔴 Risographie (Aplat couleur) :</span>
@@ -559,14 +540,15 @@
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
-        // Variable globale pour stocker la couleur d'aplat risographie personnalisée
         let customRisoColor = null;
+        let isCyanotypeActive = false; // Drapeau pour identifier le mode cyanotype
 
         document.getElementById('upload-user').addEventListener('change', function(e) {
             if (e.target.files[0]) {
                 const url = URL.createObjectURL(e.target.files[0]);
                 userLayer.src = url;
                 userLayer.style.display = 'block';
+                isCyanotypeActive = false;
                 updateFilters(); 
             }
         });
@@ -582,22 +564,23 @@
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
-        // EFFET CYANOTYPE (Réaction UV positive : tons bleus profonds, sans négatif)
+        // EFFET CYANOTYPE UV (Bleu de Prusse intense, style tirage chimique)
         document.getElementById('btn-cyanotype').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importez d'abord une image !");
-            customRisoColor = null; // Réinitialise l'aplat riso
-            document.getElementById('blend-mode').value = 'screen';
-            userLayer.style.mixBlendMode = 'screen';
+            customRisoColor = null;
+            isCyanotypeActive = true;
+            document.getElementById('blend-mode').value = 'normal';
+            userLayer.style.mixBlendMode = 'normal';
             bwToggle.checked = true;
-            briSlider.value = 90;
-            contSlider.value = 160;
-            satSlider.value = 200;
+            briSlider.value = 85;
+            contSlider.value = 170;
+            satSlider.value = 100;
             updateFilters();
         });
 
-        // EFFET RISOGRAPHIE (Aplat de couleur choisi par l'utilisateur)
         document.getElementById('btn-risographie').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importez d'abord une image !");
+            isCyanotypeActive = false;
             customRisoColor = document.getElementById('riso-color-picker').value;
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
@@ -644,8 +627,14 @@
             userLayer.style.filter = filterString;
         }
 
-        [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', updateFilters));
-        [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', updateFilters));
+        [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', () => {
+            isCyanotypeActive = false; // Désactive le mode strict si l'utilisateur retouche les curseurs
+            updateFilters();
+        }));
+        [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', () => {
+            isCyanotypeActive = false;
+            updateFilters();
+        }));
 
         const textContainer = document.getElementById('text-container');
         
@@ -738,7 +727,7 @@
             }
         });
 
-        // EXPORTATION ROBUSTE VIA HTML5 CANVAS PUR (Supporte Cyanotype et Aplat Riso personnalisé)
+        // EXPORTATION ROBUSTE : Applique fidèlement Cyanotype et Riso personnalisé
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -749,7 +738,7 @@
             const ctx = canvas.getContext('2d');
             ctx.scale(2, 2);
 
-            // 1. Dessiner le fond (bg-layer) s'il est présent
+            // 1. Dessiner le fond
             if (bgLayer.src) {
                 const bgImg = new Image();
                 bgImg.crossOrigin = "anonymous";
@@ -761,7 +750,7 @@
                 ctx.fillRect(0, 0, rect.width, rect.height);
             }
 
-            // 2. Dessiner l'image utilisateur (user-layer)
+            // 2. Dessiner l'image utilisateur
             if (userLayer.src && userLayer.style.display !== 'none') {
                 const userImg = new Image();
                 userImg.crossOrigin = "anonymous";
@@ -776,26 +765,26 @@
                 ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
                 ctx.restore();
 
-                // Si Cyanotype actif : Application d'un filtre de ton bleu UV par-dessus l'image
-                if (userLayer.style.mixBlendMode === 'screen' && bwToggle.checked) {
+                // Application rigoureuse du Cyanotype pur (Teinte Bleue profonde sans négatif)
+                if (isCyanotypeActive) {
                     ctx.save();
-                    ctx.globalCompositeOperation = 'source-atop';
-                    ctx.fillStyle = 'rgba(0, 71, 171, 0.75)'; // Bleu Cyanotype profond
+                    ctx.globalCompositeOperation = 'source-in';
+                    ctx.fillStyle = '#0a2342'; // Bleu de Prusse profond style cyanotype
                     ctx.fillRect(0, 0, rect.width, rect.height);
                     ctx.restore();
                 }
 
-                // Si Risographie avec aplat personnalisé actif
+                // Application de l'aplat Riso personnalisé
                 if (customRisoColor && bitmapToggle.checked) {
                     ctx.save();
-                    ctx.globalCompositeOperation = 'source-atop';
+                    ctx.globalCompositeOperation = 'source-in';
                     ctx.fillStyle = customRisoColor;
                     ctx.fillRect(0, 0, rect.width, rect.height);
                     ctx.restore();
                 }
             }
 
-            // 3. Dessiner les textes positionnés
+            // 3. Dessiner les textes
             const textElements = textContainer.querySelectorAll('.text-overlay');
             textElements.forEach(el => {
                 const elRect = el.getBoundingClientRect();
