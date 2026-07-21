@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glue Club - Laboratoire</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Cropper.js pour le recadrage -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <!-- html2canvas pour l'exportation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --pink-bg: #fadadd;
+            --white-bg: #ffffff;
+            --text-color: #000000;
+            --font-typewriter: 'Courier Prime', monospace;
+            --font-brutalist: 'Bebas Neue', sans-serif;
+            --win7-blue: #0058e6;
+            --win7-bg: #ece9d8;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: var(--font-typewriter);
+            color: var(--text-color);
+            background-color: var(--white-bg);
+            overflow: hidden;
+        }
+
+        /* --- POP-UPS WINDOWS 7 STYLE --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win7-window {
+            background: var(--win7-bg);
+            border: 1px solid #fff;
+            border-right-color: #888;
+            border-bottom-color: #888;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
+            width: 400px;
+            max-width: 90%;
+            font-family: Tahoma, Arial, sans-serif;
+            display: none;
+            flex-direction: column;
+        }
+
+        .win7-window.active {
+            display: flex;
+        }
+
+        .win7-titlebar {
+            background: linear-gradient(to right, #0058e6, #3a93ff);
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .win7-close {
+            background: #e04343;
+            color: white;
+            border: 1px solid white;
+            width: 20px; height: 20px;
+            text-align: center;
+            line-height: 18px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .win7-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .brutalist-title {
+            font-family: var(--font-brutalist);
+            font-size: 4rem;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
+        }
+
+        .win7-text {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        .win7-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .win7-btn {
+            background: #e1e1e1;
+            border: 1px solid #fff;
+            border-right-color: #888;
+            border-bottom-color: #888;
+            padding: 5px 20px;
+            cursor: pointer;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+        .win7-btn:active {
+            border: 1px solid #888;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        /* --- APP LAYOUT --- */
+        #app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+
+        #app-container.active {
+            filter: blur(0);
+        }
+
+        /* CANVAS AREA (LEFT) */
+        #canvas-area {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white-bg);
+            background-image: radial-gradient(#ddd 1px, transparent 1px);
+            background-size: 20px 20px;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        #export-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 3/4;
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        #bg-layer { z-index: 1; }
+        
+        #user-layer {
+            z-index: 2;
+            transition: all 0.2s ease;
+        }
+
+        .text-overlay {
+            position: absolute;
+            z-index: 3;
+            font-family: var(--font-brutalist);
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+            cursor: move;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        /* CONTROL PANEL (RIGHT) */
+        #control-panel {
+            width: 350px;
+            background-color: var(--pink-bg);
+            border-left: 2px solid #000;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h2.panel-title {
+            font-family: var(--font-brutalist);
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 15px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        input[type="file"], select, input[type="text"], input[type="range"] {
+            font-family: var(--font-typewriter);
+            padding: 5px;
+            border: 1px solid #000;
+            background: #fff;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            font-family: var(--font-typewriter);
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background: #333; }
+
+        /* Background Library Grid */
+        .bg-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 5px;
+            background: #fff;
+        }
+
+        .bg-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .bg-thumb:hover { border-color: #000; }
+
+        /* BIG EXPORT BUTTON */
+        .btn-export {
+            background: #000;
+            color: var(--pink-bg);
+            font-size: 1.2rem;
+            padding: 15px;
+            margin-top: auto;
+            border: 2px solid #000;
+        }
+        .btn-export:hover {
+            background: var(--pink-bg);
+            color: #000;
+        }
+
+        /* RESPONSIVE MOBILE */
+        @media (max-width: 800px) {
+            #app-container {
+                flex-direction: column;
+            }
+            #control-panel {
+                width: 100%;
+                height: 50vh;
+                border-left: none;
+                border-top: 2px solid #000;
+            }
+            #canvas-area {
+                height: 50vh;
+            }
+        }
+        
+        /* Utility classes for SVG Filters */
+        .pixelated { image-rendering: pixelated; }
+    </style>
+</head>
+<body>
+
+    <!-- SVG Filters for Bitmap and Pixelation -->
+    <svg style="display:none;">
+        <defs>
+            <filter id="bitmap-filter">
+                <feColorMatrix type="matrix" values="
+                    0.33 0.33 0.33 0 0
+                    0.33 0.33 0.33 0 0
+                    0.33 0.33 0.33 0 0
+                    0 0 0 1 0" />
+                <feComponentTransfer>
+                    <feFuncR type="discrete" tableValues="0 1"/>
+                    <feFuncG type="discrete" tableValues="0 1"/>
+                    <feFuncB type="discrete" tableValues="0 1"/>
+                </feComponentTransfer>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- ONBOARDING OVERLAY -->
+    <div id="overlay">
+        <!-- POP-UP 1 -->
+        <div id="popup-1" class="win7-window active">
+            <div class="win7-titlebar">
+                <span>Système</span>
+                <div class="win7-close">X</div>
+            </div>
+            <div class="win7-content">
+                <h1 class="brutalist-title">GLUE CLUB</h1>
+                <div class="win7-text">T'as ramené ta colle ?</div>
+                <div class="win7-buttons">
+                    <button class="win7-btn" id="btn-oui">Oui</button>
+                    <button class="win7-btn" id="btn-zappe">J'ai zappé</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POP-UP 2 -->
+        <div id="popup-2" class="win7-window">
+            <div class="win7-titlebar">
+                <span>Avertissement</span>
+                <div class="win7-close">X</div>
+            </div>
+            <div class="win7-content">
+                <div class="win7-text">T'es sûr(e) ?</div>
+                <div class="win7-buttons">
+                    <button class="win7-btn" id="btn-non1">Non</button>
+                    <button class="win7-btn" id="btn-non2">Non</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app-container">
+        <!-- CANVAS (LEFT) -->
+        <div id="canvas-area">
+            <div id="export-wrapper">
+                <img id="bg-layer" class="layer" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" alt="Fond">
+                <img id="user-layer" class="layer" src="" alt="" style="display:none;">
+                <div id="text-container"></div>
+            </div>
+        </div>
+
+        <!-- CONTROL PANEL (RIGHT) -->
+        <div id="control-panel">
+            <h2 class="panel-title">Laboratoire</h2>
+
+            <div class="control-group">
+                <label>1. Importer une image</label>
+                <input type="file" id="upload-user" accept="image/*">
+            </div>
+
+            <div class="control-group">
+                <label>2. Détourage (Auto)</label>
+                <button id="btn-remove-bg">Supprimer le fond</button>
+                <small style="font-size:0.7rem; color:#555;">(Simule un détourage via incrustation sur fond blanc)</small>
+            </div>
+
+            <div class="control-group">
+                <label>3. Bibliothèque de magazines (30 fonds)</label>
+                <div class="bg-grid" id="bg-library">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>4. Masques de fusion</label>
+                <select id="blend-mode">
+                    <option value="normal">Normal</option>
+                    <option value="multiply">Produit (Multiply)</option>
+                    <option value="screen">Superposition (Screen)</option>
+                    <option value="overlay">Incrustation (Overlay)</option>
+                    <option value="darken">Obscurcir (Darken)</option>
+                    <option value="lighten">Éclaircir (Lighten)</option>
+                    <option value="difference">Différence</option>
+                    <option value="exclusion">Exclusion</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>5. Colorimétrie</label>
+                <label for="sat-slider" style="font-weight:normal;">Saturation</label>
+                <input type="range" id="sat-slider" min="0" max="200" value="100">
+                
+                <label style="font-weight:normal; margin-top:5px;">
+                    <input type="checkbox" id="bw-toggle"> Filtre Noir & Blanc
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>6. Effets destructifs</label>
+                <label for="pixel-slider" style="font-weight:normal;">Pixelisation (Flou / Net)</label>
+                <input type="range" id="pixel-slider" min="0" max="20" value="0">
+                
+                <label style="font-weight:normal; margin-top:5px;">
+                    <input type="checkbox" id="bitmap-toggle"> Effet Bitmap (Seuil PP)
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>7. Outils basiques</label>
+                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                    <input type="text" id="text-input" placeholder="Taper un texte...">
+                    <button id="btn-add-text">Ajouter</button>
+                </div>
+                <button id="btn-crop">Recadrer l'image</button>
+                <button id="btn-crop-validate" style="display:none; background:#e04343;">Valider Recadrage</button>
+            </div>
+
+            <button class="btn-export" id="btn-export">Exporter l'image</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ONBOARDING LOGIC ---
+        const overlay = document.getElementById('overlay');
+        const popup1 = document.getElementById('popup-1');
+        const popup2 = document.getElementById('popup-2');
+        const appContainer = document.getElementById('app-container');
+
+        function startApp() {
+            overlay.style.display = 'none';
+            appContainer.classList.add('active');
+        }
+
+        document.getElementById('btn-oui').onclick = startApp;
+        document.querySelectorAll('.win7-close').forEach(btn => btn.onclick = startApp);
+        
+        document.getElementById('btn-zappe').onclick = () => {
+            popup1.classList.remove('active');
+            popup2.classList.add('active');
+        };
+
+        document.getElementById('btn-non1').onclick = startApp;
+        document.getElementById('btn-non2').onclick = startApp;
+
+        // --- APP LOGIC ---
+        const userLayer = document.getElementById('user-layer');
+        const bgLayer = document.getElementById('bg-layer');
+        
+        // 1. Import Image
+        document.getElementById('upload-user').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                const url = URL.createObjectURL(e.target.files[0]);
+                userLayer.src = url;
+                userLayer.style.display = 'block';
+                updateFilters(); // Reset/Apply filters
+            }
+        });
+
+        // 2. Fake Background Removal
+        // In a pure frontend app without a heavy ML model, we fake it by applying a multiply blend if the background is light.
+        document.getElementById('btn-remove-bg').addEventListener('click', () => {
+            if(!userLayer.src) return alert("Importez d'abord une image !");
+            document.getElementById('blend-mode').value = 'multiply';
+            userLayer.style.mixBlendMode = 'multiply';
+            alert("Mode détourage rapide activé (Fusion Produit). Idéal pour les photos sur fond blanc.");
+        });
+
+        // 3. Background Library (Generate 30 dummies for the prototype)
+        const bgLibrary = document.getElementById('bg-library');
+        // A mix of abstract unspash images to simulate magazine textures
+        const dummyBgs = [
+            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200",
+            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=200",
+            "https://images.unsplash.com/photo-1604871000636-074fa5117945?w=200",
+            "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=200",
+            "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=200"
+        ];
+        
+        for(let i=0; i<30; i++) {
+            const img = document.createElement('img');
+            img.className = 'bg-thumb';
+            // Cycle through dummy images, vary by adding random parameters to avoid cache
+            img.src = dummyBgs[i % dummyBgs.length] + "&random=" + i;
+            img.onclick = () => {
+                // Remove the low-res parameters for the main canvas
+                bgLayer.src = img.src.replace("w=200", "w=800");
+            };
+            bgLibrary.appendChild(img);
+        }
+
+        // 4. Blend Modes
+        document.getElementById('blend-mode').addEventListener('change', (e) => {
+            userLayer.style.mixBlendMode = e.target.value;
+        });
+
+        // 5 & 6. Filters & Destructive Effects
+        const satSlider = document.getElementById('sat-slider');
+        const bwToggle = document.getElementById('bw-toggle');
+        const pixelSlider = document.getElementById('pixel-slider');
+        const bitmapToggle = document.getElementById('bitmap-toggle');
+
+        function updateFilters() {
+            let filterString = `saturate(${satSlider.value}%) `;
+            
+            if (bwToggle.checked) {
+                filterString += "grayscale(100%) ";
+            }
+            
+            if (pixelSlider.value > 0) {
+                filterString += `blur(${pixelSlider.value}px) `;
+                // Note: True pixelation on DOM requires canvas redraw. Blur is used here as a placeholder for destructive degradation.
+            }
+            
+            if (bitmapToggle.checked) {
+                filterString += `url(#bitmap-filter) `;
+            }
+
+            userLayer.style.filter = filterString;
+        }
+
+        satSlider.addEventListener('input', updateFilters);
+        bwToggle.addEventListener('change', updateFilters);
+        pixelSlider.addEventListener('input', updateFilters);
+        bitmapToggle.addEventListener('change', updateFilters);
+
+        // 7. Text Tool (Draggable)
+        document.getElementById('btn-add-text').addEventListener('click', () => {
+            const textVal = document.getElementById('text-input').value;
+            if(!textVal) return;
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'text-overlay';
+            textDiv.innerText = textVal;
+            textDiv.style.top = '50%';
+            textDiv.style.left = '50%';
+            textDiv.style.transform = 'translate(-50%, -50%)';
+            
+            // Simple Drag Logic
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+
+            textDiv.addEventListener("mousedown", dragStart);
+            document.addEventListener("mouseup", dragEnd);
+            document.addEventListener("mousemove", drag);
+
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                if (e.target === textDiv) isDragging = true;
+            }
+            function dragEnd() {
+                initialX = currentX;
+                initialY = currentY;
+                isDragging = false;
+            }
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    textDiv.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
+                }
+            }
+
+            // Click to remove
+            textDiv.ondblclick = () => textDiv.remove();
+
+            document.getElementById('text-container').appendChild(textDiv);
+            document.getElementById('text-input').value = '';
+        });
+
+        // 7. Crop Tool (using Cropper.js)
+        let cropper = null;
+        const btnCrop = document.getElementById('btn-crop');
+        const btnCropValidate = document.getElementById('btn-crop-validate');
+
+        btnCrop.addEventListener('click', () => {
+            if(!userLayer.src) return alert("Importez d'abord une image !");
+            
+            // Remove blend mode and filters temporarily for accurate cropping
+            userLayer.style.mixBlendMode = 'normal';
+            userLayer.style.filter = 'none';
+
+            cropper = new Cropper(userLayer, {
+                viewMode: 1,
+                background: false,
+                modal: true,
+                guides: true,
+                autoCropArea: 0.8
+            });
+
+            btnCrop.style.display = 'none';
+            btnCropValidate.style.display = 'block';
+        });
+
+        btnCropValidate.addEventListener('click', () => {
+            if(cropper) {
+                // Get cropped canvas and replace image source
+                const croppedCanvas = cropper.getCroppedCanvas();
+                userLayer.src = croppedCanvas.toDataURL();
+                
+                // Destroy cropper
+                cropper.destroy();
+                cropper = null;
+
+                // Restore styles
+                userLayer.style.mixBlendMode = document.getElementById('blend-mode').value;
+                updateFilters();
+
+                btnCrop.style.display = 'block';
+                btnCropValidate.style.display = 'none';
+            }
+        });
+
+        // 8. EXPORT
+        document.getElementById('btn-export').addEventListener('click', () => {
+            const wrapper = document.getElementById('export-wrapper');
+            
+            // Change text style temporarily so html2canvas captures transform properly
+            html2canvas(wrapper, {
+                scale: 2, // High resolution
+                useCORS: true, // Allow cross-origin images (like unsplash)
+                allowTaint: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'glue-club-creation.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
