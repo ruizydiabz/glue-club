@@ -495,18 +495,18 @@
                 </label>
             </div>
 
-            <!-- SECTION DESTRUCT AVEC OPTION BITMAP -->
+            <!-- SECTION DESTRUCT AVEC OPTION BITMAP FONCTIONNELLE -->
             <div class="control-group">
                 <span class="color-label">05. DESTRUCT</span>
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Bitmap
+                    <input type="checkbox" id="bitmap-toggle"> Bitmap (1-bit Noir & Blanc)
                 </label>
 
                 <div class="slider-row" style="margin-top:8px;"><span>Seuil Bitmap</span></div>
-                <input type="range" id="bitmap- intensity" min="100" max="500" value="100">
+                <input type="range" id="bitmap-intensity" min="0" max="255" value="128">
             </div>
 
             <div class="control-group">
@@ -631,18 +631,28 @@
         const bitmapIntensity = document.getElementById('bitmap-intensity');
 
         async function updateFilters() {
-            if (activePhotoFilter === 'cyanotype' && originalUserImageUrl) {
-                userLayer.src = await generateCyanotypeDataUrl(originalUserImageUrl);
-                userLayer.style.filter = 'none';
-                return;
-            }
-            if (activePhotoFilter === 'riso' && originalUserImageUrl) {
-                userLayer.src = await generateRisoDataUrl(originalUserImageUrl, risoTintColor);
-                userLayer.style.filter = 'none';
+            if (!originalUserImageUrl) return;
+
+            // Si Bitmap actif, on génère l'effet pixel par pixel (vrai bitmap 1-bit)
+            if (bitmapToggle.checked) {
+                const threshold = parseInt(bitmapIntensity.value);
+                userLayer.src = await generateBitmapDataUrl(originalUserImageUrl, threshold);
+                userLayer.style.filter = pixelSlider.value > 0 ? `blur(${pixelSlider.value}px)` : 'none';
                 return;
             }
 
-            if (originalUserImageUrl && userLayer.src !== originalUserImageUrl && !activePhotoFilter) {
+            if (activePhotoFilter === 'cyanotype') {
+                userLayer.src = await generateCyanotypeDataUrl(originalUserImageUrl);
+                userLayer.style.filter = pixelSlider.value > 0 ? `blur(${pixelSlider.value}px)` : 'none';
+                return;
+            }
+            if (activePhotoFilter === 'riso') {
+                userLayer.src = await generateRisoDataUrl(originalUserImageUrl, risoTintColor);
+                userLayer.style.filter = pixelSlider.value > 0 ? `blur(${pixelSlider.value}px)` : 'none';
+                return;
+            }
+
+            if (userLayer.src !== originalUserImageUrl && !activePhotoFilter) {
                 userLayer.src = originalUserImageUrl;
             }
 
@@ -650,23 +660,45 @@
             if (bwToggle.checked) filterString += "grayscale(100%) ";
             if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
             
-            // Effet Bitmap pur (seuil 1-bit noir et blanc extrême)
-            if (bitmapToggle.checked) {
-                let contrastVal = bitmapIntensity.value;
-                filterString += `grayscale(100%) contrast(${contrastVal}%) brightness(110%)`;
-            }
-
             userLayer.style.filter = filterString;
         }
 
         [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', () => {
-            if(s !== bitmapIntensity && s !== pixelSlider) activePhotoFilter = null;
+            if (s !== bitmapIntensity && s !== pixelSlider) activePhotoFilter = null;
             updateFilters();
         }));
         [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', () => {
-            if(t !== bitmapToggle) activePhotoFilter = null;
+            if (t !== bitmapToggle) activePhotoFilter = null;
             updateFilters();
         }));
+
+        // Générateur de Bitmap 1-bit (Noir & Blanc pur via seuil)
+        function generateBitmapDataUrl(srcUrl, threshold) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = srcUrl;
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                    const data = imgData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
+                        let v = gray >= threshold ? 255 : 0; // Noir ou Blanc pur
+                        data[i]   = v;
+                        data[i+1] = v;
+                        data[i+2] = v;
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    resolve(c.toDataURL());
+                };
+            });
+        }
 
         function generateCyanotypeDataUrl(srcUrl) {
             return new Promise(resolve => {
@@ -869,6 +901,7 @@
                 ctx.font = `${computedStyle.fontWeight} ${parseFloat(computedStyle.fontSize)}px ${el.style.fontFamily || 'Inter'}`;
                 ctx.fillStyle = computedStyle.color;
                 ctx.textAlign = 'center';
+            ;
                 ctx.textBaseline = 'middle';
 
                 ctx.strokeStyle = '#ffffff';
