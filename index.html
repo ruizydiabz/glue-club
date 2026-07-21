@@ -358,7 +358,8 @@
         <!-- CANVAS (LEFT) -->
         <div id="canvas-area">
             <div id="export-wrapper">
-                <img id="bg-layer" class="layer" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop" alt="Fond">
+                <!-- Image de fond par défaut (1.jpg) -->
+                <img id="bg-layer" class="layer" src="1.jpg" alt="Fond">
                 <img id="user-layer" class="layer" src="" alt="" style="display:none;">
                 <div id="text-container"></div>
             </div>
@@ -380,7 +381,7 @@
             </div>
 
             <div class="control-group">
-                <label>3. Bibliothèque de magazines (30 fonds)</label>
+                <label>3. Bibliothèque de magazines (9 fonds)</label>
                 <div class="bg-grid" id="bg-library">
                     <!-- Généré par JS -->
                 </div>
@@ -480,28 +481,31 @@
             alert("Mode détourage rapide activé (Fusion Produit). Idéal pour les photos sur fond blanc.");
         });
 
-        // 3. Background Library (Generate 30 dummies for the prototype)
+        // 3. Background Library (Vos 9 images)
         const bgLibrary = document.getElementById('bg-library');
-        // A mix of abstract unspash images to simulate magazine textures
-        const dummyBgs = [
-            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200",
-            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=200",
-            "https://images.unsplash.com/photo-1604871000636-074fa5117945?w=200",
-            "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=200",
-            "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=200"
+        // Liste exacte de vos 9 images de 1.jpg à 9.jpg
+        const myBackgrounds = [
+            "1.jpg",
+            "2.jpg",
+            "3.jpg",
+            "4.jpg",
+            "5.jpg",
+            "6.jpg",
+            "7.jpg",
+            "8.jpg",
+            "9.jpg"
         ];
         
-        for(let i=0; i<30; i++) {
+        myBackgrounds.forEach((imagePath) => {
             const img = document.createElement('img');
             img.className = 'bg-thumb';
-            // Cycle through dummy images, vary by adding random parameters to avoid cache
-            img.src = dummyBgs[i % dummyBgs.length] + "&random=" + i;
+            img.src = imagePath; // Utilise vos images directement comme miniatures
             img.onclick = () => {
-                // Remove the low-res parameters for the main canvas
-                bgLayer.src = img.src.replace("w=200", "w=800");
+                // Modifie le fond principal lorsqu'on clique sur la miniature
+                bgLayer.src = imagePath;
             };
             bgLibrary.appendChild(img);
-        }
+        });
 
         // 4. Blend Modes
         document.getElementById('blend-mode').addEventListener('change', (e) => {
