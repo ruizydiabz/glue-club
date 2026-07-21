@@ -76,7 +76,7 @@
 
         .poster-modal.active { display: flex; }
 
-        /* FENÊTRE POPUP DE CRÉATION DE STICKER (DRAWING BOARD) */
+        /* FENÊTRE POPUP DE CRÉATION DE STICKER (ATELIER DESSIN) */
         #sticker-modal-canvas {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -250,28 +250,6 @@
             height: auto;
             cursor: move;
             user-select: none;
-        }
-
-        .sticker-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            max-height: 140px;
-            overflow-y: auto;
-        }
-        .sticker-thumb {
-            width: 100%;
-            aspect-ratio: 1;
-            background: var(--white);
-            border: 2px solid var(--black);
-            object-fit: contain;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-sizing: border-box;
-        }
-        .sticker-thumb:hover {
-            background: var(--swiss-yellow);
         }
 
         #control-panel {
@@ -553,32 +531,22 @@
                 <span class="color-label">01. IMPORT</span>
                 <div class="serif-subtext">Charge ton image perso</div>
                 <input type="file" id="upload-user" accept="image/*">
-                <button class="btn-ui" id="btn-remove-bg">✂️ Auto Cut-out</button>
+                <button class="btn-ui" id="btn-remove-bg">Auto Cut-out</button>
             </div>
 
             <div class="control-group">
                 <span class="color-label">02. ARCHIVE</span>
                 <div class="serif-subtext">Fonds (1-13) & Option sans fond</div>
                 <div class="bg-grid" id="bg-library"></div>
-                <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond</button>
+                <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">Enlever le fond</button>
             </div>
 
-            <!-- CATÉGORIE STICKERS + BOUTON CRÉER TON STICKER -->
+            <!-- CATÉGORIE STICKERS SEULEMENT AVEC "CRÉE TON STICKER" -->
             <div class="control-group">
                 <span class="color-label">02-BIS. STICKERS</span>
-                <div class="serif-subtext">Bibliothèque & Création libre</div>
+                <div class="serif-subtext">Crée ton sticker personnalisé</div>
                 
-                <button class="btn-bold" id="btn-open-sticker-maker" style="background: var(--swiss-yellow); color: var(--black); margin-bottom: 8px; font-size: 0.9rem; padding: 10px;">✨ Crée ton sticker</button>
-
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;">
-                    <span style="font-size:0.8rem; font-weight:900;">Teinte sticker :</span>
-                    <input type="color" id="sticker-color-picker" value="#e0241b" style="padding:0; height:32px; width:60px; cursor:pointer; border:2px solid var(--black);">
-                </div>
-
-                <div class="sticker-grid" id="sticker-library">
-                    <img src="stickers-1.svg" class="sticker-thumb" data-src="stickers-1.svg" alt="Sticker 1">
-                    <img src="stickers-2.svg" class="sticker-thumb" data-src="stickers-2.svg" alt="Sticker 2">
-                </div>
+                <button class="btn-bold" id="btn-open-sticker-maker" style="background: var(--swiss-yellow); color: var(--black); margin-bottom: 5px; font-size: 0.9rem; padding: 10px;">Crée ton stickers</button>
                 <button class="btn-ui" id="btn-clear-stickers" style="margin-top:5px; color:var(--riso-red); border-color:var(--riso-red);">Effacer les stickers</button>
             </div>
 
@@ -602,10 +570,10 @@
                 <span class="color-label">03-BIS. FILTRES PHOTO</span>
                 <div class="serif-subtext">Cyanotype & Risographie</div>
                 
-                <button class="btn-ui" id="btn-cyanotype" style="background:#1b4965; color:#fff; margin-bottom:5px;">💙 Cyanotype (Bleu Vif UV)</button>
+                <button class="btn-ui" id="btn-cyanotype" style="background:#1b4965; color:#fff; margin-bottom:5px;">Cyanotype (Bleu Vif UV)</button>
                 
                 <div style="display:flex; flex-direction:column; gap:5px; margin-top:5px; border-top: 2px dashed var(--black); padding-top:8px;">
-                    <span style="font-size: 0.8rem; font-weight:900;">🔴 Risographie (Teinte aplat) :</span>
+                    <span style="font-size: 0.8rem; font-weight:900;">Risographie (Teinte aplat) :</span>
                     <div style="display:flex; gap:5px; align-items:center;">
                         <input type="color" id="riso-color-picker" value="#e0241b" style="padding:0; height:36px; width:50px; cursor:pointer;">
                         <button class="btn-ui" id="btn-risographie" style="flex:1; background:var(--riso-red); color:#fff;">Appliquer Risographie</button>
@@ -730,7 +698,6 @@
 
         document.getElementById('btn-open-sticker-maker').addEventListener('click', () => {
             stickerModal.classList.add('active');
-            // Initialiser la taille du canvas interne
             paintCanvas.width = 400;
             paintCanvas.height = 400;
             paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
@@ -744,7 +711,6 @@
             paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
         });
 
-        // Gestion des pinceaux
         document.querySelectorAll('.brush-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.brush-btn').forEach(b => {
@@ -757,7 +723,6 @@
             });
         });
 
-        // Logique de dessin tactile / souris
         function getMousePos(e) {
             const rect = paintCanvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -812,7 +777,6 @@
         paintCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
         paintCanvas.addEventListener('touchend', (e) => { e.preventDefault(); stopDrawing(); });
 
-        // Sauvegarder et ajouter le sticker personnalisé sur l'affiche
         document.getElementById('btn-save-drawing').addEventListener('click', () => {
             const dataUrl = paintCanvas.toDataURL('image/png');
             stickerModal.classList.remove('active');
@@ -821,15 +785,6 @@
 
         // --- GESTION DES STICKERS SUR L'AFFICHE ---
         const stickerContainer = document.getElementById('sticker-container');
-
-        document.querySelectorAll('.sticker-thumb').forEach(thumb => {
-            thumb.addEventListener('click', async () => {
-                const src = thumb.getAttribute('data-src');
-                const color = document.getElementById('sticker-color-picker').value;
-                const coloredSvgUrl = await colorizeSvg(src, color);
-                addStickerToCanvas(coloredSvgUrl);
-            });
-        });
 
         function addStickerToCanvas(imgSrc) {
             const stickerImg = document.createElement('img');
@@ -873,25 +828,6 @@
         document.getElementById('btn-clear-stickers').addEventListener('click', () => {
             stickerContainer.innerHTML = '';
         });
-
-        async function colorizeSvg(url, hexColor) {
-            try {
-                const response = await fetch(url);
-                let text = await response.text();
-                if (text.includes('fill=')) {
-                    text = text.replace(/fill="[^"]*"/g, `fill="${hexColor}"`);
-                } else {
-                    text = text.replace('<svg', `<svg fill="${hexColor}"`);
-                }
-                if (text.includes('stroke=')) {
-                    text = text.replace(/stroke="[^"]*"/g, `stroke="${hexColor}"`);
-                }
-                const blob = new Blob([text], {type: 'image/svg+xml'});
-                return URL.createObjectURL(blob);
-            } catch (e) {
-                return url;
-            }
-        }
 
         document.getElementById('btn-cyanotype').addEventListener('click', async () => {
             if(!originalUserImageUrl) return alert("Importez d'abord une image !");
@@ -1160,7 +1096,7 @@
             }
         });
 
-        // EXPORTATION FIDÈLE (Inclut les stickers dessinés, SVG et les textes)
+        // EXPORTATION FIDÈLE (Inclut les stickers créés et les textes)
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -1254,14 +1190,6 @@
                 case 'exclusion': return 'exclusion';
                 default: return 'source-over';
             }
-        }
-
-        function hexToRgb(hex) {
-            let bigint = parseInt(hex.replace("#", ""), 16);
-            let r = (bigint >> 16) & 255;
-            let g = (bigint >> 8) & 255;
-            let b = bigint & 255;
-            return {r, g, b};
         }
     </script>
 </body>
