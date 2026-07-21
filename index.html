@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Glue Club - Riso Zine Edition</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts : Syne, Inter, Playfair -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+        /* CSS Variables - Palette Riso + Swiss */
         :root {
             --riso-red: #e0241b;
             --riso-green: #3ea055;
@@ -28,15 +29,16 @@
             --font-serif: 'Playfair Display', serif;
         }
 
+        /* VERROUILLAGE GLOBAL DE L'ÉCRAN (Empêche le scroll de la page entière) */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            height: 100dvh; /* Gère parfaitement la hauteur sur mobile (barres de navigation incluses) */
+            height: 100dvh; /* Hauteur stricte dynamique pour mobile */
             font-family: var(--font-sans);
             color: var(--black);
-            overflow: hidden;
+            overflow: hidden; /* Coupe le défilement global */
+            
             background-color: var(--white);
             background-image: 
                 radial-gradient(var(--riso-red) 15%, transparent 16%), 
@@ -45,12 +47,12 @@
             background-position: 0 0, 4px 4px;
         }
 
-        /* --- POP-UPS --- */
+        /* --- POP-UPS FAÇON ZINE --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
             z-index: 999;
             display: flex;
             align-items: center;
@@ -71,8 +73,12 @@
             box-shadow: 10px 10px 0 var(--riso-green);
         }
 
-        .poster-modal.active {
-            display: flex;
+        .poster-modal.active { display: flex; }
+
+        .modal-content {
+            position: relative;
+            z-index: 1;
+            text-align: left;
         }
 
         .modal-title {
@@ -80,7 +86,7 @@
             font-weight: 800;
             font-size: 3.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             margin: 0 0 5px 0;
             line-height: 1;
         }
@@ -89,7 +95,7 @@
             background-color: var(--riso-red);
             color: var(--white);
             display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 15px;
             font-size: 1rem;
             font-weight: 900;
             letter-spacing: 2px;
@@ -100,7 +106,7 @@
         .modal-italic {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             margin-bottom: 20px;
         }
 
@@ -114,7 +120,7 @@
             background-color: var(--black);
             color: var(--white);
             border: 2px solid var(--black);
-            padding: 12px 20px;
+            padding: 10px 20px;
             font-family: var(--font-display);
             font-weight: 700;
             text-transform: uppercase;
@@ -123,11 +129,12 @@
             flex: 1;
         }
 
-        /* --- APP LAYOUT --- */
+        /* --- APP LAYOUT (SPLIT SCREEN STRICT) --- */
         #app-container {
             display: flex;
-            height: 100%;
-            width: 100%;
+            flex-direction: row; /* Force l'affichage côte à côte */
+            height: 100dvh;
+            width: 100vw;
             filter: blur(10px);
             transition: filter 0.3s ease;
         }
@@ -136,26 +143,27 @@
             filter: blur(0);
         }
 
-        /* CANVAS AREA (LEFT / TOP) */
+        /* ZONE IMAGE : FIXE À GAUCHE */
         #canvas-area {
-            flex: 1;
+            flex: 1; /* Prend tout l'espace disponible à gauche */
+            height: 100%;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
-            overflow: hidden;
+            padding: 15px;
             box-sizing: border-box;
+            overflow: hidden; /* L'image ne déborde pas */
         }
 
         #export-wrapper {
             position: relative;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px; /* Taille max sur PC */
             aspect-ratio: 3/4;
             background-color: var(--white);
-            border: 4px solid var(--black);
-            box-shadow: 10px 10px 0 var(--black);
+            border: 5px solid var(--black);
+            box-shadow: 15px 15px 0 var(--black);
             overflow: hidden;
         }
 
@@ -179,34 +187,53 @@
             white-space: nowrap;
         }
 
-        /* CONTROL PANEL (RIGHT / BOTTOM) */
+        /* ZONE MENU : À DROITE AVEC DÉFILEMENT INTÉGRÉ */
         #control-panel {
-            width: 380px;
+            width: 420px; /* Largeur sur ordinateur */
+            height: 100%;
             background-color: var(--white);
-            border-left: 4px solid var(--black);
-            padding: 20px;
-            overflow-y: auto;
+            border-left: 5px solid var(--black);
+            padding: 30px;
+            overflow-y: auto; /* Barre de défilement uniquement ici ! */
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 35px;
             box-sizing: border-box;
-            -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
+            -webkit-overflow-scrolling: touch; /* Défilement fluide sur smartphone */
+            position: relative;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        }
+
+        .panel-bg-text {
+            position: absolute;
+            top: -20px;
+            right: 10px;
+            font-family: var(--font-sans);
+            font-weight: 900;
+            font-size: 7rem;
+            color: var(--black);
+            opacity: 0.04;
+            writing-mode: vertical-rl;
+            pointer-events: none;
+            z-index: 0;
+            letter-spacing: -5px;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            z-index: 1;
         }
 
         .color-label {
             display: inline-table;
-            padding: 4px 10px;
+            padding: 6px 12px;
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 0.95rem;
+            font-size: 1rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             align-self: flex-start;
             border: 2px solid var(--black);
         }
@@ -218,7 +245,7 @@
         .serif-subtext {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--black);
         }
 
@@ -247,11 +274,12 @@
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             background: var(--white);
             border: 3px solid var(--black);
             cursor: pointer;
+            border-radius: 0;
         }
 
         .slider-row {
@@ -265,10 +293,11 @@
         }
 
         input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             accent-color: var(--black);
             cursor: pointer;
+            border-radius: 0;
             border: 2px solid var(--black);
         }
         .checkbox-label {
@@ -285,7 +314,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
-            max-height: 130px;
+            max-height: 150px;
             overflow-y: auto;
         }
         .bg-thumb {
@@ -318,43 +347,47 @@
             color: var(--white);
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             padding: 15px;
             margin-top: 10px;
             border: 4px solid var(--black);
             text-transform: uppercase;
             cursor: pointer;
-            box-shadow: 4px 4px 0 var(--black);
+            box-shadow: 6px 6px 0 var(--black);
         }
 
-        /* --- MEDIA QUERY MOBILE (Écrans inférieurs à 900px) --- */
+        /* --- MEDIA QUERY MOBILE (Garde le menu à droite mais réduit sa taille) --- */
         @media (max-width: 900px) {
-            body, html {
-                overflow: auto; /* Permet de scroller toute la page sur mobile si besoin */
-                height: auto;
-            }
-            #app-container {
-                flex-direction: column;
-                height: auto;
-                overflow: visible;
+            #control-panel {
+                width: 50vw; /* Prend la moitié de l'écran sur téléphone */
+                min-width: 160px; /* Évite qu'il ne soit trop fin */
+                padding: 15px 10px;
+                gap: 20px;
+                border-left: 3px solid var(--black);
             }
             #canvas-area {
-                height: 50vh; /* Prend la moitié haute pour voir l'image clairement */
-                min-height: 320px;
-                flex: none;
+                padding: 5px; /* Laisse un max de place à l'image */
             }
             #export-wrapper {
-                max-width: 80vw;
+                border-width: 2px;
+                box-shadow: 5px 5px 0 var(--black); /* Ombre plus petite sur mobile */
             }
-            #control-panel {
-                width: 100%;
-                height: auto;
-                max-height: none;
-                border-left: none;
-                border-top: 4px solid var(--black);
-                padding: 15px;
-                overflow-y: visible;
+            /* Réduction globale de la taille des textes du menu sur mobile pour que ça rentre */
+            .color-label { font-size: 0.7rem; padding: 4px 6px; }
+            .serif-subtext, .slider-row, .checkbox-label { font-size: 0.7rem; }
+            input[type="file"], select, input[type="text"], .btn-ui {
+                font-size: 0.7rem;
+                padding: 6px;
             }
+            .bg-grid {
+                grid-template-columns: repeat(2, 1fr); /* Passe à 2 colonnes d'images sur mobile */
+            }
+            .btn-export {
+                font-size: 1rem;
+                padding: 10px;
+                box-shadow: 3px 3px 0 var(--black);
+            }
+            .panel-bg-text { display: none; } /* Cache le gros texte vertical sur mobile */
         }
     </style>
 </head>
@@ -386,7 +419,7 @@
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
-                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black); border: 2px solid var(--black);">J'AI ZAPPÉ</button>
+                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black);">J'AI ZAPPÉ</button>
                 </div>
             </div>
         </div>
@@ -403,7 +436,7 @@
         </div>
     </div>
 
-    <!-- APP CONTAINER -->
+    <!-- APP CONTAINER (Flex Row forcé) -->
     <div id="app-container">
         <!-- CANVAS (LEFT) -->
         <div id="canvas-area">
@@ -416,15 +449,18 @@
 
         <!-- CONTROL PANEL (RIGHT) -->
         <div id="control-panel">
+            <div class="panel-bg-text">ZINE</div>
+            
             <div class="control-group">
                 <span class="color-label bg-yellow">01. IMPORT</span>
+                <div class="serif-subtext">Charge ton image perso</div>
                 <input type="file" id="upload-user" accept="image/*">
-                <button class="btn-ui" id="btn-remove-bg">Auto Cut-out (Détourage)</button>
+                <button class="btn-ui" id="btn-remove-bg" style="margin-top:5px;">Auto Cut-out</button>
             </div>
 
             <div class="control-group">
                 <span class="color-label bg-green">02. ARCHIVE</span>
-                <div class="serif-subtext">Fonds (1-13)</div>
+                <div class="serif-subtext">Sélectionne un fond</div>
                 <div class="bg-grid" id="bg-library"></div>
             </div>
 
@@ -432,12 +468,12 @@
                 <span class="color-label bg-red">03. BLEND</span>
                 <select id="blend-mode">
                     <option value="normal">NORMAL</option>
-                    <option value="multiply">MULTIPLY</option>
-                    <option value="screen">SCREEN</option>
-                    <option value="overlay">OVERLAY</option>
-                    <option value="darken">DARKEN</option>
-                    <option value="lighten">LIGHTEN</option>
-                    <option value="difference">DIFFERENCE</option>
+                    <option value="multiply">PRODUIT (MULTIPLY)</option>
+                    <option value="screen">SUPERPOSITION (SCREEN)</option>
+                    <option value="overlay">INCRUSTATION (OVERLAY)</option>
+                    <option value="darken">OBSCURCIR (DARKEN)</option>
+                    <option value="lighten">ÉCLAIRCIR (LIGHTEN)</option>
+                    <option value="difference">DIFFÉRENCE (DIFFERENCE)</option>
                     <option value="exclusion">EXCLUSION</option>
                 </select>
                 <div class="slider-row"><span>Opacité</span></div>
@@ -458,37 +494,38 @@
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-yellow">05. DESTRUCTION</span>
+                <span class="color-label bg-yellow">05. DESTRUCT</span>
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Trame Riso / Bitmap
+                    <input type="checkbox" id="bitmap-toggle"> Trame Riso
                 </label>
                 <div class="slider-row"><span>Seuil</span></div>
                 <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-green">06. TYPOGRAPHY</span>
-                <input type="text" id="text-input" placeholder="Votre texte...">
+                <span class="color-label bg-green">06. TYPO</span>
+                <input type="text" id="text-input" placeholder="Taper un texte...">
                 <select id="font-selector">
                     <option value="var(--font-display)">Syne (Étendu)</option>
                     <option value="var(--font-sans)">Inter (Suisse)</option>
-                    <option value="var(--font-serif)">Playfair (Éditorial)</option>
+                    <option value="var(--font-serif)">Playfair (Italique)</option>
                 </select>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:5px;">
                     <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
-                    <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red);">Effacer</button>
+                    <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer</button>
                 </div>
                 <button class="btn-ui" id="btn-crop" style="margin-top:5px;">Recadrer</button>
                 <button class="btn-bold" id="btn-crop-validate" style="display:none; background:var(--swiss-yellow); color:var(--black); margin-top:5px;">Valider le crop</button>
             </div>
 
-            <button class="btn-export" id="btn-export">EXPORT FILE</button>
+            <button class="btn-export" id="btn-export">EXPORT</button>
         </div>
     </div>
 
     <script>
+        // --- ONBOARDING ---
         const overlay = document.getElementById('overlay');
         const popup1 = document.getElementById('popup-1');
         const popup2 = document.getElementById('popup-2');
@@ -507,6 +544,7 @@
         document.getElementById('btn-non1').onclick = startApp;
         document.getElementById('btn-non2').onclick = startApp;
 
+        // --- APP LOGIC ---
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
@@ -520,7 +558,7 @@
         });
 
         document.getElementById('btn-remove-bg').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importez une image !");
+            if(!userLayer.src) return alert("Importez une image d'abord !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
         });
