@@ -76,6 +76,58 @@
 
         .poster-modal.active { display: flex; }
 
+        /* FENÊTRE POPUP DE CRÉATION DE STICKER (DRAWING BOARD) */
+        #sticker-modal-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #sticker-modal-canvas.active { display: flex; }
+
+        .drawing-popup-box {
+            background: var(--white);
+            border: 6px solid var(--black);
+            padding: 25px;
+            width: 450px;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 15px 15px 0 var(--riso-red);
+            box-sizing: border-box;
+        }
+
+        .drawing-canvas-container {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--white);
+            border: 4px solid var(--black);
+            position: relative;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        #paint-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .modal-content {
             position: relative;
             z-index: 1;
@@ -191,7 +243,6 @@
             white-space: nowrap;
         }
 
-        /* Style des stickers SVG positionnés */
         .sticker-overlay {
             position: absolute;
             z-index: 4;
@@ -432,7 +483,7 @@
     <div id="overlay">
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
-                <h1 class="modal-title">G L U E<br>C L U B</h1>
+                <h1 class="modal-title">G L U E<br>C L U Б</h1>
                 <div class="modal-highlight">VOL. 01 — COLLAGE MIX</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
@@ -450,6 +501,35 @@
                     <button class="btn-bold" id="btn-non1">NON</button>
                     <button class="btn-bold" id="btn-non2">NON</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP DE CRÉATION DE STICKER (ATELIER DESSIN) -->
+    <div id="sticker-modal-canvas">
+        <div class="drawing-popup-box">
+            <span style="font-family: var(--font-syne); font-weight: 800; font-size: 1.2rem; text-transform: uppercase;">Atelier Sticker Personnalisé</span>
+            
+            <div class="drawing-canvas-container">
+                <canvas id="paint-canvas"></canvas>
+            </div>
+
+            <div class="drawing-tools">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-ui brush-btn active" data-brush="pen" style="background:var(--black); color:var(--white);">Pinceau Fin</button>
+                    <button class="btn-ui brush-btn" data-brush="marker">Marqueur Gras</button>
+                    <button class="btn-ui brush-btn" data-brush="spray">Spray</button>
+                </div>
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="font-size:0.75rem; font-weight:900;">Couleur :</span>
+                    <input type="color" id="draw-color" value="#e0241b" style="padding:0; height:32px; width:45px; cursor:pointer; border:2px solid var(--black);">
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:5px;">
+                <button class="btn-ui" id="btn-clear-drawing" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer</button>
+                <button class="btn-ui" id="btn-cancel-drawing" style="flex:1;">Annuler</button>
+                <button class="btn-bold" id="btn-save-drawing" style="flex:1; font-size:0.9rem; padding:10px;">Ajouter</button>
             </div>
         </div>
     </div>
@@ -483,11 +563,13 @@
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond</button>
             </div>
 
-            <!-- CATÉGORIE STICKERS SVG (stickers-1.svg et stickers-2.svg) -->
+            <!-- CATÉGORIE STICKERS + BOUTON CRÉER TON STICKER -->
             <div class="control-group">
                 <span class="color-label">02-BIS. STICKERS</span>
-                <div class="serif-subtext">Choisis une couleur et clique sur un sticker SVG</div>
+                <div class="serif-subtext">Bibliothèque & Création libre</div>
                 
+                <button class="btn-bold" id="btn-open-sticker-maker" style="background: var(--swiss-yellow); color: var(--black); margin-bottom: 8px; font-size: 0.9rem; padding: 10px;">✨ Crée ton sticker</button>
+
                 <div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;">
                     <span style="font-size:0.8rem; font-weight:900;">Teinte sticker :</span>
                     <input type="color" id="sticker-color-picker" value="#e0241b" style="padding:0; height:32px; width:60px; cursor:pointer; border:2px solid var(--black);">
@@ -639,66 +721,163 @@
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
-        // --- GESTION DES STICKERS SVG ---
+        // --- ATELIER DE DESSIN DE STICKERS ---
+        const stickerModal = document.getElementById('sticker-modal-canvas');
+        const paintCanvas = document.getElementById('paint-canvas');
+        const paintCtx = paintCanvas.getContext('2d');
+        let isDrawing = false;
+        let currentBrush = 'pen';
+
+        document.getElementById('btn-open-sticker-maker').addEventListener('click', () => {
+            stickerModal.classList.add('active');
+            // Initialiser la taille du canvas interne
+            paintCanvas.width = 400;
+            paintCanvas.height = 400;
+            paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+        });
+
+        document.getElementById('btn-cancel-drawing').addEventListener('click', () => {
+            stickerModal.classList.remove('active');
+        });
+
+        document.getElementById('btn-clear-drawing').addEventListener('click', () => {
+            paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+        });
+
+        // Gestion des pinceaux
+        document.querySelectorAll('.brush-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.brush-btn').forEach(b => {
+                    b.style.background = 'var(--white)';
+                    b.style.color = 'var(--black)';
+                });
+                btn.style.background = 'var(--black)';
+                btn.style.color = 'var(--white)';
+                currentBrush = btn.getAttribute('data-brush');
+            });
+        });
+
+        // Logique de dessin tactile / souris
+        function getMousePos(e) {
+            const rect = paintCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (paintCanvas.width / rect.width),
+                y: (clientY - rect.top) * (paintCanvas.height / rect.height)
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            paintCtx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            const color = document.getElementById('draw-color').value;
+
+            paintCtx.lineWidth = currentBrush === 'pen' ? 4 : (currentBrush === 'marker' ? 18 : 30);
+            paintCtx.lineCap = 'round';
+            paintCtx.lineJoin = 'round';
+            paintCtx.strokeStyle = color;
+            paintCtx.fillStyle = color;
+
+            if (currentBrush === 'spray') {
+                for (let i = 0; i < 15; i++) {
+                    let offsetX = (Math.random() - 0.5) * 35;
+                    let offsetY = (Math.random() - 0.5) * 35;
+                    paintCtx.fillRect(pos.x + offsetX, pos.y + offsetY, 2, 2);
+                }
+            } else {
+                paintCtx.lineTo(pos.x, pos.y);
+                paintCtx.stroke();
+                paintCtx.beginPath();
+                paintCtx.moveTo(pos.x, pos.y);
+            }
+        }
+
+        paintCanvas.addEventListener('mousedown', startDrawing);
+        paintCanvas.addEventListener('mousemove', draw);
+        paintCanvas.addEventListener('mouseup', stopDrawing);
+        paintCanvas.addEventListener('mouseleave', stopDrawing);
+
+        paintCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
+        paintCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+        paintCanvas.addEventListener('touchend', (e) => { e.preventDefault(); stopDrawing(); });
+
+        // Sauvegarder et ajouter le sticker personnalisé sur l'affiche
+        document.getElementById('btn-save-drawing').addEventListener('click', () => {
+            const dataUrl = paintCanvas.toDataURL('image/png');
+            stickerModal.classList.remove('active');
+            addStickerToCanvas(dataUrl);
+        });
+
+        // --- GESTION DES STICKERS SUR L'AFFICHE ---
         const stickerContainer = document.getElementById('sticker-container');
+
         document.querySelectorAll('.sticker-thumb').forEach(thumb => {
             thumb.addEventListener('click', async () => {
                 const src = thumb.getAttribute('data-src');
                 const color = document.getElementById('sticker-color-picker').value;
-
-                // Colorisation dynamique du fichier SVG via fetch et manipulation du DOM SVG
                 const coloredSvgUrl = await colorizeSvg(src, color);
-
-                const stickerImg = document.createElement('img');
-                stickerImg.className = 'sticker-overlay';
-                stickerImg.src = coloredSvgUrl;
-                stickerImg.style.top = '50%';
-                stickerImg.style.left = '50%';
-                stickerImg.style.transform = 'translate(-50%, -50%)';
-
-                let isDragging = false;
-                let initialX, initialY, xOffset = 0, yOffset = 0;
-
-                const dragStart = (e) => {
-                    initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
-                    initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
-                    if (e.target === stickerImg) isDragging = true;
-                };
-                const dragEnd = () => isDragging = false;
-                const drag = (e) => {
-                    if (isDragging) {
-                        e.preventDefault();
-                        let currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
-                        let currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
-                        xOffset = currentX; yOffset = currentY;
-                        stickerImg.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
-                    }
-                };
-
-                stickerImg.addEventListener("mousedown", dragStart);
-                document.addEventListener("mouseup", dragEnd);
-                document.addEventListener("mousemove", drag);
-                stickerImg.addEventListener("touchstart", dragStart, {passive: false});
-                document.addEventListener("touchend", dragEnd);
-                document.addEventListener("touchmove", drag, {passive: false});
-
-                stickerImg.ondblclick = () => stickerImg.remove();
-
-                stickerContainer.appendChild(stickerImg);
+                addStickerToCanvas(coloredSvgUrl);
             });
         });
+
+        function addStickerToCanvas(imgSrc) {
+            const stickerImg = document.createElement('img');
+            stickerImg.className = 'sticker-overlay';
+            stickerImg.src = imgSrc;
+            stickerImg.style.top = '50%';
+            stickerImg.style.left = '50%';
+            stickerImg.style.transform = 'translate(-50%, -50%)';
+
+            let isDragging = false;
+            let initialX, initialY, xOffset = 0, yOffset = 0;
+
+            const dragStart = (e) => {
+                initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
+                initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
+                if (e.target === stickerImg) isDragging = true;
+            };
+            const dragEnd = () => isDragging = false;
+            const drag = (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    let currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
+                    let currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
+                    xOffset = currentX; yOffset = currentY;
+                    stickerImg.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
+                }
+            };
+
+            stickerImg.addEventListener("mousedown", dragStart);
+            document.addEventListener("mouseup", dragEnd);
+            document.addEventListener("mousemove", drag);
+            stickerImg.addEventListener("touchstart", dragStart, {passive: false});
+            document.addEventListener("touchend", dragEnd);
+            document.addEventListener("touchmove", drag, {passive: false});
+
+            stickerImg.ondblclick = () => stickerImg.remove();
+
+            stickerContainer.appendChild(stickerImg);
+        }
 
         document.getElementById('btn-clear-stickers').addEventListener('click', () => {
             stickerContainer.innerHTML = '';
         });
 
-        // Fonction pour télécharger et teinter proprement un fichier SVG
         async function colorizeSvg(url, hexColor) {
             try {
                 const response = await fetch(url);
                 let text = await response.text();
-                
-                // Remplace ou ajoute fill / stroke par la nouvelle couleur choisie
                 if (text.includes('fill=')) {
                     text = text.replace(/fill="[^"]*"/g, `fill="${hexColor}"`);
                 } else {
@@ -707,12 +886,10 @@
                 if (text.includes('stroke=')) {
                     text = text.replace(/stroke="[^"]*"/g, `stroke="${hexColor}"`);
                 }
-
                 const blob = new Blob([text], {type: 'image/svg+xml'});
                 return URL.createObjectURL(blob);
             } catch (e) {
-                console.error("Erreur de chargement du SVG :", e);
-                return url; // Fallback direct si erreur réseau/CORS en local
+                return url;
             }
         }
 
@@ -983,7 +1160,7 @@
             }
         });
 
-        // EXPORTATION FIDÈLE (Inclut les stickers SVG et les textes)
+        // EXPORTATION FIDÈLE (Inclut les stickers dessinés, SVG et les textes)
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -1018,7 +1195,7 @@
                 ctx.restore();
             }
 
-            // Dessiner les stickers SVG positionnés
+            // Dessiner les stickers positionnés
             const stickerElements = stickerContainer.querySelectorAll('.sticker-overlay');
             for (let el of stickerElements) {
                 const elRect = el.getBoundingClientRect();
