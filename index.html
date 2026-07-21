@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glue Club - Laboratoire</title>
+    <title>Glue Club - Éditorial</title>
     
-    <!-- Google Fonts : Polices Punk et Fanzine pour le texte créatif et les lettres découpées -->
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Permanent+Marker&family=Rubik+Glitch&family=Special+Elite&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <!-- Google Fonts pour le style Suisse/Éditorial -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -16,146 +16,135 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* Déclaration de votre police personnalisée */
-        @font-face {
-            font-family: 'LoveFont';
-            src: url('love.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        /* CSS Variables */
+        /* CSS Variables - Palette Suisse */
         :root {
-            --pale-pink: #ffc0cb;
+            --poster-yellow: #F4C522; /* Le jaune moutarde de l'affiche */
             --white: #ffffff;
-            --black: #000000;
-            --win7-bg: #ece9d8;
-            --font-ui: 'LoveFont', sans-serif;
-            --font-punk-1: 'Permanent Marker', cursive;
-            --font-punk-2: 'Rubik Glitch', system-ui;
-            --font-punk-3: 'Creepster', cursive;
-            --font-punk-4: 'Special Elite', monospace;
+            --black: #050505;
+            --gray: #e0e0e0;
+            
+            /* Polices */
+            --font-sans: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --font-serif: 'Playfair Display', 'Times New Roman', Times, serif;
         }
 
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: var(--font-ui);
-            background-color: var(--white); /* Fond principal Blanc pur */
+            font-family: var(--font-sans);
+            background-color: var(--white);
+            color: var(--black);
             overflow: hidden;
         }
 
-        /* --- POP-UPS WINDOWS 7 STYLE --- */
+        /* --- POP-UPS FAÇON AFFICHE --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.95);
             z-index: 999;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .win7-window {
-            background: var(--win7-bg);
-            border: 2px solid #fff;
-            border-right-color: #888;
-            border-bottom-color: #888;
-            box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
-            width: 450px;
+        .poster-modal {
+            background: var(--white);
+            border: 2px solid var(--black);
+            padding: 40px;
+            width: 500px;
             max-width: 90%;
-            color: #000;
             display: none;
             flex-direction: column;
+            position: relative;
         }
 
-        .win7-window.active {
+        .poster-modal.active {
             display: flex;
         }
 
-        .win7-titlebar {
-            background: linear-gradient(to right, #0058e6, #3a93ff);
-            color: white;
-            padding: 5px 10px;
-            font-family: Tahoma, sans-serif;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
+        .huge-bg-text {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            font-size: 8rem;
+            font-weight: 900;
+            color: var(--black);
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+            letter-spacing: -5px;
         }
 
-        .win7-close {
-            background: #e04343;
-            color: white;
-            border: 1px solid white;
-            width: 20px; height: 20px;
-            text-align: center;
-            line-height: 18px;
-            cursor: pointer;
-            font-size: 12px;
+        .modal-content {
+            position: relative;
+            z-index: 1;
         }
 
-        .win7-content {
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        /* Titre "GLUE CLUB" façon lettres découpées (Ransom Note) */
-        .magazine-title {
-            display: flex;
-            justify-content: center;
-            gap: 2px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        .m-letter {
-            display: inline-block;
-            padding: 2px 8px;
-            font-size: 3.5rem;
+        .modal-title {
+            font-family: var(--font-sans);
+            font-weight: 900;
+            font-size: 3rem;
             text-transform: uppercase;
-            border: 2px solid #000;
-            box-shadow: 2px 2px 0 #000;
+            letter-spacing: -2px;
+            margin: 0 0 10px 0;
         }
-        .l1 { background: #000; color: #fff; font-family: 'Bebas Neue'; transform: rotate(-5deg); }
-        .l2 { background: #fff; color: #000; font-family: 'Special Elite'; transform: rotate(3deg); }
-        .l3 { background: #ff007f; color: #fff; font-family: 'Permanent Marker'; transform: rotate(-2deg); }
-        .l4 { background: #fff; color: #000; font-family: 'Rubik Glitch'; transform: rotate(6deg); margin-right: 15px;}
-        
-        .l5 { background: #000; color: #fff; font-family: 'Special Elite'; transform: rotate(2deg); }
-        .l6 { background: #fff; color: #000; font-family: 'Bebas Neue'; transform: rotate(-4deg); }
-        .l7 { background: #ffc0cb; color: #000; font-family: 'Permanent Marker'; transform: rotate(5deg); }
-        .l8 { background: #000; color: #fff; font-family: 'Creepster'; transform: rotate(-3deg); }
 
-        .win7-text {
-            font-size: 2.5rem;
+        .modal-highlight {
+            background-color: var(--poster-yellow);
+            display: inline-block;
+            padding: 5px 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
             margin-bottom: 30px;
-            font-family: var(--font-ui);
         }
 
-        .win7-buttons {
+        .modal-italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            gap: 15px;
+            margin-top: 20px;
         }
 
-        .win7-btn {
-            background: #e1e1e1;
-            border: 2px solid #fff;
-            border-right-color: #888;
-            border-bottom-color: #888;
-            padding: 10px 30px;
+        .btn-yellow {
+            background-color: var(--poster-yellow);
+            color: var(--black);
+            border: none;
+            padding: 12px 25px;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1rem;
             cursor: pointer;
-            font-family: var(--font-ui);
-            font-size: 1.8rem;
-            color: #000;
+            transition: background 0.2s;
         }
-        .win7-btn:active {
-            border: 2px solid #888;
-            border-right-color: #fff;
-            border-bottom-color: #fff;
+        .btn-yellow:hover {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--black);
+            border: 2px solid var(--black);
+            padding: 10px 23px;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover {
+            background-color: var(--black);
+            color: var(--white);
         }
 
         /* --- APP LAYOUT --- */
@@ -180,7 +169,7 @@
             justify-content: center;
             padding: 20px;
             overflow: auto;
-            background-color: var(--white);
+            background-color: var(--gray); /* Légèrement gris pour faire ressortir l'image blanche */
         }
 
         #export-wrapper {
@@ -189,8 +178,7 @@
             max-width: 600px;
             aspect-ratio: 3/4;
             background-color: var(--white);
-            border: 4px solid var(--black); /* Brutalist border */
-            box-shadow: 15px 15px 0px rgba(0,0,0,1); /* Brutalist shadow */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             overflow: hidden;
         }
 
@@ -212,141 +200,135 @@
             position: absolute;
             z-index: 3;
             font-size: 4rem;
-            color: var(--white);
-            /* Brutalist heavy outline */
-            text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+            color: var(--black);
             cursor: move;
             user-select: none;
             white-space: nowrap;
         }
 
-        /* CONTROL PANEL (RIGHT) - BRUTALIST PINK / RIOT GRRRL */
+        /* CONTROL PANEL (RIGHT) - STYLE ARCHITECTURE */
         #control-panel {
-            width: 420px;
-            background-color: var(--pale-pink);
-            border-left: 6px solid var(--black);
-            padding: 20px;
+            width: 400px;
+            background-color: var(--white);
+            border-left: 2px solid var(--black);
+            padding: 40px 30px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 25px;
-            z-index: 10;
-            color: var(--white);
+            gap: 30px;
+            position: relative;
         }
 
-        /* Textes blancs avec contour noir brut pour la lisibilité sur fond rose pâle */
-        .brutalist-label {
-            font-size: 1.8rem;
-            color: var(--white);
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-            display: block;
+        /* Texte décoratif géant en fond de menu (comme "AUGUST" dans l'affiche) */
+        .panel-bg-text {
+            position: absolute;
+            top: 10px;
+            right: -20px;
+            font-family: var(--font-sans);
+            font-weight: 900;
+            font-size: 9rem;
+            color: rgba(0,0,0,0.03);
+            writing-mode: vertical-rl;
+            pointer-events: none;
+            z-index: 0;
+            letter-spacing: -5px;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            background: transparent;
-            padding: 0;
+            z-index: 1;
         }
 
-        /* Inputs & Selects Brutalistes */
+        /* Surlignage jaune caractéristique de l'affiche */
+        .yellow-label {
+            background-color: var(--poster-yellow);
+            color: var(--black);
+            display: inline-table;
+            padding: 4px 10px;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            align-self: flex-start; /* S'adapte à la taille du texte */
+        }
+
+        /* Italique classique pour les descriptions */
+        .serif-subtext {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        /* Inputs, Selects et Sliders : Plats et anguleux */
         input[type="file"], select, input[type="text"] {
-            font-family: inherit;
-            font-size: 1.5rem;
-            padding: 10px;
-            border: 3px solid var(--black);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            padding: 8px 10px;
+            border: 1px solid var(--black);
             background: var(--white);
             color: var(--black);
+            border-radius: 0; /* Angles stricts */
             width: 100%;
             box-sizing: border-box;
-            box-shadow: 4px 4px 0 var(--black);
             outline: none;
         }
-        select, input[type="text"] {
-            font-family: Arial, sans-serif; /* Plus lisible pour les options techniques */
+        
+        select {
+            cursor: pointer;
             font-weight: bold;
         }
 
-        /* Sliders Brutalistes */
+        /* Sliders minimalistes */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 12px;
+            height: 2px;
             background: var(--black);
-            border: 2px solid var(--white);
             outline: none;
-            box-shadow: 2px 2px 0 var(--black);
-            margin: 10px 0;
+            margin: 15px 0;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 25px;
-            height: 25px;
-            background: var(--white);
-            border: 3px solid var(--black);
+            width: 15px;
+            height: 15px;
+            background: var(--poster-yellow);
+            border: 2px solid var(--black);
             cursor: pointer;
+            border-radius: 0; /* Curseur carré */
         }
 
         .slider-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.3rem;
-            color: var(--white);
-            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-        }
-
-        /* Boutons Punk/Fanzine */
-        button {
-            font-family: var(--font-ui);
-            font-size: 1.6rem;
-            background: var(--black);
-            color: var(--white);
-            border: 3px solid var(--black);
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.1s;
-            box-shadow: 5px 5px 0 var(--white);
+            font-family: var(--font-sans);
+            font-weight: bold;
+            font-size: 0.85rem;
             text-transform: uppercase;
         }
-        button:hover { 
-            transform: translate(-2px, -2px);
-            box-shadow: 7px 7px 0 var(--white);
-        }
-        button:active {
-            transform: translate(3px, 3px);
-            box-shadow: 0px 0px 0 var(--white);
-        }
-        .btn-secondary {
-            background: var(--white);
-            color: var(--black);
-            box-shadow: 4px 4px 0 var(--black);
-            border: 3px solid var(--black);
-        }
-        .btn-secondary:hover {
-            box-shadow: 6px 6px 0 var(--black);
-        }
 
-        /* Toggle Checkbox */
+        /* Checkbox carrées strictes */
         input[type="checkbox"] {
-            width: 25px;
-            height: 25px;
+            width: 18px;
+            height: 18px;
             accent-color: var(--black);
             cursor: pointer;
-            border: 2px solid var(--black);
+            border-radius: 0;
         }
         .checkbox-label {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.5rem;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1rem;
             cursor: pointer;
-            color: var(--white);
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
 
         /* Background Library Grid */
@@ -354,38 +336,42 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 5px;
-            max-height: 180px;
+            max-height: 150px;
             overflow-y: auto;
-            border: 4px solid var(--black);
-            padding: 5px;
-            background: var(--white);
-            box-shadow: 5px 5px 0 var(--black);
         }
         .bg-thumb {
             width: 100%;
             aspect-ratio: 1;
             object-fit: cover;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 1px solid transparent;
+            filter: grayscale(100%); /* Esthétique affiche en vignette */
+            transition: all 0.2s;
         }
-        .bg-thumb:hover { 
+        .bg-thumb:hover, .bg-thumb.active { 
             border-color: var(--black);
+            filter: grayscale(0%);
         }
 
         /* BIG EXPORT BUTTON */
         .btn-export {
             background: var(--black);
-            color: var(--pale-pink);
-            font-size: 2.2rem;
+            color: var(--white);
+            font-family: var(--font-sans);
+            font-weight: 900;
+            font-size: 1.5rem;
             padding: 15px;
-            margin-top: 10px;
-            border: 4px solid var(--black);
-            box-shadow: 6px 6px 0 var(--white);
+            margin-top: 20px;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 1;
         }
         .btn-export:hover {
-            background: var(--white);
+            background: var(--poster-yellow);
             color: var(--black);
-            box-shadow: 8px 8px 0 var(--black);
         }
 
         /* RESPONSIVE MOBILE */
@@ -397,7 +383,7 @@
                 width: 100%;
                 height: 50vh;
                 border-left: none;
-                border-top: 6px solid var(--black);
+                border-top: 2px solid var(--black);
             }
             #canvas-area {
                 height: 50vh;
@@ -428,42 +414,29 @@
     <!-- ONBOARDING OVERLAY -->
     <div id="overlay">
         <!-- POP-UP 1 : ACCUEIL -->
-        <div id="popup-1" class="win7-window active">
-            <div class="win7-titlebar">
-                <span>Système Glue</span>
-                <div class="win7-close">X</div>
-            </div>
-            <div class="win7-content">
-                <!-- Titre en lettres de magazines -->
-                <div class="magazine-title">
-                    <span class="m-letter l1">G</span>
-                    <span class="m-letter l2">L</span>
-                    <span class="m-letter l3">U</span>
-                    <span class="m-letter l4">E</span>
-                    <span class="m-letter l5">C</span>
-                    <span class="m-letter l6">L</span>
-                    <span class="m-letter l7">U</span>
-                    <span class="m-letter l8">B</span>
-                </div>
-                <div class="win7-text">T'as ramené ta colle ?</div>
-                <div class="win7-buttons">
-                    <button class="win7-btn" id="btn-oui">Oui</button>
-                    <button class="win7-btn" id="btn-zappe">J'ai zappé</button>
+        <div id="popup-1" class="poster-modal active">
+            <div class="huge-bg-text">GLUE</div>
+            <div class="modal-content">
+                <h1 class="modal-title">GLUE<br>CLUB</h1>
+                <div class="modal-highlight">FA. 24 / INTERACTIVE DESIGN</div>
+                <div class="modal-italic">T'as ramené ta colle ?</div>
+                
+                <div class="modal-buttons">
+                    <button class="btn-yellow" id="btn-oui">OUI</button>
+                    <button class="btn-outline" id="btn-zappe">J'AI ZAPPÉ</button>
                 </div>
             </div>
         </div>
 
         <!-- POP-UP 2 : CONFIRMATION ABSURDE -->
-        <div id="popup-2" class="win7-window">
-            <div class="win7-titlebar">
-                <span>Alerte Système</span>
-                <div class="win7-close">X</div>
-            </div>
-            <div class="win7-content">
-                <div class="win7-text">T'es sûr(e) ?</div>
-                <div class="win7-buttons">
-                    <button class="win7-btn" id="btn-non1">Non</button>
-                    <button class="win7-btn" id="btn-non2">Non</button>
+        <div id="popup-2" class="poster-modal">
+            <div class="huge-bg-text">SURE?</div>
+            <div class="modal-content">
+                <div class="modal-highlight">SYSTEM ALERT</div>
+                <div class="modal-italic">T'es sûr(e) ?</div>
+                <div class="modal-buttons">
+                    <button class="btn-yellow" id="btn-non1">NON</button>
+                    <button class="btn-outline" id="btn-non2">NON</button>
                 </div>
             </div>
         </div>
@@ -482,17 +455,20 @@
 
         <!-- CONTROL PANEL (RIGHT) -->
         <div id="control-panel">
+            <div class="panel-bg-text">EDITOR</div>
             
             <!-- 1. Importation & Détourage -->
             <div class="control-group">
-                <label class="brutalist-label">1. MON IMAGE</label>
+                <span class="yellow-label">STEP 1. IMPORT</span>
+                <div class="serif-subtext">Upload your image & remove background</div>
                 <input type="file" id="upload-user" accept="image/*">
-                <button class="btn-secondary" id="btn-remove-bg">✂️ Détourage Magique</button>
+                <button class="btn-outline" id="btn-remove-bg" style="margin-top:5px; border-width: 1px;">Auto Cut-out</button>
             </div>
 
             <!-- 2. Bibliothèque -->
             <div class="control-group">
-                <label class="brutalist-label">2. FONDS (13)</label>
+                <span class="yellow-label">STEP 2. ARCHIVE</span>
+                <div class="serif-subtext">Select background (1-13)</div>
                 <div class="bg-grid" id="bg-library">
                     <!-- Généré par JS -->
                 </div>
@@ -500,78 +476,79 @@
 
             <!-- 3. Modes de fusion & Intensité -->
             <div class="control-group">
-                <label class="brutalist-label">3. MASQUE DE FUSION</label>
+                <span class="yellow-label">STEP 3. BLEND</span>
+                <div class="serif-subtext">Overlay algorithms</div>
                 <select id="blend-mode">
-                    <option value="normal">Normal</option>
-                    <option value="multiply">Produit (Multiply)</option>
-                    <option value="screen">Superposition (Screen)</option>
-                    <option value="overlay">Incrustation (Overlay)</option>
-                    <option value="darken">Obscurcir (Darken)</option>
-                    <option value="lighten">Éclaircir (Lighten)</option>
-                    <option value="difference">Différence</option>
-                    <option value="exclusion">Exclusion</option>
+                    <option value="normal">NORMAL</option>
+                    <option value="multiply">MULTIPLY</option>
+                    <option value="screen">SCREEN</option>
+                    <option value="overlay">OVERLAY</option>
+                    <option value="darken">DARKEN</option>
+                    <option value="lighten">LIGHTEN</option>
+                    <option value="difference">DIFFERENCE</option>
+                    <option value="exclusion">EXCLUSION</option>
                 </select>
                 <div class="slider-row">
-                    <span>Intensité</span>
+                    <span>Opacity Level</span>
                 </div>
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
             <!-- 4. Colorimétrie -->
             <div class="control-group">
-                <label class="brutalist-label">4. COULEURS</label>
-                <div class="slider-row"><span>Luminosité</span></div>
+                <span class="yellow-label">ADJUSTMENTS</span>
+                
+                <div class="slider-row"><span>Brightness</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
                 
-                <div class="slider-row"><span>Contraste</span></div>
+                <div class="slider-row"><span>Contrast</span></div>
                 <input type="range" id="cont-slider" min="0" max="200" value="100">
 
                 <div class="slider-row"><span>Saturation</span></div>
                 <input type="range" id="sat-slider" min="0" max="200" value="100">
                 
-                <label class="checkbox-label" style="margin-top:10px;">
-                    <input type="checkbox" id="bw-toggle"> Filtre Noir & Blanc
+                <label class="checkbox-label" style="margin-top:5px;">
+                    <input type="checkbox" id="bw-toggle"> Force Monochrome
                 </label>
             </div>
 
             <!-- 5. Effets Destructifs -->
             <div class="control-group">
-                <label class="brutalist-label">5. DESTRUCTION</label>
-                <div class="slider-row"><span>Pixelisation</span></div>
+                <span class="yellow-label">DEGRADATION</span>
+                
+                <div class="slider-row"><span>Pixelate / Blur</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
-                <label class="checkbox-label" style="margin-top:10px;">
-                    <input type="checkbox" id="bitmap-toggle"> Effet Bitmap (Seuil PP)
+                <label class="checkbox-label" style="margin-top:5px;">
+                    <input type="checkbox" id="bitmap-toggle"> Dither / Bitmap Effect
                 </label>
                 
-                <div class="slider-row"><span>Intensité Bitmap</span></div>
+                <div class="slider-row"><span>Bitmap Threshold</span></div>
                 <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
             </div>
 
             <!-- 6. Outils Créatifs & Textes -->
             <div class="control-group">
-                <label class="brutalist-label">6. OUTILS CRÉATIFS</label>
+                <span class="yellow-label">TYPE & COMPOSITION</span>
                 
-                <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
-                    <input type="text" id="text-input" placeholder="Taper un texte...">
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+                    <input type="text" id="text-input" placeholder="Insert typography...">
                     <select id="font-selector">
-                        <option value="var(--font-punk-1)">Punk : Permanent Marker</option>
-                        <option value="var(--font-punk-2)">Punk : Rubik Glitch</option>
-                        <option value="var(--font-punk-3)">Punk : Creepster</option>
-                        <option value="var(--font-punk-4)">Punk : Special Elite</option>
-                        <option value="'LoveFont', sans-serif">Manuscrit : LoveFont</option>
+                        <option value="var(--font-sans)">Sans-Serif (Inter)</option>
+                        <option value="var(--font-serif)">Serif (Playfair)</option>
                     </select>
-                    <button class="btn-secondary" id="btn-add-text">Ajouter Texte</button>
-                    <!-- Nouveau bouton pour supprimer les textes -->
-                    <button class="btn-secondary" id="btn-clear-text" style="background:#e04343; color:#fff;">🗑️ Supprimer les textes</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-yellow" id="btn-add-text" style="flex:1;">Insert Text</button>
+                        <button class="btn-outline" id="btn-clear-text" style="flex:1; border-width:1px; color:#e04343; border-color:#e04343;">Clear</button>
+                    </div>
                 </div>
                 
-                <button class="btn-secondary" id="btn-crop">Recadrer (Crop)</button>
-                <button class="btn-secondary" id="btn-crop-validate" style="display:none; background:#000; color:#fff;">Valider Recadrage</button>
+                <button class="btn-outline" id="btn-crop" style="border-width: 1px;">Crop Image</button>
+                <button class="btn-yellow" id="btn-crop-validate" style="display:none;">Validate Crop</button>
             </div>
 
             <!-- EXPORT -->
-            <button class="btn-export" id="btn-export">Exporter l'image</button>
+            <button class="btn-export" id="btn-export">EXPORT FILE</button>
         </div>
     </div>
 
@@ -595,7 +572,6 @@
 
         document.getElementById('btn-non1').onclick = startApp;
         document.getElementById('btn-non2').onclick = startApp;
-        document.querySelectorAll('.win7-close').forEach(btn => btn.onclick = startApp);
 
         // --- APP LOGIC ---
         const userLayer = document.getElementById('user-layer');
@@ -613,7 +589,7 @@
 
         // 2. Détourage auto
         document.getElementById('btn-remove-bg').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importe d'abord une image !");
+            if(!userLayer.src) return alert("Please import an image first.");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
         });
@@ -625,7 +601,11 @@
             const img = document.createElement('img');
             img.className = 'bg-thumb';
             img.src = imgPath;
-            img.onclick = () => bgLayer.src = imgPath;
+            img.onclick = () => {
+                bgLayer.src = imgPath;
+                document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
+                img.classList.add('active');
+            };
             bgLibrary.appendChild(img);
         }
 
@@ -669,6 +649,16 @@
             textDiv.className = 'text-overlay';
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
+            
+            // Si c'est du sans-serif, on le met en majuscules grasses (esthétique affiche)
+            if(fontSelected === 'var(--font-sans)') {
+                textDiv.style.fontWeight = '900';
+                textDiv.style.textTransform = 'uppercase';
+                textDiv.style.letterSpacing = '-2px';
+            } else {
+                textDiv.style.fontStyle = 'italic';
+            }
+
             textDiv.style.top = '50%';
             textDiv.style.left = '50%';
             textDiv.style.transform = 'translate(-50%, -50%)';
@@ -700,14 +690,12 @@
             document.addEventListener("touchend", dragEnd);
             document.addEventListener("touchmove", drag, {passive: false});
 
-            // Double clic pour supprimer un texte individuel
             textDiv.ondblclick = () => textDiv.remove();
 
             textContainer.appendChild(textDiv);
             document.getElementById('text-input').value = ''; 
         });
 
-        // Bouton Vider les textes
         document.getElementById('btn-clear-text').addEventListener('click', () => {
             textContainer.innerHTML = '';
         });
@@ -718,7 +706,7 @@
         const btnCropValidate = document.getElementById('btn-crop-validate');
 
         btnCrop.addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importe d'abord une image !");
+            if(!userLayer.src) return alert("Import image first!");
             userLayer.style.mixBlendMode = 'normal';
             userLayer.style.filter = 'none';
             userLayer.style.opacity = 1;
@@ -746,7 +734,7 @@
                 scale: 2, useCORS: true, allowTaint: true, backgroundColor: null
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'glue-club-creation.png';
+                link.download = 'glue-club-editorial.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
