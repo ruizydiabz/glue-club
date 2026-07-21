@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glue Club - Laboratoire</title>
     
-    <!-- Google Fonts : Polices Punk pour le texte créatif -->
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Permanent+Marker&family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Polices Punk et Fanzine pour le texte créatif et les lettres découpées -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Permanent+Marker&family=Rubik+Glitch&family=Special+Elite&family=Bebas+Neue&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -26,21 +26,23 @@
 
         /* CSS Variables */
         :root {
-            --electric-blue: #0033ff;
+            --pale-pink: #ffc0cb;
             --white: #ffffff;
+            --black: #000000;
             --win7-bg: #ece9d8;
+            --font-ui: 'LoveFont', sans-serif;
             --font-punk-1: 'Permanent Marker', cursive;
             --font-punk-2: 'Rubik Glitch', system-ui;
             --font-punk-3: 'Creepster', cursive;
+            --font-punk-4: 'Special Elite', monospace;
         }
 
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: 'LoveFont', sans-serif; /* Police globale enfantine/manuscrite */
-            color: var(--white);
-            background-color: var(--white); /* Fond principal du site : Blanc pur */
+            font-family: var(--font-ui);
+            background-color: var(--white); /* Fond principal Blanc pur */
             overflow: hidden;
         }
 
@@ -77,8 +79,8 @@
             background: linear-gradient(to right, #0058e6, #3a93ff);
             color: white;
             padding: 5px 10px;
-            font-weight: bold;
             font-family: Tahoma, sans-serif;
+            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -101,17 +103,36 @@
             text-align: center;
         }
 
-        /* Intégration du logo SVG */
-        .logo-image {
-            max-width: 80%;
-            height: auto;
-            margin-bottom: 20px;
+        /* Titre "GLUE CLUB" façon lettres découpées (Ransom Note) */
+        .magazine-title {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
+        .m-letter {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0 #000;
+        }
+        .l1 { background: #000; color: #fff; font-family: 'Bebas Neue'; transform: rotate(-5deg); }
+        .l2 { background: #fff; color: #000; font-family: 'Special Elite'; transform: rotate(3deg); }
+        .l3 { background: #ff007f; color: #fff; font-family: 'Permanent Marker'; transform: rotate(-2deg); }
+        .l4 { background: #fff; color: #000; font-family: 'Rubik Glitch'; transform: rotate(6deg); margin-right: 15px;}
+        
+        .l5 { background: #000; color: #fff; font-family: 'Special Elite'; transform: rotate(2deg); }
+        .l6 { background: #fff; color: #000; font-family: 'Bebas Neue'; transform: rotate(-4deg); }
+        .l7 { background: #ffc0cb; color: #000; font-family: 'Permanent Marker'; transform: rotate(5deg); }
+        .l8 { background: #000; color: #fff; font-family: 'Creepster'; transform: rotate(-3deg); }
 
         .win7-text {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin-bottom: 30px;
-            font-family: 'LoveFont', sans-serif;
+            font-family: var(--font-ui);
         }
 
         .win7-buttons {
@@ -127,8 +148,8 @@
             border-bottom-color: #888;
             padding: 10px 30px;
             cursor: pointer;
-            font-family: 'LoveFont', sans-serif;
-            font-size: 1.5rem;
+            font-family: var(--font-ui);
+            font-size: 1.8rem;
             color: #000;
         }
         .win7-btn:active {
@@ -168,9 +189,9 @@
             max-width: 600px;
             aspect-ratio: 3/4;
             background-color: var(--white);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* Ombre plus douce */
+            border: 4px solid var(--black); /* Brutalist border */
+            box-shadow: 15px 15px 0px rgba(0,0,0,1); /* Brutalist shadow */
             overflow: hidden;
-            border-radius: 10px; /* Légèrement arrondi pour le côté moderne */
         }
 
         .layer {
@@ -191,163 +212,180 @@
             position: absolute;
             z-index: 3;
             font-size: 4rem;
-            color: #fff;
-            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            color: var(--white);
+            /* Brutalist heavy outline */
+            text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
             cursor: move;
             user-select: none;
             white-space: nowrap;
         }
 
-        /* CONTROL PANEL (RIGHT) - MODERN & GIRLY */
+        /* CONTROL PANEL (RIGHT) - BRUTALIST PINK / RIOT GRRRL */
         #control-panel {
-            width: 400px;
-            background-color: var(--electric-blue);
-            color: var(--white);
-            padding: 25px;
+            width: 420px;
+            background-color: var(--pale-pink);
+            border-left: 6px solid var(--black);
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            box-shadow: -5px 0 25px rgba(0, 0, 255, 0.2);
+            gap: 25px;
             z-index: 10;
+            color: var(--white);
         }
 
-        /* Style moderne des menus (bulles) */
+        /* Textes blancs avec contour noir brut pour la lisibilité sur fond rose pâle */
+        .brutalist-label {
+            font-size: 1.8rem;
+            color: var(--white);
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(5px);
+            gap: 10px;
+            background: transparent;
+            padding: 0;
         }
 
-        .control-group label {
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        /* Inputs & Selects Brutalistes */
         input[type="file"], select, input[type="text"] {
             font-family: inherit;
-            font-size: 1.2rem;
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--electric-blue);
+            font-size: 1.5rem;
+            padding: 10px;
+            border: 3px solid var(--black);
+            background: var(--white);
+            color: var(--black);
             width: 100%;
             box-sizing: border-box;
+            box-shadow: 4px 4px 0 var(--black);
             outline: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        select, input[type="text"] {
+            font-family: Arial, sans-serif; /* Plus lisible pour les options techniques */
+            font-weight: bold;
         }
 
-        /* Curseurs Modernes & Girly */
+        /* Sliders Brutalistes */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.5);
+            height: 12px;
+            background: var(--black);
+            border: 2px solid var(--white);
             outline: none;
+            box-shadow: 2px 2px 0 var(--black);
+            margin: 10px 0;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            width: 25px;
+            height: 25px;
             background: var(--white);
+            border: 3px solid var(--black);
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
         }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-        
+
         .slider-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.2rem;
-            margin-bottom: 2px;
+            font-size: 1.3rem;
+            color: var(--white);
+            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
 
+        /* Boutons Punk/Fanzine */
         button {
-            font-family: 'LoveFont', sans-serif;
-            font-size: 1.4rem;
-            background: var(--white);
-            color: var(--electric-blue);
-            border: none;
-            border-radius: 15px;
-            padding: 12px;
+            font-family: var(--font-ui);
+            font-size: 1.6rem;
+            background: var(--black);
+            color: var(--white);
+            border: 3px solid var(--black);
+            padding: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.1s;
+            box-shadow: 5px 5px 0 var(--white);
+            text-transform: uppercase;
         }
         button:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0 var(--white);
         }
         button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0 var(--white);
+        }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            border: 3px solid var(--black);
+        }
+        .btn-secondary:hover {
+            box-shadow: 6px 6px 0 var(--black);
         }
 
         /* Toggle Checkbox */
         input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            accent-color: var(--electric-blue);
+            width: 25px;
+            height: 25px;
+            accent-color: var(--black);
             cursor: pointer;
+            border: 2px solid var(--black);
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--white);
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
 
         /* Background Library Grid */
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            gap: 5px;
             max-height: 180px;
             overflow-y: auto;
-            border-radius: 12px;
-            padding: 8px;
-            background: rgba(255,255,255,0.2);
+            border: 4px solid var(--black);
+            padding: 5px;
+            background: var(--white);
+            box-shadow: 5px 5px 0 var(--black);
         }
-
         .bg-thumb {
             width: 100%;
             aspect-ratio: 1;
             object-fit: cover;
             cursor: pointer;
-            border-radius: 8px;
             border: 2px solid transparent;
-            transition: border-color 0.2s, transform 0.2s;
         }
         .bg-thumb:hover { 
-            border-color: var(--white);
-            transform: scale(1.05);
+            border-color: var(--black);
         }
 
         /* BIG EXPORT BUTTON */
         .btn-export {
-            background: #ff007f; /* Touche rose néon pour contraster joliment */
-            color: var(--white);
-            font-size: 1.8rem;
-            padding: 18px;
-            margin-top: auto;
-            border-radius: 25px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border: 2px solid rgba(255,255,255,0.5);
+            background: var(--black);
+            color: var(--pale-pink);
+            font-size: 2.2rem;
+            padding: 15px;
+            margin-top: 10px;
+            border: 4px solid var(--black);
+            box-shadow: 6px 6px 0 var(--white);
         }
         .btn-export:hover {
             background: var(--white);
-            color: #ff007f;
+            color: var(--black);
+            box-shadow: 8px 8px 0 var(--black);
         }
 
         /* RESPONSIVE MOBILE */
@@ -358,7 +396,8 @@
             #control-panel {
                 width: 100%;
                 height: 50vh;
-                border-radius: 30px 30px 0 0;
+                border-left: none;
+                border-top: 6px solid var(--black);
             }
             #canvas-area {
                 height: 50vh;
@@ -371,7 +410,6 @@
     <!-- SVG Filters for complex destructive effects -->
     <svg style="display:none;">
         <defs>
-            <!-- Effet Bitmap / Dither Threshold -->
             <filter id="bitmap-filter">
                 <feColorMatrix type="matrix" values="
                     0.33 0.33 0.33 0 0
@@ -396,8 +434,17 @@
                 <div class="win7-close">X</div>
             </div>
             <div class="win7-content">
-                <!-- Utilisation du logo SVG demandé -->
-                <img src="glue-club-logo.svg" alt="GLUE CLUB" class="logo-image" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<h1 style=\'font-family: var(--font-punk-2); color: var(--electric-blue); font-size: 4rem;\'>GLUE CLUB</h1>');">
+                <!-- Titre en lettres de magazines -->
+                <div class="magazine-title">
+                    <span class="m-letter l1">G</span>
+                    <span class="m-letter l2">L</span>
+                    <span class="m-letter l3">U</span>
+                    <span class="m-letter l4">E</span>
+                    <span class="m-letter l5">C</span>
+                    <span class="m-letter l6">L</span>
+                    <span class="m-letter l7">U</span>
+                    <span class="m-letter l8">B</span>
+                </div>
                 <div class="win7-text">T'as ramené ta colle ?</div>
                 <div class="win7-buttons">
                     <button class="win7-btn" id="btn-oui">Oui</button>
@@ -438,14 +485,14 @@
             
             <!-- 1. Importation & Détourage -->
             <div class="control-group">
-                <label>✨ Mon Image</label>
+                <label class="brutalist-label">1. MON IMAGE</label>
                 <input type="file" id="upload-user" accept="image/*">
-                <button id="btn-remove-bg">✂️ Détourage Magique</button>
+                <button class="btn-secondary" id="btn-remove-bg">✂️ Détourage Magique</button>
             </div>
 
             <!-- 2. Bibliothèque -->
             <div class="control-group">
-                <label>📖 Fonds de magazines (13)</label>
+                <label class="brutalist-label">2. FONDS (13)</label>
                 <div class="bg-grid" id="bg-library">
                     <!-- Généré par JS -->
                 </div>
@@ -453,7 +500,7 @@
 
             <!-- 3. Modes de fusion & Intensité -->
             <div class="control-group">
-                <label>🎭 Masque de Fusion</label>
+                <label class="brutalist-label">3. MASQUE DE FUSION</label>
                 <select id="blend-mode">
                     <option value="normal">Normal</option>
                     <option value="multiply">Produit (Multiply)</option>
@@ -463,17 +510,16 @@
                     <option value="lighten">Éclaircir (Lighten)</option>
                     <option value="difference">Différence</option>
                     <option value="exclusion">Exclusion</option>
-                    <option value="color-dodge">Densité couleur - (Color Dodge)</option>
                 </select>
                 <div class="slider-row">
-                    <span>Intensité du masque</span>
+                    <span>Intensité</span>
                 </div>
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
             <!-- 4. Colorimétrie -->
             <div class="control-group">
-                <label>🌈 Colorimétrie</label>
+                <label class="brutalist-label">4. COULEURS</label>
                 <div class="slider-row"><span>Luminosité</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
                 
@@ -483,45 +529,49 @@
                 <div class="slider-row"><span>Saturation</span></div>
                 <input type="range" id="sat-slider" min="0" max="200" value="100">
                 
-                <label style="margin-top:10px; display:flex; align-items:center; gap:10px; cursor:pointer;">
-                    <input type="checkbox" id="bw-toggle"> <span>Filtre Noir & Blanc</span>
+                <label class="checkbox-label" style="margin-top:10px;">
+                    <input type="checkbox" id="bw-toggle"> Filtre Noir & Blanc
                 </label>
             </div>
 
             <!-- 5. Effets Destructifs -->
             <div class="control-group">
-                <label>💥 Effets Destructifs</label>
-                <div class="slider-row"><span>Pixelisation / Flou</span></div>
+                <label class="brutalist-label">5. DESTRUCTION</label>
+                <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
-                <label style="margin-top:10px; display:flex; align-items:center; gap:10px; cursor:pointer;">
-                    <input type="checkbox" id="bitmap-toggle"> 
-                    <span>Effet Bitmap (Seuil PP)</span>
+                <label class="checkbox-label" style="margin-top:10px;">
+                    <input type="checkbox" id="bitmap-toggle"> Effet Bitmap (Seuil PP)
                 </label>
                 
                 <div class="slider-row"><span>Intensité Bitmap</span></div>
                 <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
             </div>
 
-            <!-- 6. Outils Créatifs -->
+            <!-- 6. Outils Créatifs & Textes -->
             <div class="control-group">
-                <label>🎨 Outils Créatifs</label>
-                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:10px;">
+                <label class="brutalist-label">6. OUTILS CRÉATIFS</label>
+                
+                <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
                     <input type="text" id="text-input" placeholder="Taper un texte...">
                     <select id="font-selector">
-                        <option value="var(--font-punk-1)">Police : Permanent Marker</option>
-                        <option value="var(--font-punk-2)">Police : Rubik Glitch</option>
-                        <option value="var(--font-punk-3)">Police : Creepster</option>
-                        <option value="'LoveFont', sans-serif">Police : Enfantine (Love)</option>
+                        <option value="var(--font-punk-1)">Punk : Permanent Marker</option>
+                        <option value="var(--font-punk-2)">Punk : Rubik Glitch</option>
+                        <option value="var(--font-punk-3)">Punk : Creepster</option>
+                        <option value="var(--font-punk-4)">Punk : Special Elite</option>
+                        <option value="'LoveFont', sans-serif">Manuscrit : LoveFont</option>
                     </select>
-                    <button id="btn-add-text">Ajouter Texte</button>
+                    <button class="btn-secondary" id="btn-add-text">Ajouter Texte</button>
+                    <!-- Nouveau bouton pour supprimer les textes -->
+                    <button class="btn-secondary" id="btn-clear-text" style="background:#e04343; color:#fff;">🗑️ Supprimer les textes</button>
                 </div>
-                <button id="btn-crop">Recadrer l'image (Crop)</button>
-                <button id="btn-crop-validate" style="display:none; background:#ff007f; color:#fff;">Valider Recadrage</button>
+                
+                <button class="btn-secondary" id="btn-crop">Recadrer (Crop)</button>
+                <button class="btn-secondary" id="btn-crop-validate" style="display:none; background:#000; color:#fff;">Valider Recadrage</button>
             </div>
 
             <!-- EXPORT -->
-            <button class="btn-export" id="btn-export">Exporter l'image 💖</button>
+            <button class="btn-export" id="btn-export">Exporter l'image</button>
         </div>
     </div>
 
@@ -537,18 +587,14 @@
             appContainer.classList.add('active');
         }
 
-        // Clics Pop-up 1
         document.getElementById('btn-oui').onclick = startApp;
         document.getElementById('btn-zappe').onclick = () => {
             popup1.classList.remove('active');
             popup2.classList.add('active');
         };
 
-        // Clics Pop-up 2
         document.getElementById('btn-non1').onclick = startApp;
         document.getElementById('btn-non2').onclick = startApp;
-        
-        // Fermeture avec la croix rouge
         document.querySelectorAll('.win7-close').forEach(btn => btn.onclick = startApp);
 
         // --- APP LOGIC ---
@@ -565,27 +611,21 @@
             }
         });
 
-        // 2. Détourage auto (Simulation via Multiply)
+        // 2. Détourage auto
         document.getElementById('btn-remove-bg').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importe d'abord une image !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
-            alert("Mode détourage magique activé (Fusion Produit appliquée).");
         });
 
         // 3. Bibliothèque (1 à 13)
         const bgLibrary = document.getElementById('bg-library');
-        const totalBackgrounds = 13;
-        
-        for (let i = 1; i <= totalBackgrounds; i++) {
+        for (let i = 1; i <= 13; i++) {
             const imgPath = `${i}.jpg`;
             const img = document.createElement('img');
             img.className = 'bg-thumb';
             img.src = imgPath;
-            img.alt = `Fond ${i}`;
-            img.onclick = () => {
-                bgLayer.src = imgPath;
-            };
+            img.onclick = () => bgLayer.src = imgPath;
             bgLibrary.appendChild(img);
         }
 
@@ -593,53 +633,33 @@
         document.getElementById('blend-mode').addEventListener('change', (e) => {
             userLayer.style.mixBlendMode = e.target.value;
         });
-
         document.getElementById('opacity-slider').addEventListener('input', (e) => {
             userLayer.style.opacity = e.target.value / 100;
         });
 
-        // 5 & 6. Filtres Colorimétriques et Destructifs
+        // 5 & 6. Filtres 
         const briSlider = document.getElementById('bri-slider');
         const contSlider = document.getElementById('cont-slider');
         const satSlider = document.getElementById('sat-slider');
         const bwToggle = document.getElementById('bw-toggle');
-        
         const pixelSlider = document.getElementById('pixel-slider');
         const bitmapToggle = document.getElementById('bitmap-toggle');
         const bitmapIntensity = document.getElementById('bitmap-intensity');
 
         function updateFilters() {
-            let filterString = `
-                brightness(${briSlider.value}%) 
-                contrast(${contSlider.value}%) 
-                saturate(${satSlider.value}%)
-            `;
-            
-            if (bwToggle.checked) {
-                filterString += "grayscale(100%) ";
-            }
-            
-            if (pixelSlider.value > 0) {
-                filterString += `blur(${pixelSlider.value}px) `;
-            }
-
-            // Gestion de l'effet Bitmap
-            if (bitmapToggle.checked) {
-                filterString += `url(#bitmap-filter) contrast(${bitmapIntensity.value}%) `;
-            }
-
+            let filterString = `brightness(${briSlider.value}%) contrast(${contSlider.value}%) saturate(${satSlider.value}%) `;
+            if (bwToggle.checked) filterString += "grayscale(100%) ";
+            if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
+            if (bitmapToggle.checked) filterString += `url(#bitmap-filter) contrast(${bitmapIntensity.value}%) `;
             userLayer.style.filter = filterString;
         }
 
-        // Écouteurs pour les filtres
-        [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(slider => {
-            slider.addEventListener('input', updateFilters);
-        });
-        [bwToggle, bitmapToggle].forEach(toggle => {
-            toggle.addEventListener('change', updateFilters);
-        });
+        [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', updateFilters));
+        [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', updateFilters));
 
         // 7. Outil Texte
+        const textContainer = document.getElementById('text-container');
+        
         document.getElementById('btn-add-text').addEventListener('click', () => {
             const textVal = document.getElementById('text-input').value;
             const fontSelected = document.getElementById('font-selector').value;
@@ -655,100 +675,66 @@
             
             // Drag Logic
             let isDragging = false;
-            let currentX;
-            let currentY;
-            let initialX;
-            let initialY;
-            let xOffset = 0;
-            let yOffset = 0;
+            let initialX, initialY, xOffset = 0, yOffset = 0;
+
+            const dragStart = (e) => {
+                initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
+                initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
+                if (e.target === textDiv) isDragging = true;
+            };
+            const dragEnd = () => isDragging = false;
+            const drag = (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    let currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
+                    let currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
+                    xOffset = currentX; yOffset = currentY;
+                    textDiv.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
+                }
+            };
 
             textDiv.addEventListener("mousedown", dragStart);
             document.addEventListener("mouseup", dragEnd);
             document.addEventListener("mousemove", drag);
-            
-            // Touch support pour le mobile
             textDiv.addEventListener("touchstart", dragStart, {passive: false});
             document.addEventListener("touchend", dragEnd);
             document.addEventListener("touchmove", drag, {passive: false});
 
-            function dragStart(e) {
-                if (e.type === "touchstart") {
-                    initialX = e.touches[0].clientX - xOffset;
-                    initialY = e.touches[0].clientY - yOffset;
-                } else {
-                    initialX = e.clientX - xOffset;
-                    initialY = e.clientY - yOffset;
-                }
-                if (e.target === textDiv) {
-                    isDragging = true;
-                }
-            }
-            function dragEnd() {
-                initialX = currentX;
-                initialY = currentY;
-                isDragging = false;
-            }
-            function drag(e) {
-                if (isDragging) {
-                    e.preventDefault();
-                    if (e.type === "touchmove") {
-                        currentX = e.touches[0].clientX - initialX;
-                        currentY = e.touches[0].clientY - initialY;
-                    } else {
-                        currentX = e.clientX - initialX;
-                        currentY = e.clientY - initialY;
-                    }
-                    xOffset = currentX;
-                    yOffset = currentY;
-                    textDiv.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
-                }
-            }
-
-            // Double clic pour supprimer le texte
+            // Double clic pour supprimer un texte individuel
             textDiv.ondblclick = () => textDiv.remove();
 
-            document.getElementById('text-container').appendChild(textDiv);
-            document.getElementById('text-input').value = ''; // Reset input
+            textContainer.appendChild(textDiv);
+            document.getElementById('text-input').value = ''; 
         });
 
-        // 7b. Outil Crop (Cropper.js)
+        // Bouton Vider les textes
+        document.getElementById('btn-clear-text').addEventListener('click', () => {
+            textContainer.innerHTML = '';
+        });
+
+        // 7b. Crop 
         let cropper = null;
         const btnCrop = document.getElementById('btn-crop');
         const btnCropValidate = document.getElementById('btn-crop-validate');
 
         btnCrop.addEventListener('click', () => {
             if(!userLayer.src) return alert("Importe d'abord une image !");
-            
-            // On retire temporairement les effets pour le recadrage
             userLayer.style.mixBlendMode = 'normal';
             userLayer.style.filter = 'none';
             userLayer.style.opacity = 1;
-
-            cropper = new Cropper(userLayer, {
-                viewMode: 1,
-                background: false,
-                modal: true,
-                guides: true,
-                autoCropArea: 0.8
-            });
-
+            cropper = new Cropper(userLayer, { viewMode: 1, background: false, modal: true, guides: true, autoCropArea: 0.8 });
             btnCrop.style.display = 'none';
             btnCropValidate.style.display = 'block';
         });
 
         btnCropValidate.addEventListener('click', () => {
             if(cropper) {
-                const croppedCanvas = cropper.getCroppedCanvas();
-                userLayer.src = croppedCanvas.toDataURL();
-                
+                userLayer.src = cropper.getCroppedCanvas().toDataURL();
                 cropper.destroy();
                 cropper = null;
-
-                // Restauration des effets et styles
                 userLayer.style.mixBlendMode = document.getElementById('blend-mode').value;
                 userLayer.style.opacity = document.getElementById('opacity-slider').value / 100;
                 updateFilters();
-
                 btnCrop.style.display = 'block';
                 btnCropValidate.style.display = 'none';
             }
@@ -756,13 +742,8 @@
 
         // 8. EXPORTATION
         document.getElementById('btn-export').addEventListener('click', () => {
-            const wrapper = document.getElementById('export-wrapper');
-            
-            html2canvas(wrapper, {
-                scale: 2, 
-                useCORS: true, 
-                allowTaint: true,
-                backgroundColor: null // Garde la transparence
+            html2canvas(document.getElementById('export-wrapper'), {
+                scale: 2, useCORS: true, allowTaint: true, backgroundColor: null
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'glue-club-creation.png';
