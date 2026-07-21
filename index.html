@@ -191,22 +191,21 @@
             white-space: nowrap;
         }
 
-        /* Style des stickers positionnés */
+        /* Style des stickers SVG positionnés */
         .sticker-overlay {
             position: absolute;
             z-index: 4;
-            width: 120px;
+            width: 140px;
             height: auto;
             cursor: move;
             user-select: none;
-            /* Filtre CSS pour coloriser dynamiquement l'image PNG si besoin, ou manipulé par canvas */
         }
 
         .sticker-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            max-height: 120px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            max-height: 140px;
             overflow-y: auto;
         }
         .sticker-thumb {
@@ -215,7 +214,7 @@
             background: var(--white);
             border: 2px solid var(--black);
             object-fit: contain;
-            padding: 4px;
+            padding: 8px;
             cursor: pointer;
             transition: all 0.2s;
             box-sizing: border-box;
@@ -484,10 +483,10 @@
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond</button>
             </div>
 
-            <!-- CATÉGORIE STICKERS (GitHub : stickers-1 et stickers-2) -->
+            <!-- CATÉGORIE STICKERS SVG (stickers-1.svg et stickers-2.svg) -->
             <div class="control-group">
                 <span class="color-label">02-BIS. STICKERS</span>
-                <div class="serif-subtext">Choisis une couleur et clique sur un sticker</div>
+                <div class="serif-subtext">Choisis une couleur et clique sur un sticker SVG</div>
                 
                 <div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;">
                     <span style="font-size:0.8rem; font-weight:900;">Teinte sticker :</span>
@@ -495,8 +494,8 @@
                 </div>
 
                 <div class="sticker-grid" id="sticker-library">
-                    <img src="stickers-1.png" class="sticker-thumb" data-src="stickers-1.png" alt="Sticker 1">
-                    <img src="stickers-2.png" class="sticker-thumb" data-src="stickers-2.png" alt="Sticker 2">
+                    <img src="stickers-1.svg" class="sticker-thumb" data-src="stickers-1.svg" alt="Sticker 1">
+                    <img src="stickers-2.svg" class="sticker-thumb" data-src="stickers-2.svg" alt="Sticker 2">
                 </div>
                 <button class="btn-ui" id="btn-clear-stickers" style="margin-top:5px; color:var(--riso-red); border-color:var(--riso-red);">Effacer les stickers</button>
             </div>
@@ -640,19 +639,19 @@
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
-        // --- GESTION DES STICKERS ---
+        // --- GESTION DES STICKERS SVG ---
         const stickerContainer = document.getElementById('sticker-container');
         document.querySelectorAll('.sticker-thumb').forEach(thumb => {
             thumb.addEventListener('click', async () => {
                 const src = thumb.getAttribute('data-src');
                 const color = document.getElementById('sticker-color-picker').value;
 
-                // Générer un sticker colorisé dynamiquement via un canvas temporaire
-                const coloredStickerUrl = await colorizeImage(src, color);
+                // Colorisation dynamique du fichier SVG via fetch et manipulation du DOM SVG
+                const coloredSvgUrl = await colorizeSvg(src, color);
 
                 const stickerImg = document.createElement('img');
                 stickerImg.className = 'sticker-overlay';
-                stickerImg.src = coloredStickerUrl;
+                stickerImg.src = coloredSvgUrl;
                 stickerImg.style.top = '50%';
                 stickerImg.style.left = '50%';
                 stickerImg.style.transform = 'translate(-50%, -50%)';
@@ -693,37 +692,28 @@
             stickerContainer.innerHTML = '';
         });
 
-        // Fonction pour teinter les stickers PNG selon la couleur choisie
-        function colorizeImage(srcUrl, hexColor) {
-            return new Promise(resolve => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                img.src = srcUrl;
-                img.onload = () => {
-                    const c = document.createElement('canvas');
-                    c.width = img.width;
-                    c.height = img.height;
-                    const ctx = c.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
+        // Fonction pour télécharger et teinter proprement un fichier SVG
+        async function colorizeSvg(url, hexColor) {
+            try {
+                const response = await fetch(url);
+                let text = await response.text();
+                
+                // Remplace ou ajoute fill / stroke par la nouvelle couleur choisie
+                if (text.includes('fill=')) {
+                    text = text.replace(/fill="[^"]*"/g, `fill="${hexColor}"`);
+                } else {
+                    text = text.replace('<svg', `<svg fill="${hexColor}"`);
+                }
+                if (text.includes('stroke=')) {
+                    text = text.replace(/stroke="[^"]*"/g, `stroke="${hexColor}"`);
+                }
 
-                    const rgb = hexToRgb(hexColor);
-                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
-                    const data = imgData.data;
-                    for (let i = 0; i < data.length; i += 4) {
-                        if (data[i+3] > 10) { // Si le pixel n'est pas transparent
-                            data[i]   = rgb.r;
-                            data[i+1] = rgb.g;
-                            data[i+2] = rgb.b;
-                        }
-                    }
-                    ctx.putImageData(imgData, 0, 0);
-                    resolve(c.toDataURL());
-                };
-                img.onerror = () => {
-                    // Fallback si l'image ne charge pas
-                    resolve(srcUrl);
-                };
-            });
+                const blob = new Blob([text], {type: 'image/svg+xml'});
+                return URL.createObjectURL(blob);
+            } catch (e) {
+                console.error("Erreur de chargement du SVG :", e);
+                return url; // Fallback direct si erreur réseau/CORS en local
+            }
         }
 
         document.getElementById('btn-cyanotype').addEventListener('click', async () => {
@@ -993,7 +983,7 @@
             }
         });
 
-        // EXPORTATION FIDÈLE (Inclut les stickers et les textes)
+        // EXPORTATION FIDÈLE (Inclut les stickers SVG et les textes)
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -1028,7 +1018,7 @@
                 ctx.restore();
             }
 
-            // Dessiner les stickers positionnés
+            // Dessiner les stickers SVG positionnés
             const stickerElements = stickerContainer.querySelectorAll('.sticker-overlay');
             for (let el of stickerElements) {
                 const elRect = el.getBoundingClientRect();
