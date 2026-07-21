@@ -448,7 +448,7 @@
                 <span class="color-label">02. ARCHIVE</span>
                 <div class="serif-subtext">Fonds (1-13) & Option sans fond</div>
                 <div class="bg-grid" id="bg-library"></div>
-                <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond (Blanc pur)</button>
+                <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond</button>
             </div>
 
             <div class="control-group">
@@ -726,7 +726,6 @@
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
             
-            // Ajustement dynamique du style selon la police choisie
             if(fontSelected.includes('Inter') || fontSelected.includes('Space Grotesk')) {
                 textDiv.style.fontWeight = '900';
                 textDiv.style.textTransform = 'uppercase';
@@ -811,7 +810,6 @@
             }
         });
 
-        // EXPORTATION FIDÈLE
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
