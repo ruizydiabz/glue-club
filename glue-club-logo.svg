@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 859.09 295.48">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-2 {
+        font-family: Cabazon, Cabazon;
+        font-size: 281.95px;
+      }
+    </style>
+  </defs>
+  <text class="cls-2" transform="translate(0 239.66)"><tspan x="0" y="0">glue </tspan><tspan class="cls-1" x="455.06" y="0">c</tspan><tspan x="547.54" y="0">lub</tspan></text>
+</svg>
