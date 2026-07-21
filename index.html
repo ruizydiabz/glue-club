@@ -21,7 +21,7 @@
             --scribble-pink: #ff3399; /* Rappel du fond gribouillis */
             --riso-red: #e0241b;      /* Riso Zine */
             --riso-green: #3ea055;    /* Riso Zine */
-            --swiss-yellow: #f4c522;  /* Affiche Architecture */
+            --swiss-yellow: #f4c522;  /* Affiche */
             --white: #ffffff;
             --black: #050505;
             
@@ -41,7 +41,6 @@
             overflow: hidden; 
             
             background-color: var(--scribble-pink);
-            /* L'image rose scribble en fond plein écran */
             background-image: url('db9e33eacb1625b33e4698956d249e67_2.webp');
             background-size: cover;
             background-position: center;
@@ -92,7 +91,6 @@
             line-height: 0.9;
         }
 
-        /* Style de surlignage de l'affiche Architecture */
         .modal-highlight {
             background-color: var(--swiss-yellow);
             color: var(--black);
@@ -152,7 +150,6 @@
             filter: blur(0);
         }
 
-        /* ZONE IMAGE (Canvas sur le fond rose) */
         #canvas-area {
             flex: 1; 
             height: 100%;
@@ -197,7 +194,6 @@
             white-space: nowrap;
         }
 
-        /* ZONE MENU : ARCHITECTURE SUISSE + RISO */
         #control-panel {
             width: 450px; 
             height: 100%;
@@ -211,7 +207,6 @@
             box-sizing: border-box;
             -webkit-overflow-scrolling: touch; 
             position: relative;
-            /* Trame Riso discrète en fond du menu */
             background-image: radial-gradient(rgba(224, 36, 27, 0.1) 15%, transparent 16%);
             background-size: 6px 6px;
         }
@@ -227,7 +222,6 @@
             box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
         }
 
-        /* Étiquettes style Swiss Typography (Gros blocs jaunes) */
         .color-label {
             background-color: var(--swiss-yellow);
             color: var(--black);
@@ -240,7 +234,7 @@
             letter-spacing: 1px;
             align-self: flex-start;
             border: 2px solid var(--black);
-            margin-top: -30px; /* Fait déborder l'étiquette en haut du bloc */
+            margin-top: -30px;
             margin-left: -5px;
         }
 
@@ -252,7 +246,6 @@
             margin-bottom: 5px;
         }
 
-        /* Inputs & Selects : Bruts et géométriques */
         input[type="file"], select, input[type="text"] {
             font-family: var(--font-sans);
             font-weight: 700;
@@ -268,7 +261,6 @@
         }
         select { cursor: pointer; }
         
-        /* Sliders style Riso */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
@@ -299,7 +291,6 @@
             letter-spacing: 1px;
         }
 
-        /* Checkbox carrées strictes */
         input[type="checkbox"] {
             width: 24px;
             height: 24px;
@@ -318,7 +309,6 @@
             cursor: pointer;
         }
 
-        /* Background Library Grid */
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -341,7 +331,6 @@
             transform: scale(1.05);
         }
 
-        /* Boutons de l'interface */
         .btn-ui {
             background-color: var(--white);
             color: var(--black);
@@ -359,7 +348,6 @@
             color: var(--white);
         }
 
-        /* BIG EXPORT BUTTON */
         .btn-export {
             background: var(--riso-green);
             color: var(--white);
@@ -381,7 +369,6 @@
             background: var(--riso-red);
         }
 
-        /* --- MEDIA QUERY MOBILE --- */
         @media (max-width: 900px) {
             #control-panel {
                 width: 55vw; 
@@ -434,7 +421,7 @@
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
                 <h1 class="modal-title">G L U E<br>C L U B</h1>
-                <div class="modal-highlight">VOL. 01 — ARCHITECTURE</div>
+                <div class="modal-highlight">VOL. 01 — EDITORIAL</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
@@ -634,7 +621,6 @@
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
             
-            // Stylisation spécifique selon la typo (inspiré de l'affiche)
             if(fontSelected === 'var(--font-sans)') {
                 textDiv.style.fontWeight = '900';
                 textDiv.style.textTransform = 'uppercase';
