@@ -459,12 +459,11 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
-            <!-- FILTRES PHOTO INDÉPENDANTS (Cyanotype & Risographie) -->
             <div class="control-group">
                 <span class="color-label">03-BIS. FILTRES PHOTO</span>
-                <div class="serif-subtext">Effets appliqués directement sur la photo</div>
+                <div class="serif-subtext">Cyanotype & Risographie</div>
                 
-                <button class="btn-ui" id="btn-cyanotype" style="background:#0f2b5c; color:#fff; margin-bottom:5px;">💙 Cyanotype (Bleu Profond UV)</button>
+                <button class="btn-ui" id="btn-cyanotype" style="background:#0a2342; color:#fff; margin-bottom:5px;">💙 Cyanotype (Bleu UV Réel)</button>
                 
                 <div style="display:flex; flex-direction:column; gap:5px; margin-top:5px; border-top: 2px dashed var(--black); padding-top:8px;">
                     <span style="font-size: 0.8rem; font-weight:900;">🔴 Risographie (Teinte aplat) :</span>
@@ -541,13 +540,14 @@
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
-        // États des filtres photo indépendants
-        let activePhotoFilter = null; // 'cyanotype' ou 'riso'
+        let activePhotoFilter = null; 
         let risoTintColor = '#e0241b';
+        let originalUserImageUrl = null; // Stocke l'image brute d'origine pour appliquer les filtres propres
 
         document.getElementById('upload-user').addEventListener('change', function(e) {
             if (e.target.files[0]) {
                 const url = URL.createObjectURL(e.target.files[0]);
+                originalUserImageUrl = url;
                 userLayer.src = url;
                 userLayer.style.display = 'block';
                 activePhotoFilter = null;
@@ -566,19 +566,21 @@
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
-        // Application Cyanotype (Filtre photo pur sans toucher au fond)
-        document.getElementById('btn-cyanotype').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importez d'abord une image !");
+        // Application Cyanotype direct (Génère l'aperçu bleu UV sur l'image)
+        document.getElementById('btn-cyanotype').addEventListener('click', async () => {
+            if(!originalUserImageUrl) return alert("Importez d'abord une image !");
             activePhotoFilter = 'cyanotype';
-            updateFilters();
+            userLayer.src = await generateCyanotypeDataUrl(originalUserImageUrl);
+            userLayer.style.filter = 'none';
         });
 
-        // Application Risographie (Filtre photo pur sans toucher au fond)
-        document.getElementById('btn-risographie').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importez d'abord une image !");
+        // Application Risographie direct
+        document.getElementById('btn-risographie').addEventListener('click', async () => {
+            if(!originalUserImageUrl) return alert("Importez d'abord une image !");
             activePhotoFilter = 'riso';
             risoTintColor = document.getElementById('riso-color-picker').value;
-            updateFilters();
+            userLayer.src = await generateRisoDataUrl(originalUserImageUrl, risoTintColor);
+            userLayer.style.filter = 'none';
         });
 
         const bgLibrary = document.getElementById('bg-library');
@@ -611,28 +613,95 @@
         const bitmapToggle = document.getElementById('bitmap-toggle');
         const bitmapIntensity = document.getElementById('bitmap-intensity');
 
-        function updateFilters() {
-            // Si un filtre artistique est actif, on gère l'affichage visuel en direct via un canvas interne ou des filtres CSS
-            if (activePhotoFilter === 'cyanotype') {
-                userLayer.style.filter = 'grayscale(100%) brightness(90%) contrast(190%)';
-            } else if (activePhotoFilter === 'riso') {
-                userLayer.style.filter = 'grayscale(100%) contrast(200%)';
-            } else {
-                let filterString = `brightness(${briSlider.value}%) contrast(${contSlider.value}%) saturate(${satSlider.value}%) `;
-                if (bwToggle.checked) filterString += "grayscale(100%) ";
-                if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
-                userLayer.style.filter = filterString;
+        async function updateFilters() {
+            if (activePhotoFilter === 'cyanotype' && originalUserImageUrl) {
+                userLayer.src = await generateCyanotypeDataUrl(originalUserImageUrl);
+                userLayer.style.filter = 'none';
+                return;
             }
+            if (activePhotoFilter === 'riso' && originalUserImageUrl) {
+                userLayer.src = await generateRisoDataUrl(originalUserImageUrl, risoTintColor);
+                userLayer.style.filter = 'none';
+                return;
+            }
+
+            if (originalUserImageUrl && userLayer.src !== originalUserImageUrl && !activePhotoFilter) {
+                userLayer.src = originalUserImageUrl;
+            }
+
+            let filterString = `brightness(${briSlider.value}%) contrast(${contSlider.value}%) saturate(${satSlider.value}%) `;
+            if (bwToggle.checked) filterString += "grayscale(100%) ";
+            if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
+            userLayer.style.filter = filterString;
         }
 
         [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', () => {
-            activePhotoFilter = null; // Désactive l'effet spécial si on touche aux curseurs manuels
+            activePhotoFilter = null;
             updateFilters();
         }));
         [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', () => {
             activePhotoFilter = null;
             updateFilters();
         }));
+
+        // Fonctions de traitement pixel pour un rendu Cyanotype et Riso parfaits
+        function generateCyanotypeDataUrl(srcUrl) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = srcUrl;
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                    const data = imgData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
+                        // Contraste UV chimique fort
+                        gray = gray < 90 ? gray * 0.3 : Math.min(255, gray * 1.5);
+                        let factor = gray / 255;
+                        // Palette Bleu de Prusse profond (#082042 à blanc éclatant)
+                        data[i]   = Math.floor(8 + factor * 230);
+                        data[i+1] = Math.floor(32 + factor * 210);
+                        data[i+2] = Math.floor(66 + factor * 170);
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    resolve(c.toDataURL());
+                };
+            });
+        }
+
+        function generateRisoDataUrl(srcUrl, hexColor) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = srcUrl;
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const rgb = hexToRgb(hexColor);
+                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                    const data = imgData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
+                        let factor = gray / 255;
+                        data[i]   = Math.floor(255 - (1 - factor) * (255 - rgb.r));
+                        data[i+1] = Math.floor(255 - (1 - factor) * (255 - rgb.g));
+                        data[i+2] = Math.floor(255 - (1 - factor) * (255 - rgb.b));
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    resolve(c.toDataURL());
+                };
+            });
+        }
 
         const textContainer = document.getElementById('text-container');
         
@@ -714,18 +783,21 @@
 
         btnCropValidate.addEventListener('click', () => {
             if(cropper) {
-                userLayer.src = cropper.getCroppedCanvas().toDataURL();
+                const croppedUrl = cropper.getCroppedCanvas().toDataURL();
+                originalUserImageUrl = croppedUrl; // Met à jour l'image de base après recadrage
+                userLayer.src = croppedUrl;
                 cropper.destroy();
                 cropper = null;
                 userLayer.style.mixBlendMode = document.getElementById('blend-mode').value;
                 userLayer.style.opacity = document.getElementById('opacity-slider').value / 100;
+                activePhotoFilter = null;
                 updateFilters();
                 btnCrop.style.display = 'block';
                 btnCropValidate.style.display = 'none';
             }
         });
 
-        // EXPORTATION ROBUSTE : Traitement par pixels sur Canvas pour appliquer fidèlement les filtres de photo
+        // EXPORTATION FIDÈLE
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -736,7 +808,6 @@
             const ctx = canvas.getContext('2d');
             ctx.scale(2, 2);
 
-            // 1. Dessiner le fond (bg-layer)
             if (bgLayer.src) {
                 const bgImg = new Image();
                 bgImg.crossOrigin = "anonymous";
@@ -748,7 +819,6 @@
                 ctx.fillRect(0, 0, rect.width, rect.height);
             }
 
-            // 2. Dessiner l'image utilisateur avec application des filtres de pixels si Cyanotype ou Riso actifs
             if (userLayer.src && userLayer.style.display !== 'none') {
                 const userImg = new Image();
                 userImg.crossOrigin = "anonymous";
@@ -758,54 +828,10 @@
                 ctx.save();
                 ctx.globalAlpha = parseFloat(window.getComputedStyle(userLayer).opacity);
                 ctx.globalCompositeOperation = getCanvasBlendMode(userLayer.style.mixBlendMode);
-                
-                if (activePhotoFilter === null) {
-                    ctx.filter = userLayer.style.filter;
-                    ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
-                } else {
-                    // Création d'un sous-canvas pour manipuler les pixels de la photo uniquement
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = rect.width;
-                    tempCanvas.height = rect.height;
-                    const tempCtx = tempCanvas.getContext('2d');
-                    tempCtx.drawImage(userImg, 0, 0, rect.width, rect.height);
-                    
-                    const imgData = tempCtx.getImageData(0, 0, rect.width, rect.height);
-                    const data = imgData.data;
-
-                    if (activePhotoFilter === 'cyanotype') {
-                        // Transformation rigoureuse en Cyanotype (Blanc & Bleu de Prusse profond)
-                        for (let i = 0; i < data.length; i += 4) {
-                            let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
-                            // Contraste UV fort
-                            gray = gray < 100 ? gray * 0.5 : Math.min(255, gray * 1.3);
-                            
-                            // Colorisation Cyanotype (#081d3a à #eaf2f8)
-                            let factor = gray / 255;
-                            data[i]   = Math.floor(8 + factor * 226);   // Rouge
-                            data[i+1] = Math.floor(29 + factor * 210);  // Vert
-                            data[i+2] = Math.floor(75 + factor * 165);  // Bleu
-                        }
-                    } else if (activePhotoFilter === 'riso') {
-                        // Conversion en teinte Riso unie avec la couleur choisie
-                        const rgb = hexToRgb(risoTintColor);
-                        for (let i = 0; i < data.length; i += 4) {
-                            let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
-                            let factor = gray / 255; // 0 = noir, 1 = blanc
-                            
-                            // Fond blanc, l'encre Riso s'applique sur les zones sombres
-                            data[i]   = Math.floor(255 - (1 - factor) * (255 - rgb.r));
-                            data[i+1] = Math.floor(255 - (1 - factor) * (255 - rgb.g));
-                            data[i+2] = Math.floor(255 - (1 - factor) * (255 - rgb.b));
-                        }
-                    }
-                    tempCtx.putImageData(imgData, 0, 0);
-                    ctx.drawImage(tempCanvas, 0, 0);
-                }
+                ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
                 ctx.restore();
             }
 
-            // 3. Dessiner les textes
             const textElements = textContainer.querySelectorAll('.text-overlay');
             textElements.forEach(el => {
                 const elRect = el.getBoundingClientRect();
