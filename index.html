@@ -40,7 +40,7 @@
             height: 100dvh; 
             font-family: var(--font-inter);
             color: var(--black);
-            overflow: hidden; /* Empêche le défilement global de la page */
+            overflow: hidden; 
             
             background-color: var(--white);
             background-image: url('0012dd4013c5c9a464147e60b9053cf5_3.jpg');
@@ -192,7 +192,6 @@
             box-shadow: 4px 4px 0 var(--black);
         }
 
-        /* CONTAINER PRINCIPAL BUREAU (Desktop par défaut) */
         #app-container {
             display: flex;
             flex-direction: row; 
@@ -224,7 +223,7 @@
             background-color: var(--white);
             border: 6px solid var(--black);
             box-shadow: 20px 20px 0 var(--black);
-            overflow: hidden;
+            overflow: hidden; /* Garantit que tout ce qui dépasse est proprement contenu dans le cadre */
         }
 
         .layer {
@@ -240,7 +239,7 @@
         .text-overlay {
             position: absolute;
             z-index: 3;
-            font-size: 4rem;
+            font-size: 3.2rem; /* Taille de police légèrement ajustée pour éviter les débordements massifs sur mobile */
             color: var(--black);
             cursor: move;
             user-select: none;
@@ -250,13 +249,12 @@
         .sticker-overlay {
             position: absolute;
             z-index: 4;
-            width: 140px;
+            width: 120px;
             height: auto;
             cursor: move;
             user-select: none;
         }
 
-        /* PANNEAU DE CONTRÔLE (DROITE SUR DESKTOP ET MOBILE) */
         #control-panel {
             width: 450px; 
             height: 100%;
@@ -432,43 +430,50 @@
             background: var(--riso-green);
         }
 
-        /* ADAPTATION MOBILE STRICTE : L'image ne bouge pas (fixe en haut), le menu est à droite et défilable */
+        /* MEDIA QUERIES MOBILES AMÉLIORÉES CONTENANT PARFAITEMENT LES TYPOS */
         @media (max-width: 900px) {
             body, html {
                 height: 100dvh;
-                overflow: hidden; /* Verrouille le défilement de fond de page */
+                overflow: hidden;
             }
             #app-container {
-                flex-direction: row; /* Force l'affichage côte à côte ou structure fixe */
+                flex-direction: row; 
                 height: 100dvh;
                 width: 100vw;
             }
             #canvas-area {
                 flex: 1;
                 height: 100dvh;
-                position: fixed; /* Fixe l'image pour qu'elle ne bouge pas lors du scroll du menu */
+                position: fixed;
                 top: 0;
                 left: 0;
                 width: 55vw;
                 padding: 10px;
                 background: rgba(255, 255, 255, 0.4);
                 backdrop-filter: blur(2px);
+                overflow: hidden; /* Empêche les éléments de s'échapper visuellement du cadre de l'écran */
             }
             #export-wrapper {
                 max-width: 100%;
-                max-height: 85vh;
-                box-shadow: 8px 8px 0 var(--black);
+                max-height: 80vh;
+                box-shadow: 6px 6px 0 var(--black);
+                overflow: hidden; /* Coupe net tout texte ou sticker qui sort du poster */
+            }
+            .text-overlay {
+                font-size: 2.2rem; /* Réduction adaptative de la taille pour téléphones */
+            }
+            .sticker-overlay {
+                width: 90px; /* Redimensionnement proportionnel sur mobile */
             }
             #control-panel {
                 position: absolute;
                 right: 0;
                 top: 0;
-                width: 45vw; /* Le menu occupe la partie droite de l'écran */
+                width: 45vw; 
                 height: 100dvh;
                 border-left: 4px solid var(--black);
-                padding: 20px 12px;
-                gap: 25px;
-                z-index: 10;
+                padding: 15px 10px;
+                gap: 20px;
             }
         }
     </style>
