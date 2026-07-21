@@ -389,6 +389,24 @@
 </head>
 <body>
 
+    <!-- SVG Filtre pour la trame Riso / Bitmap -->
+    <svg style="display:none;">
+        <defs>
+            <filter id="bitmap-filter">
+                <feColorMatrix type="matrix" values="
+                    0.33 0.33 0.33 0 0
+                    0.33 0.33 0.33 0 0
+                    0.33 0.33 0.33 0 0
+                    0 0 0 1 0" />
+                <feComponentTransfer>
+                    <feFuncR type="discrete" tableValues="0 1"/>
+                    <feFuncG type="discrete" tableValues="0 1"/>
+                    <feFuncB type="discrete" tableValues="0 1"/>
+                </feComponentTransfer>
+            </filter>
+        </defs>
+    </svg>
+
     <!-- ONBOARDING OVERLAY -->
     <div id="overlay">
         <div id="popup-1" class="poster-modal active">
@@ -440,7 +458,6 @@
                 <span class="color-label">02. ARCHIVE</span>
                 <div class="serif-subtext">Fonds (1-13) & Option sans fond</div>
                 <div class="bg-grid" id="bg-library"></div>
-                <!-- Bouton pour enlever le fond de la bibliothèque -->
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond (Blanc pur)</button>
             </div>
 
@@ -460,12 +477,19 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
+            <!-- EFFETS ARTISTIQUES : Cyanotype & Risographie avec choix de couleur d'aplat -->
             <div class="control-group">
                 <span class="color-label">03-BIS. EFFETS ART</span>
-                <div class="serif-subtext">Styles d'impression</div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-ui" id="btn-cyanotype" style="flex:1; background:#0047ab; color:#fff;">💙 Cyanotype</button>
-                    <button class="btn-ui" id="btn-risographie" style="flex:1; background:#e0241b; color:#fff;">🔴 Risographie</button>
+                <div class="serif-subtext">Cyanotype & Risographie</div>
+                
+                <button class="btn-ui" id="btn-cyanotype" style="background:#0047ab; color:#fff; margin-bottom:5px;">💙 Cyanotype (Ton bleu UV)</button>
+                
+                <div style="display:flex; flex-direction:column; gap:5px; margin-top:5px; border-top: 2px dashed var(--black); padding-top:8px;">
+                    <span style="font-size: 0.8rem; font-weight:900;">🔴 Risographie (Aplat couleur) :</span>
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <input type="color" id="riso-color-picker" value="#e0241b" style="padding:0; height:36px; width:50px; cursor:pointer;">
+                        <button class="btn-ui" id="btn-risographie" style="flex:1; background:var(--riso-red); color:#fff;">Appliquer l'aplat Riso</button>
+                    </div>
                 </div>
             </div>
 
@@ -535,6 +559,9 @@
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
+        // Variable globale pour stocker la couleur d'aplat risographie personnalisée
+        let customRisoColor = null;
+
         document.getElementById('upload-user').addEventListener('change', function(e) {
             if (e.target.files[0]) {
                 const url = URL.createObjectURL(e.target.files[0]);
@@ -550,25 +577,28 @@
             userLayer.style.mixBlendMode = 'multiply';
         });
 
-        // Bouton pour enlever le fond de la bibliothèque (le rend vide/blanc)
         document.getElementById('btn-remove-bg-layer').addEventListener('click', () => {
             bgLayer.removeAttribute('src');
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
+        // EFFET CYANOTYPE (Réaction UV positive : tons bleus profonds, sans négatif)
         document.getElementById('btn-cyanotype').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importez d'abord une image !");
-            document.getElementById('blend-mode').value = 'difference';
-            userLayer.style.mixBlendMode = 'difference';
+            customRisoColor = null; // Réinitialise l'aplat riso
+            document.getElementById('blend-mode').value = 'screen';
+            userLayer.style.mixBlendMode = 'screen';
             bwToggle.checked = true;
-            briSlider.value = 80;
-            contSlider.value = 150;
+            briSlider.value = 90;
+            contSlider.value = 160;
             satSlider.value = 200;
             updateFilters();
         });
 
+        // EFFET RISOGRAPHIE (Aplat de couleur choisi par l'utilisateur)
         document.getElementById('btn-risographie').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importez d'abord une image !");
+            customRisoColor = document.getElementById('riso-color-picker').value;
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
             bitmapToggle.checked = true;
@@ -708,7 +738,7 @@
             }
         });
 
-        // EXPORTATION ROBUSTE VIA HTML5 CANVAS PUR
+        // EXPORTATION ROBUSTE VIA HTML5 CANVAS PUR (Supporte Cyanotype et Aplat Riso personnalisé)
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -731,7 +761,7 @@
                 ctx.fillRect(0, 0, rect.width, rect.height);
             }
 
-            // 2. Dessiner l'image utilisateur (user-layer) avec ses filtres et mode de fusion
+            // 2. Dessiner l'image utilisateur (user-layer)
             if (userLayer.src && userLayer.style.display !== 'none') {
                 const userImg = new Image();
                 userImg.crossOrigin = "anonymous";
@@ -745,6 +775,24 @@
                 
                 ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
                 ctx.restore();
+
+                // Si Cyanotype actif : Application d'un filtre de ton bleu UV par-dessus l'image
+                if (userLayer.style.mixBlendMode === 'screen' && bwToggle.checked) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'source-atop';
+                    ctx.fillStyle = 'rgba(0, 71, 171, 0.75)'; // Bleu Cyanotype profond
+                    ctx.fillRect(0, 0, rect.width, rect.height);
+                    ctx.restore();
+                }
+
+                // Si Risographie avec aplat personnalisé actif
+                if (customRisoColor && bitmapToggle.checked) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'source-atop';
+                    ctx.fillStyle = customRisoColor;
+                    ctx.fillRect(0, 0, rect.width, rect.height);
+                    ctx.restore();
+                }
             }
 
             // 3. Dessiner les textes positionnés
