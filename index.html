@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Glue Club - Ultimate Collage Mix</title>
     
-    <!-- Google Fonts : Syne, Inter, Playfair -->
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Sélection large de polices Zine, Brutaliste, Suisse, Riso & Éditoriales -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Abril+Fatface&family=Bungee&family=Changa+One&family=DM+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&family=Oswald:wght@700&family=Permanent+Marker&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -20,9 +20,17 @@
             --white: #ffffff;
             --black: #050505;
             
-            --font-display: 'Syne', sans-serif;
-            --font-sans: 'Inter', sans-serif;
-            --font-serif: 'Playfair Display', serif;
+            --font-inter: 'Inter', sans-serif;
+            --font-syne: 'Syne', sans-serif;
+            --font-playfair: 'Playfair Display', serif;
+            --font-space: 'Space Grotesk', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+            --font-anton: 'Anton', sans-serif;
+            --font-changa: 'Changa One', cursive;
+            --font-oswald: 'Oswald', sans-serif;
+            --font-marker: 'Permanent Marker', cursive;
+            --font-bungee: 'Bungee', cursive;
+            --font-abril: 'Abril Fatface', serif;
         }
 
         body, html {
@@ -30,7 +38,7 @@
             padding: 0;
             width: 100%;
             height: 100dvh; 
-            font-family: var(--font-sans);
+            font-family: var(--font-inter);
             color: var(--black);
             overflow: hidden; 
             
@@ -75,7 +83,7 @@
         }
 
         .modal-title {
-            font-family: var(--font-display);
+            font-family: var(--font-syne);
             font-weight: 800;
             font-size: 4rem;
             text-transform: uppercase;
@@ -98,7 +106,7 @@
         }
 
         .modal-italic {
-            font-family: var(--font-serif);
+            font-family: var(--font-playfair);
             font-style: italic;
             font-size: 1.4rem;
             margin-bottom: 25px;
@@ -115,7 +123,7 @@
             color: var(--white);
             border: 3px solid var(--black);
             padding: 12px 25px;
-            font-family: var(--font-display);
+            font-family: var(--font-syne);
             font-weight: 800;
             text-transform: uppercase;
             font-size: 1rem;
@@ -218,7 +226,7 @@
             color: var(--black);
             display: inline-table;
             padding: 6px 12px;
-            font-family: var(--font-sans);
+            font-family: var(--font-inter);
             font-weight: 900;
             font-size: 1rem;
             text-transform: uppercase;
@@ -230,7 +238,7 @@
         }
 
         .serif-subtext {
-            font-family: var(--font-serif);
+            font-family: var(--font-playfair);
             font-style: italic;
             font-size: 0.9rem;
             color: var(--black);
@@ -238,7 +246,7 @@
         }
 
         input[type="file"], select, input[type="text"] {
-            font-family: var(--font-sans);
+            font-family: var(--font-inter);
             font-weight: 700;
             font-size: 0.95rem;
             padding: 10px;
@@ -275,7 +283,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: var(--font-sans);
+            font-family: var(--font-inter);
             font-weight: 900;
             font-size: 0.8rem;
             text-transform: uppercase;
@@ -294,7 +302,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-family: var(--font-serif);
+            font-family: var(--font-playfair);
             font-style: italic;
             font-size: 1rem;
             cursor: pointer;
@@ -326,7 +334,7 @@
             color: var(--black);
             border: 2px solid var(--black);
             padding: 10px;
-            font-family: var(--font-sans);
+            font-family: var(--font-inter);
             font-weight: 900;
             text-transform: uppercase;
             font-size: 0.85rem;
@@ -341,7 +349,7 @@
         .btn-export {
             background: var(--riso-red);
             color: var(--white);
-            font-family: var(--font-display);
+            font-family: var(--font-syne);
             font-weight: 800;
             font-size: 1.8rem;
             padding: 15px;
@@ -502,9 +510,17 @@
                 <span class="color-label">06. TYPO</span>
                 <input type="text" id="text-input" placeholder="Taper un texte...">
                 <select id="font-selector">
-                    <option value="Inter">Inter (Suisse - Block)</option>
-                    <option value="Syne">Syne (Étendu)</option>
-                    <option value="Playfair Display">Playfair (Italique)</option>
+                    <option value="'Inter', sans-serif">Inter (Suisse - Block)</option>
+                    <option value="'Syne', sans-serif">Syne (Étendu)</option>
+                    <option value="'Space Grotesk', sans-serif">Space Grotesk (Moderne)</option>
+                    <option value="'Playfair Display', serif">Playfair (Éditorial)</option>
+                    <option value="'DM Mono', monospace">DM Mono (Technique)</option>
+                    <option value="'Anton', sans-serif">Anton (Impact Brut)</option>
+                    <option value="'Oswald', sans-serif">Oswald (Condensed)</option>
+                    <option value="'Changa One', cursive">Changa One (Street/Cartoon)</option>
+                    <option value="'Permanent Marker', cursive">Permanent Marker (Gribouillage)</option>
+                    <option value="'Bungee', cursive">Bungee (Block Poster)</option>
+                    <option value="'Abril Fatface', serif">Abril Fatface (Luxe & Rétro)</option>
                 </select>
                 <div style="display:flex; gap:10px;">
                     <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
@@ -566,7 +582,6 @@
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
-        // Cyanotype ultra-bleuté et lumineux (style tirage UV intense)
         document.getElementById('btn-cyanotype').addEventListener('click', async () => {
             if(!originalUserImageUrl) return alert("Importez d'abord une image !");
             activePhotoFilter = 'cyanotype';
@@ -643,7 +658,6 @@
             updateFilters();
         }));
 
-        // Algorithme optimisé pour un bleu cyanotype éclatant et lumineux
         function generateCyanotypeDataUrl(srcUrl) {
             return new Promise(resolve => {
                 const img = new Image();
@@ -660,14 +674,11 @@
                     const data = imgData.data;
                     for (let i = 0; i < data.length; i += 4) {
                         let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
-                        // Accentuation du contraste pour préserver les blancs de l'eau/lumière
                         gray = gray < 80 ? gray * 0.2 : Math.min(255, gray * 1.6);
                         let factor = gray / 255;
-                        
-                        // Palette ultra-bleutée (Bleu cyan lumineux / Bleu électrique profond)
-                        data[i]   = Math.floor(15  + factor * 215);  // Rouge bas pour garder le bleu pur
-                        data[i+1] = Math.floor(55  + factor * 190);  // Vert modéré
-                        data[i+2] = Math.floor(130 + factor * 125); // Bleu très fort et lumineux
+                        data[i]   = Math.floor(15  + factor * 215);
+                        data[i+1] = Math.floor(55  + factor * 190);
+                        data[i+2] = Math.floor(130 + factor * 125);
                     }
                     ctx.putImageData(imgData, 0, 0);
                     resolve(c.toDataURL());
@@ -715,16 +726,19 @@
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
             
-            if(fontSelected === 'Inter') {
+            // Ajustement dynamique du style selon la police choisie
+            if(fontSelected.includes('Inter') || fontSelected.includes('Space Grotesk')) {
                 textDiv.style.fontWeight = '900';
                 textDiv.style.textTransform = 'uppercase';
                 textDiv.style.letterSpacing = '-2px';
-            } else if(fontSelected === 'Syne') {
+            } else if(fontSelected.includes('Syne') || fontSelected.includes('Anton') || fontSelected.includes('Oswald') || fontSelected.includes('Bungee')) {
                 textDiv.style.fontWeight = '800';
                 textDiv.style.textTransform = 'uppercase';
-                textDiv.style.letterSpacing = '0.1em';
-            } else {
+                textDiv.style.letterSpacing = '0.05em';
+            } else if(fontSelected.includes('Playfair') || fontSelected.includes('Abril')) {
                 textDiv.style.fontStyle = 'italic';
+            } else {
+                textDiv.style.fontStyle = 'normal';
             }
 
             textDiv.style.top = '50%';
