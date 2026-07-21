@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Glue Club - Riso Zine Edition</title>
+    <title>Glue Club - Tri-Blend Aesthetic</title>
     
-    <!-- Google Fonts : Syne, Inter, Playfair -->
+    <!-- Google Fonts : Syne (Large/Éditorial), Inter (Suisse), Playfair -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
@@ -16,11 +16,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* CSS Variables - Palette Riso + Swiss */
+        /* CSS Variables - Fusion des 3 palettes */
         :root {
-            --riso-red: #e0241b;
-            --riso-green: #3ea055;
-            --swiss-yellow: #f4c522;
+            --scribble-pink: #ff3399; /* Rappel du fond gribouillis */
+            --riso-red: #e0241b;      /* Riso Zine */
+            --riso-green: #3ea055;    /* Riso Zine */
+            --swiss-yellow: #f4c522;  /* Affiche Architecture */
             --white: #ffffff;
             --black: #050505;
             
@@ -29,7 +30,7 @@
             --font-serif: 'Playfair Display', serif;
         }
 
-        /* VERROUILLAGE GLOBAL DE L'ÉCRAN */
+        /* VERROUILLAGE GLOBAL & FOND GRIBOUILLAGE ROSE */
         body, html {
             margin: 0;
             padding: 0;
@@ -39,19 +40,19 @@
             color: var(--black);
             overflow: hidden; 
             
-            background-color: var(--white);
-            /* Intégration de votre fond gribouillage */
-            background-image: url('db9e33eacb1625b33e4698956d249e67.webp');
+            background-color: var(--scribble-pink);
+            /* L'image rose scribble en fond plein écran */
+            background-image: url('db9e33eacb1625b33e4698956d249e67_2.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
 
-        /* --- POP-UPS FAÇON ZINE --- */
+        /* --- POP-UPS FAÇON AFFICHE SUISSE/PUNK --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(10px);
             z-index: 999;
             display: flex;
@@ -63,14 +64,14 @@
 
         .poster-modal {
             background: var(--white);
-            border: 4px solid var(--black);
-            padding: 30px;
+            border: 5px solid var(--black);
+            padding: 40px;
             width: 550px;
             max-width: 100%;
             display: none;
             flex-direction: column;
             position: relative;
-            box-shadow: 10px 10px 0 var(--riso-green);
+            box-shadow: 15px 15px 0 var(--riso-red);
         }
 
         .poster-modal.active { display: flex; }
@@ -84,49 +85,57 @@
         .modal-title {
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 3.5rem;
+            font-size: 4.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin: 0 0 5px 0;
-            line-height: 1;
+            letter-spacing: -2px;
+            margin: 0 0 10px 0;
+            line-height: 0.9;
         }
 
+        /* Style de surlignage de l'affiche Architecture */
         .modal-highlight {
-            background-color: var(--riso-red);
-            color: var(--white);
+            background-color: var(--swiss-yellow);
+            color: var(--black);
             display: inline-block;
             padding: 5px 15px;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 900;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
             text-transform: uppercase;
         }
 
         .modal-italic {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
         .btn-bold {
             background-color: var(--black);
             color: var(--white);
-            border: 2px solid var(--black);
-            padding: 10px 20px;
-            font-family: var(--font-display);
-            font-weight: 700;
+            border: 3px solid var(--black);
+            padding: 15px 25px;
+            font-family: var(--font-sans);
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
             flex: 1;
+            transition: all 0.2s;
+        }
+        .btn-bold:hover {
+            background-color: var(--swiss-yellow);
+            color: var(--black);
+            box-shadow: 5px 5px 0 var(--black);
+            transform: translate(-2px, -2px);
         }
 
         /* --- APP LAYOUT (SPLIT SCREEN STRICT) --- */
@@ -135,15 +144,15 @@
             flex-direction: row; 
             height: 100dvh;
             width: 100vw;
-            filter: blur(10px);
-            transition: filter 0.3s ease;
+            filter: blur(15px);
+            transition: filter 0.4s ease;
         }
 
         #app-container.active {
             filter: blur(0);
         }
 
-        /* ZONE IMAGE : FIXE À GAUCHE */
+        /* ZONE IMAGE (Canvas sur le fond rose) */
         #canvas-area {
             flex: 1; 
             height: 100%;
@@ -151,7 +160,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
             overflow: hidden; 
         }
@@ -162,8 +171,8 @@
             max-width: 600px;
             aspect-ratio: 3/4;
             background-color: var(--white);
-            border: 5px solid var(--black);
-            box-shadow: 15px 15px 0 var(--black);
+            border: 6px solid var(--black);
+            box-shadow: 20px 20px 0 var(--black);
             overflow: hidden;
         }
 
@@ -180,80 +189,75 @@
         .text-overlay {
             position: absolute;
             z-index: 3;
-            font-size: 3rem;
+            font-size: 4rem;
             color: var(--black);
+            text-shadow: 3px 3px 0 var(--white);
             cursor: move;
             user-select: none;
             white-space: nowrap;
         }
 
-        /* ZONE MENU : À DROITE AVEC DÉFILEMENT INTÉGRÉ */
+        /* ZONE MENU : ARCHITECTURE SUISSE + RISO */
         #control-panel {
-            width: 420px; 
+            width: 450px; 
             height: 100%;
             background-color: var(--white);
-            border-left: 5px solid var(--black);
-            padding: 30px;
+            border-left: 6px solid var(--black);
+            padding: 40px 30px;
             overflow-y: auto; 
             display: flex;
             flex-direction: column;
-            gap: 35px;
+            gap: 40px;
             box-sizing: border-box;
             -webkit-overflow-scrolling: touch; 
             position: relative;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-        }
-
-        .panel-bg-text {
-            position: absolute;
-            top: -20px;
-            right: 10px;
-            font-family: var(--font-sans);
-            font-weight: 900;
-            font-size: 7rem;
-            color: var(--black);
-            opacity: 0.04;
-            writing-mode: vertical-rl;
-            pointer-events: none;
-            z-index: 0;
-            letter-spacing: -5px;
+            /* Trame Riso discrète en fond du menu */
+            background-image: radial-gradient(rgba(224, 36, 27, 0.1) 15%, transparent 16%);
+            background-size: 6px 6px;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             z-index: 1;
+            background: var(--white);
+            padding: 15px;
+            border: 3px solid var(--black);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
         }
 
+        /* Étiquettes style Swiss Typography (Gros blocs jaunes) */
         .color-label {
+            background-color: var(--swiss-yellow);
+            color: var(--black);
             display: inline-table;
-            padding: 6px 12px;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 1rem;
+            padding: 8px 15px;
+            font-family: var(--font-sans);
+            font-weight: 900;
+            font-size: 1.2rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             align-self: flex-start;
             border: 2px solid var(--black);
+            margin-top: -30px; /* Fait déborder l'étiquette en haut du bloc */
+            margin-left: -5px;
         }
-        .bg-yellow { background-color: var(--swiss-yellow); color: var(--black); }
-        .bg-red { background-color: var(--riso-red); color: var(--white); }
-        .bg-green { background-color: var(--riso-green); color: var(--white); }
-        .bg-black { background-color: var(--black); color: var(--white); }
 
         .serif-subtext {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: var(--black);
+            margin-bottom: 5px;
         }
 
+        /* Inputs & Selects : Bruts et géométriques */
         input[type="file"], select, input[type="text"] {
             font-family: var(--font-sans);
             font-weight: 700;
-            font-size: 0.95rem;
-            padding: 10px;
+            font-size: 1rem;
+            padding: 12px;
             border: 2px solid var(--black);
             background: var(--white);
             color: var(--black);
@@ -262,21 +266,23 @@
             box-sizing: border-box;
             outline: none;
         }
+        select { cursor: pointer; }
         
+        /* Sliders style Riso */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 4px;
+            height: 6px;
             background: var(--black);
             outline: none;
-            margin: 10px 0;
+            margin: 15px 0;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--white);
+            width: 20px;
+            height: 20px;
+            background: var(--riso-red);
             border: 3px solid var(--black);
             cursor: pointer;
             border-radius: 0;
@@ -288,14 +294,16 @@
             align-items: center;
             font-family: var(--font-sans);
             font-weight: 900;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
+        /* Checkbox carrées strictes */
         input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--black);
+            width: 24px;
+            height: 24px;
+            accent-color: var(--riso-green);
             cursor: pointer;
             border-radius: 0;
             border: 2px solid var(--black);
@@ -303,18 +311,19 @@
         .checkbox-label {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
         }
 
+        /* Background Library Grid */
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            max-height: 150px;
+            gap: 8px;
+            max-height: 160px;
             overflow-y: auto;
         }
         .bg-thumb {
@@ -324,69 +333,80 @@
             cursor: pointer;
             border: 2px solid var(--black);
             filter: grayscale(100%) contrast(150%);
+            transition: all 0.2s;
         }
-        .bg-thumb.active { 
+        .bg-thumb:hover, .bg-thumb.active { 
             filter: grayscale(0%) contrast(100%);
-            border-color: var(--riso-red);
+            border-color: var(--riso-green);
+            transform: scale(1.05);
         }
 
+        /* Boutons de l'interface */
         .btn-ui {
             background-color: var(--white);
             color: var(--black);
-            border: 2px solid var(--black);
-            padding: 10px;
-            font-family: var(--font-display);
-            font-weight: 800;
+            border: 3px solid var(--black);
+            padding: 12px;
+            font-family: var(--font-sans);
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-ui:hover {
+            background-color: var(--black);
+            color: var(--white);
         }
 
+        /* BIG EXPORT BUTTON */
         .btn-export {
-            background: var(--riso-red);
+            background: var(--riso-green);
             color: var(--white);
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 1.8rem;
-            padding: 15px;
+            font-size: 2rem;
+            padding: 20px;
             margin-top: 10px;
-            border: 4px solid var(--black);
+            border: 5px solid var(--black);
             text-transform: uppercase;
+            letter-spacing: 2px;
             cursor: pointer;
-            box-shadow: 6px 6px 0 var(--black);
+            box-shadow: 8px 8px 0 var(--black);
+            transition: all 0.2s;
+        }
+        .btn-export:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 11px 11px 0 var(--black);
+            background: var(--riso-red);
         }
 
         /* --- MEDIA QUERY MOBILE --- */
         @media (max-width: 900px) {
             #control-panel {
-                width: 50vw; 
-                min-width: 160px; 
-                padding: 15px 10px;
-                gap: 20px;
-                border-left: 3px solid var(--black);
+                width: 55vw; 
+                min-width: 200px; 
+                padding: 30px 15px;
+                gap: 30px;
+                border-left: 4px solid var(--black);
             }
-            #canvas-area {
-                padding: 5px;
-            }
+            #canvas-area { padding: 10px; }
             #export-wrapper {
-                border-width: 2px;
+                border-width: 3px;
+                box-shadow: 8px 8px 0 var(--black);
+            }
+            .color-label { font-size: 0.8rem; padding: 5px 10px; margin-top: -25px;}
+            .serif-subtext, .slider-row, .checkbox-label { font-size: 0.8rem; }
+            input[type="file"], select, input[type="text"], .btn-ui {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+            .bg-grid { grid-template-columns: repeat(2, 1fr); }
+            .btn-export {
+                font-size: 1.2rem;
+                padding: 15px;
                 box-shadow: 5px 5px 0 var(--black);
             }
-            .color-label { font-size: 0.7rem; padding: 4px 6px; }
-            .serif-subtext, .slider-row, .checkbox-label { font-size: 0.7rem; }
-            input[type="file"], select, input[type="text"], .btn-ui {
-                font-size: 0.7rem;
-                padding: 6px;
-            }
-            .bg-grid {
-                grid-template-columns: repeat(2, 1fr); 
-            }
-            .btn-export {
-                font-size: 1rem;
-                padding: 10px;
-                box-shadow: 3px 3px 0 var(--black);
-            }
-            .panel-bg-text { display: none; } 
         }
     </style>
 </head>
@@ -414,18 +434,18 @@
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
                 <h1 class="modal-title">G L U E<br>C L U B</h1>
-                <div class="modal-highlight">VOL. 01 — ARCHIVE</div>
+                <div class="modal-highlight">VOL. 01 — ARCHITECTURE</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
-                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black); border: 2px solid var(--black);">J'AI ZAPPÉ</button>
+                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black);">J'AI ZAPPÉ</button>
                 </div>
             </div>
         </div>
 
         <div id="popup-2" class="poster-modal">
             <div class="modal-content">
-                <div class="modal-highlight" style="background:var(--swiss-yellow); color:var(--black);">SYS. WARNING</div>
+                <div class="modal-highlight" style="background:var(--riso-red);">SYS. WARNING</div>
                 <div class="modal-italic">T'es sûr(e) ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-non1">NON</button>
@@ -435,7 +455,7 @@
         </div>
     </div>
 
-    <!-- APP CONTAINER (Flex Row forcé) -->
+    <!-- APP CONTAINER -->
     <div id="app-container">
         <!-- CANVAS (LEFT) -->
         <div id="canvas-area">
@@ -448,23 +468,22 @@
 
         <!-- CONTROL PANEL (RIGHT) -->
         <div id="control-panel">
-            <div class="panel-bg-text">ZINE</div>
             
             <div class="control-group">
-                <span class="color-label bg-yellow">01. IMPORT</span>
+                <span class="color-label">01. IMPORT</span>
                 <div class="serif-subtext">Charge ton image perso</div>
                 <input type="file" id="upload-user" accept="image/*">
-                <button class="btn-ui" id="btn-remove-bg" style="margin-top:5px;">Auto Cut-out</button>
+                <button class="btn-ui" id="btn-remove-bg">✂️ Auto Cut-out</button>
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-green">02. ARCHIVE</span>
+                <span class="color-label">02. ARCHIVE</span>
                 <div class="serif-subtext">Fonds (1-13)</div>
                 <div class="bg-grid" id="bg-library"></div>
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-red">03. BLEND</span>
+                <span class="color-label">03. BLEND</span>
                 <select id="blend-mode">
                     <option value="normal">NORMAL</option>
                     <option value="multiply">PRODUIT (MULTIPLY)</option>
@@ -480,7 +499,7 @@
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-black">04. COLORS</span>
+                <span class="color-label">04. COLORS</span>
                 <div class="slider-row"><span>Luminosité</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
                 <div class="slider-row"><span>Contraste</span></div>
@@ -493,7 +512,7 @@
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-yellow">05. DESTRUCT</span>
+                <span class="color-label">05. DESTRUCT</span>
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 <label class="checkbox-label" style="margin-top:5px;">
@@ -504,22 +523,22 @@
             </div>
 
             <div class="control-group">
-                <span class="color-label bg-green">06. TYPO</span>
+                <span class="color-label">06. TYPO</span>
                 <input type="text" id="text-input" placeholder="Taper un texte...">
                 <select id="font-selector">
+                    <option value="var(--font-sans)">Inter (Suisse - Block)</option>
                     <option value="var(--font-display)">Syne (Étendu)</option>
-                    <option value="var(--font-sans)">Inter (Suisse)</option>
                     <option value="var(--font-serif)">Playfair (Italique)</option>
                 </select>
-                <div style="display:flex; gap:5px;">
+                <div style="display:flex; gap:10px;">
                     <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
                     <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer</button>
                 </div>
-                <button class="btn-ui" id="btn-crop" style="margin-top:5px;">Recadrer</button>
-                <button class="btn-bold" id="btn-crop-validate" style="display:none; background:var(--swiss-yellow); color:var(--black); margin-top:5px;">Valider le crop</button>
+                <button class="btn-ui" id="btn-crop" style="margin-top:10px;">Recadrer Image</button>
+                <button class="btn-bold" id="btn-crop-validate" style="display:none; background:var(--swiss-yellow); color:var(--black); margin-top:10px;">Valider le crop</button>
             </div>
 
-            <button class="btn-export" id="btn-export">EXPORT</button>
+            <button class="btn-export" id="btn-export">EXPORT FILE</button>
         </div>
     </div>
 
@@ -615,13 +634,15 @@
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
             
-            if(fontSelected === 'var(--font-display)') {
+            // Stylisation spécifique selon la typo (inspiré de l'affiche)
+            if(fontSelected === 'var(--font-sans)') {
+                textDiv.style.fontWeight = '900';
+                textDiv.style.textTransform = 'uppercase';
+                textDiv.style.letterSpacing = '-2px';
+            } else if(fontSelected === 'var(--font-display)') {
                 textDiv.style.fontWeight = '800';
                 textDiv.style.textTransform = 'uppercase';
                 textDiv.style.letterSpacing = '0.1em';
-            } else if(fontSelected === 'var(--font-sans)') {
-                textDiv.style.fontWeight = '900';
-                textDiv.style.textTransform = 'uppercase';
             } else {
                 textDiv.style.fontStyle = 'italic';
             }
