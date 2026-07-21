@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glue Club - Laboratoire</title>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Enfantine (Patrick Hand) & Punk (Permanent Marker, Rubik Glitch) -->
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Permanent+Marker&family=Rubik+Glitch&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -18,12 +18,11 @@
     <style>
         /* CSS Variables */
         :root {
-            --pink-bg: #fadadd;
-            --white-bg: #ffffff;
-            --text-color: #000000;
-            --font-typewriter: 'Courier Prime', monospace;
-            --font-brutalist: 'Bebas Neue', sans-serif;
-            --win7-blue: #0058e6;
+            --electric-blue: #0033ff;
+            --white: #ffffff;
+            --font-ui: 'Patrick Hand', cursive; /* Écriture d'enfant */
+            --font-punk-1: 'Permanent Marker', cursive;
+            --font-punk-2: 'Rubik Glitch', system-ui;
             --win7-bg: #ece9d8;
         }
 
@@ -31,9 +30,16 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: var(--font-typewriter);
-            color: var(--text-color);
-            background-color: var(--white-bg);
+            font-family: var(--font-ui);
+            color: var(--white);
+            /* Motif Zèbre */
+            background: repeating-linear-gradient(
+                -45deg,
+                #000,
+                #000 20px,
+                #fff 20px,
+                #fff 40px
+            );
             overflow: hidden;
         }
 
@@ -41,8 +47,8 @@
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
             z-index: 999;
             display: flex;
             align-items: center;
@@ -51,13 +57,13 @@
 
         .win7-window {
             background: var(--win7-bg);
-            border: 1px solid #fff;
+            border: 2px solid #fff;
             border-right-color: #888;
             border-bottom-color: #888;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.2);
-            width: 400px;
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
+            width: 450px;
             max-width: 90%;
-            font-family: Tahoma, Arial, sans-serif;
+            color: #000; /* Texte noir pour l'intérieur du pop-up */
             display: none;
             flex-direction: column;
         }
@@ -71,6 +77,7 @@
             color: white;
             padding: 5px 10px;
             font-weight: bold;
+            font-family: Tahoma, sans-serif;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -89,39 +96,42 @@
         }
 
         .win7-content {
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
         }
 
-        .brutalist-title {
-            font-family: var(--font-brutalist);
-            font-size: 4rem;
+        .logo-title {
+            font-family: var(--font-punk-2); /* Logo très marqué */
+            font-size: 5rem;
             margin: 0 0 10px 0;
-            letter-spacing: 2px;
+            color: var(--electric-blue);
+            text-shadow: 2px 2px 0 #000;
         }
 
         .win7-text {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
+            font-size: 2rem;
+            margin-bottom: 30px;
         }
 
         .win7-buttons {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .win7-btn {
             background: #e1e1e1;
-            border: 1px solid #fff;
+            border: 2px solid #fff;
             border-right-color: #888;
             border-bottom-color: #888;
-            padding: 5px 20px;
+            padding: 10px 30px;
             cursor: pointer;
-            font-family: Tahoma, Arial, sans-serif;
+            font-family: var(--font-ui);
+            font-size: 1.5rem;
+            color: #000;
         }
         .win7-btn:active {
-            border: 1px solid #888;
+            border: 2px solid #888;
             border-right-color: #fff;
             border-bottom-color: #fff;
         }
@@ -131,7 +141,7 @@
             display: flex;
             height: 100vh;
             width: 100vw;
-            filter: blur(5px);
+            filter: blur(10px);
             transition: filter 0.3s ease;
         }
 
@@ -146,9 +156,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--white-bg);
-            background-image: radial-gradient(#ddd 1px, transparent 1px);
-            background-size: 20px 20px;
             padding: 20px;
             overflow: auto;
         }
@@ -156,10 +163,10 @@
         #export-wrapper {
             position: relative;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             aspect-ratio: 3/4;
-            background-color: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background-color: var(--white); /* Fond du canvas Blanc Pur */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             overflow: hidden;
         }
 
@@ -174,16 +181,15 @@
         
         #user-layer {
             z-index: 2;
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, filter 0.2s ease;
         }
 
         .text-overlay {
             position: absolute;
             z-index: 3;
-            font-family: var(--font-brutalist);
-            font-size: 3rem;
-            color: #fff;
-            text-shadow: 2px 2px 0 #000;
+            font-size: 4rem;
+            color: #000;
+            text-shadow: 2px 2px 0 #fff;
             cursor: move;
             user-select: none;
             white-space: nowrap;
@@ -191,67 +197,93 @@
 
         /* CONTROL PANEL (RIGHT) */
         #control-panel {
-            width: 350px;
-            background-color: var(--pink-bg);
-            border-left: 2px solid #000;
+            width: 380px;
+            background-color: var(--electric-blue); /* Bleu Électrique */
+            color: var(--white); /* Texte Blanc */
+            border-left: 4px solid #000;
             padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
 
         h2.panel-title {
-            font-family: var(--font-brutalist);
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            border-bottom: 2px solid #000;
-            padding-bottom: 5px;
+            font-size: 3rem;
+            margin: 0;
+            border-bottom: 3px dashed var(--white);
+            padding-bottom: 10px;
+            text-align: center;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            border-bottom: 1px dashed #000;
-            padding-bottom: 15px;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid var(--white);
         }
 
         .control-group label {
-            font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
         }
 
-        input[type="file"], select, input[type="text"], input[type="range"] {
-            font-family: var(--font-typewriter);
-            padding: 5px;
-            border: 1px solid #000;
+        input[type="file"], select, input[type="text"] {
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            padding: 8px;
+            border: 2px solid #000;
             background: #fff;
+            color: #000;
             width: 100%;
             box-sizing: border-box;
         }
 
+        /* Stylisation des curseurs (Sliders) */
+        input[type="range"] {
+            width: 100%;
+            accent-color: #000;
+        }
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
         button {
-            font-family: var(--font-typewriter);
-            background: #000;
-            color: #fff;
-            border: none;
+            font-family: var(--font-ui);
+            font-size: 1.3rem;
+            background: var(--white);
+            color: var(--electric-blue);
+            border: 3px solid #000;
             padding: 10px;
             cursor: pointer;
-            text-transform: uppercase;
             font-weight: bold;
-            transition: background 0.2s;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 3px 3px 0 #000;
         }
-        button:hover { background: #333; }
+        button:hover { 
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0 #000;
+        }
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0 #000;
+        }
 
         /* Background Library Grid */
         .bg-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 5px;
-            max-height: 150px;
+            max-height: 160px;
             overflow-y: auto;
-            border: 1px solid #000;
+            border: 2px solid #000;
             padding: 5px;
             background: #fff;
         }
@@ -261,26 +293,28 @@
             aspect-ratio: 1;
             object-fit: cover;
             cursor: pointer;
-            border: 1px solid transparent;
+            border: 2px solid transparent;
         }
-        .bg-thumb:hover { border-color: #000; }
+        .bg-thumb:hover { border-color: var(--electric-blue); }
 
         /* BIG EXPORT BUTTON */
         .btn-export {
             background: #000;
-            color: var(--pink-bg);
-            font-size: 1.2rem;
-            padding: 15px;
+            color: #fff;
+            font-size: 1.8rem;
+            padding: 20px;
             margin-top: auto;
-            border: 2px solid #000;
+            border: 4px solid var(--white);
+            text-transform: uppercase;
         }
         .btn-export:hover {
-            background: var(--pink-bg);
+            background: var(--white);
             color: #000;
+            border-color: #000;
         }
 
         /* RESPONSIVE MOBILE */
-        @media (max-width: 800px) {
+        @media (max-width: 900px) {
             #app-container {
                 flex-direction: column;
             }
@@ -288,22 +322,20 @@
                 width: 100%;
                 height: 50vh;
                 border-left: none;
-                border-top: 2px solid #000;
+                border-top: 4px solid #000;
             }
             #canvas-area {
                 height: 50vh;
             }
         }
-        
-        /* Utility classes for SVG Filters */
-        .pixelated { image-rendering: pixelated; }
     </style>
 </head>
 <body>
 
-    <!-- SVG Filters for Bitmap and Pixelation -->
+    <!-- SVG Filters for complex destructive effects -->
     <svg style="display:none;">
         <defs>
+            <!-- Effet Bitmap / Dither Threshold -->
             <filter id="bitmap-filter">
                 <feColorMatrix type="matrix" values="
                     0.33 0.33 0.33 0 0
@@ -321,14 +353,14 @@
 
     <!-- ONBOARDING OVERLAY -->
     <div id="overlay">
-        <!-- POP-UP 1 -->
+        <!-- POP-UP 1 : ACCUEIL -->
         <div id="popup-1" class="win7-window active">
             <div class="win7-titlebar">
-                <span>Système</span>
+                <span>GLUEOS.exe</span>
                 <div class="win7-close">X</div>
             </div>
             <div class="win7-content">
-                <h1 class="brutalist-title">GLUE CLUB</h1>
+                <h1 class="logo-title">GLUE CLUB</h1>
                 <div class="win7-text">T'as ramené ta colle ?</div>
                 <div class="win7-buttons">
                     <button class="win7-btn" id="btn-oui">Oui</button>
@@ -337,10 +369,10 @@
             </div>
         </div>
 
-        <!-- POP-UP 2 -->
+        <!-- POP-UP 2 : CONFIRMATION ABSURDE -->
         <div id="popup-2" class="win7-window">
             <div class="win7-titlebar">
-                <span>Avertissement</span>
+                <span>Alerte Système</span>
                 <div class="win7-close">X</div>
             </div>
             <div class="win7-content">
@@ -358,7 +390,6 @@
         <!-- CANVAS (LEFT) -->
         <div id="canvas-area">
             <div id="export-wrapper">
-                <!-- Image de fond par défaut (1.jpg) -->
                 <img id="bg-layer" class="layer" src="1.jpg" alt="Fond">
                 <img id="user-layer" class="layer" src="" alt="" style="display:none;">
                 <div id="text-container"></div>
@@ -369,26 +400,24 @@
         <div id="control-panel">
             <h2 class="panel-title">Laboratoire</h2>
 
+            <!-- 1. Importation -->
             <div class="control-group">
-                <label>1. Importer une image</label>
+                <label>1. Ton image</label>
                 <input type="file" id="upload-user" accept="image/*">
+                <button id="btn-remove-bg">✂️ Détourage Magique</button>
             </div>
 
+            <!-- 3. Bibliothèque -->
             <div class="control-group">
-                <label>2. Détourage (Auto)</label>
-                <button id="btn-remove-bg">Supprimer le fond</button>
-                <small style="font-size:0.7rem; color:#555;">(Simule un détourage via incrustation sur fond blanc)</small>
-            </div>
-
-            <div class="control-group">
-                <label>3. Bibliothèque de magazines (9 fonds)</label>
+                <label>2. Fonds de magazines (13)</label>
                 <div class="bg-grid" id="bg-library">
                     <!-- Généré par JS -->
                 </div>
             </div>
 
+            <!-- 4. Modes de fusion & Intensité -->
             <div class="control-group">
-                <label>4. Masques de fusion</label>
+                <label>3. Masque de Fusion</label>
                 <select id="blend-mode">
                     <option value="normal">Normal</option>
                     <option value="multiply">Produit (Multiply)</option>
@@ -398,40 +427,65 @@
                     <option value="lighten">Éclaircir (Lighten)</option>
                     <option value="difference">Différence</option>
                     <option value="exclusion">Exclusion</option>
+                    <option value="color-dodge">Densité couleur - (Color Dodge)</option>
                 </select>
+                <div class="slider-row">
+                    <span>Intensité du masque</span>
+                </div>
+                <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
+            <!-- 5. Effets Destructifs -->
             <div class="control-group">
-                <label>5. Colorimétrie</label>
-                <label for="sat-slider" style="font-weight:normal;">Saturation</label>
-                <input type="range" id="sat-slider" min="0" max="200" value="100">
-                
-                <label style="font-weight:normal; margin-top:5px;">
-                    <input type="checkbox" id="bw-toggle"> Filtre Noir & Blanc
-                </label>
-            </div>
-
-            <div class="control-group">
-                <label>6. Effets destructifs</label>
-                <label for="pixel-slider" style="font-weight:normal;">Pixelisation (Flou / Net)</label>
+                <label>4. Effets Destructifs</label>
+                <div class="slider-row"><span>Pixelisation / Flou</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
-                <label style="font-weight:normal; margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Effet Bitmap (Seuil PP)
+                <div class="slider-row" style="margin-top:10px;">
+                    <label style="display:flex; align-items:center; gap:10px; font-size:1.1rem; cursor:pointer;">
+                        <input type="checkbox" id="bitmap-toggle" style="width:20px;height:20px;"> 
+                        Activer Effet Bitmap (Seuil PP)
+                    </label>
+                </div>
+                <div class="slider-row"><span>Intensité Bitmap (Contraste)</span></div>
+                <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
+            </div>
+
+            <!-- 6. Colorimétrie -->
+            <div class="control-group">
+                <label>5. Colorimétrie</label>
+                <div class="slider-row"><span>Luminosité</span></div>
+                <input type="range" id="bri-slider" min="0" max="200" value="100">
+                
+                <div class="slider-row"><span>Contraste</span></div>
+                <input type="range" id="cont-slider" min="0" max="200" value="100">
+
+                <div class="slider-row"><span>Saturation</span></div>
+                <input type="range" id="sat-slider" min="0" max="200" value="100">
+                
+                <label style="margin-top:10px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <input type="checkbox" id="bw-toggle" style="width:20px;height:20px;"> Filtre Noir & Blanc
                 </label>
             </div>
 
+            <!-- 7. Outils Créatifs -->
             <div class="control-group">
-                <label>7. Outils basiques</label>
-                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                <label>6. Outils Créatifs</label>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:10px;">
                     <input type="text" id="text-input" placeholder="Taper un texte...">
-                    <button id="btn-add-text">Ajouter</button>
+                    <select id="font-selector">
+                        <option value="var(--font-punk-1)">Police : Permanent Marker</option>
+                        <option value="var(--font-punk-2)">Police : Rubik Glitch</option>
+                        <option value="var(--font-ui)">Police : Enfantine</option>
+                    </select>
+                    <button id="btn-add-text">Ajouter Texte</button>
                 </div>
-                <button id="btn-crop">Recadrer l'image</button>
-                <button id="btn-crop-validate" style="display:none; background:#e04343;">Valider Recadrage</button>
+                <button id="btn-crop">Recadrer l'image (Crop)</button>
+                <button id="btn-crop-validate" style="display:none; background:#e04343; color:#fff;">Valider Recadrage</button>
             </div>
 
-            <button class="btn-export" id="btn-export">Exporter l'image</button>
+            <!-- EXPORT -->
+            <button class="btn-export" id="btn-export">Exporter l'image 💾</button>
         </div>
     </div>
 
@@ -447,79 +501,83 @@
             appContainer.classList.add('active');
         }
 
+        // Clics Pop-up 1
         document.getElementById('btn-oui').onclick = startApp;
-        document.querySelectorAll('.win7-close').forEach(btn => btn.onclick = startApp);
-        
         document.getElementById('btn-zappe').onclick = () => {
             popup1.classList.remove('active');
             popup2.classList.add('active');
         };
 
+        // Clics Pop-up 2
         document.getElementById('btn-non1').onclick = startApp;
         document.getElementById('btn-non2').onclick = startApp;
+        
+        // Fermeture avec la croix rouge
+        document.querySelectorAll('.win7-close').forEach(btn => btn.onclick = startApp);
 
         // --- APP LOGIC ---
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
-        // 1. Import Image
+        // 1. Importation
         document.getElementById('upload-user').addEventListener('change', function(e) {
             if (e.target.files[0]) {
                 const url = URL.createObjectURL(e.target.files[0]);
                 userLayer.src = url;
                 userLayer.style.display = 'block';
-                updateFilters(); // Reset/Apply filters
+                updateFilters(); 
             }
         });
 
-        // 2. Fake Background Removal
-        // In a pure frontend app without a heavy ML model, we fake it by applying a multiply blend if the background is light.
+        // 2. Détourage auto (Simulation via Multiply)
         document.getElementById('btn-remove-bg').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importez d'abord une image !");
+            if(!userLayer.src) return alert("Importe d'abord une image !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
-            alert("Mode détourage rapide activé (Fusion Produit). Idéal pour les photos sur fond blanc.");
+            alert("Mode détourage magique activé (Fusion Produit appliquée).");
         });
 
-        // 3. Background Library (Vos 9 images)
+        // 3. Bibliothèque (1 à 13)
         const bgLibrary = document.getElementById('bg-library');
-        // Liste exacte de vos 9 images de 1.jpg à 9.jpg
-        const myBackgrounds = [
-            "1.jpg",
-            "2.jpg",
-            "3.jpg",
-            "4.jpg",
-            "5.jpg",
-            "6.jpg",
-            "7.jpg",
-            "8.jpg",
-            "9.jpg"
-        ];
+        const totalBackgrounds = 13;
         
-        myBackgrounds.forEach((imagePath) => {
+        for (let i = 1; i <= totalBackgrounds; i++) {
+            const imgPath = `${i}.jpg`;
             const img = document.createElement('img');
             img.className = 'bg-thumb';
-            img.src = imagePath; // Utilise vos images directement comme miniatures
+            img.src = imgPath;
+            img.alt = `Fond ${i}`;
             img.onclick = () => {
-                // Modifie le fond principal lorsqu'on clique sur la miniature
-                bgLayer.src = imagePath;
+                bgLayer.src = imgPath;
             };
             bgLibrary.appendChild(img);
-        });
+        }
 
-        // 4. Blend Modes
+        // 4. Modes de fusion & Opacité
         document.getElementById('blend-mode').addEventListener('change', (e) => {
             userLayer.style.mixBlendMode = e.target.value;
         });
 
-        // 5 & 6. Filters & Destructive Effects
+        document.getElementById('opacity-slider').addEventListener('input', (e) => {
+            userLayer.style.opacity = e.target.value / 100;
+        });
+
+        // 5 & 6. Filtres Colorimétriques et Destructifs
+        const briSlider = document.getElementById('bri-slider');
+        const contSlider = document.getElementById('cont-slider');
         const satSlider = document.getElementById('sat-slider');
         const bwToggle = document.getElementById('bw-toggle');
+        
         const pixelSlider = document.getElementById('pixel-slider');
         const bitmapToggle = document.getElementById('bitmap-toggle');
+        const bitmapIntensity = document.getElementById('bitmap-intensity');
 
         function updateFilters() {
-            let filterString = `saturate(${satSlider.value}%) `;
+            let filterString = `
+                brightness(${briSlider.value}%) 
+                contrast(${contSlider.value}%) 
+                saturate(${satSlider.value}%)
+            `;
             
             if (bwToggle.checked) {
                 filterString += "grayscale(100%) ";
@@ -527,34 +585,40 @@
             
             if (pixelSlider.value > 0) {
                 filterString += `blur(${pixelSlider.value}px) `;
-                // Note: True pixelation on DOM requires canvas redraw. Blur is used here as a placeholder for destructive degradation.
             }
-            
+
+            // Gestion de l'effet Bitmap
             if (bitmapToggle.checked) {
-                filterString += `url(#bitmap-filter) `;
+                // Application du filtre SVG + contraste poussé pour l'intensité
+                filterString += `url(#bitmap-filter) contrast(${bitmapIntensity.value}%) `;
             }
 
             userLayer.style.filter = filterString;
         }
 
-        satSlider.addEventListener('input', updateFilters);
-        bwToggle.addEventListener('change', updateFilters);
-        pixelSlider.addEventListener('input', updateFilters);
-        bitmapToggle.addEventListener('change', updateFilters);
+        // Écouteurs pour les filtres
+        [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(slider => {
+            slider.addEventListener('input', updateFilters);
+        });
+        [bwToggle, bitmapToggle].forEach(toggle => {
+            toggle.addEventListener('change', updateFilters);
+        });
 
-        // 7. Text Tool (Draggable)
+        // 7. Outil Texte
         document.getElementById('btn-add-text').addEventListener('click', () => {
             const textVal = document.getElementById('text-input').value;
+            const fontSelected = document.getElementById('font-selector').value;
             if(!textVal) return;
 
             const textDiv = document.createElement('div');
             textDiv.className = 'text-overlay';
             textDiv.innerText = textVal;
+            textDiv.style.fontFamily = fontSelected;
             textDiv.style.top = '50%';
             textDiv.style.left = '50%';
             textDiv.style.transform = 'translate(-50%, -50%)';
             
-            // Simple Drag Logic
+            // Drag Logic
             let isDragging = false;
             let currentX;
             let currentY;
@@ -588,24 +652,25 @@
                 }
             }
 
-            // Click to remove
+            // Double clic pour supprimer le texte
             textDiv.ondblclick = () => textDiv.remove();
 
             document.getElementById('text-container').appendChild(textDiv);
-            document.getElementById('text-input').value = '';
+            document.getElementById('text-input').value = ''; // Reset input
         });
 
-        // 7. Crop Tool (using Cropper.js)
+        // 7b. Outil Crop (Cropper.js)
         let cropper = null;
         const btnCrop = document.getElementById('btn-crop');
         const btnCropValidate = document.getElementById('btn-crop-validate');
 
         btnCrop.addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importez d'abord une image !");
+            if(!userLayer.src) return alert("Importe d'abord une image !");
             
-            // Remove blend mode and filters temporarily for accurate cropping
+            // On retire temporairement les effets pour le recadrage
             userLayer.style.mixBlendMode = 'normal';
             userLayer.style.filter = 'none';
+            userLayer.style.opacity = 1;
 
             cropper = new Cropper(userLayer, {
                 viewMode: 1,
@@ -621,16 +686,15 @@
 
         btnCropValidate.addEventListener('click', () => {
             if(cropper) {
-                // Get cropped canvas and replace image source
                 const croppedCanvas = cropper.getCroppedCanvas();
                 userLayer.src = croppedCanvas.toDataURL();
                 
-                // Destroy cropper
                 cropper.destroy();
                 cropper = null;
 
-                // Restore styles
+                // Restauration des effets et styles
                 userLayer.style.mixBlendMode = document.getElementById('blend-mode').value;
+                userLayer.style.opacity = document.getElementById('opacity-slider').value / 100;
                 updateFilters();
 
                 btnCrop.style.display = 'block';
@@ -638,15 +702,15 @@
             }
         });
 
-        // 8. EXPORT
+        // 8. EXPORTATION
         document.getElementById('btn-export').addEventListener('click', () => {
             const wrapper = document.getElementById('export-wrapper');
             
-            // Change text style temporarily so html2canvas captures transform properly
             html2canvas(wrapper, {
-                scale: 2, // High resolution
-                useCORS: true, // Allow cross-origin images (like unsplash)
-                allowTaint: true
+                scale: 2, 
+                useCORS: true, 
+                allowTaint: true,
+                backgroundColor: null // Garde la transparence si besoin
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'glue-club-creation.png';
