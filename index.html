@@ -438,8 +438,10 @@
 
             <div class="control-group">
                 <span class="color-label">02. ARCHIVE</span>
-                <div class="serif-subtext">Fonds (1-13)</div>
+                <div class="serif-subtext">Fonds (1-13) & Option sans fond</div>
                 <div class="bg-grid" id="bg-library"></div>
+                <!-- Bouton pour enlever le fond de la bibliothèque -->
+                <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond (Blanc pur)</button>
             </div>
 
             <div class="control-group">
@@ -546,6 +548,12 @@
             if(!userLayer.src) return alert("Importez d'abord une image !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
+        });
+
+        // Bouton pour enlever le fond de la bibliothèque (le rend vide/blanc)
+        document.getElementById('btn-remove-bg-layer').addEventListener('click', () => {
+            bgLayer.removeAttribute('src');
+            document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
         document.getElementById('btn-cyanotype').addEventListener('click', () => {
@@ -706,17 +714,22 @@
             const rect = wrapper.getBoundingClientRect();
             
             const canvas = document.createElement('canvas');
-            canvas.width = rect.width * 2;   // Haute résolution (Retina)
+            canvas.width = rect.width * 2;   
             canvas.height = rect.height * 2;
             const ctx = canvas.getContext('2d');
             ctx.scale(2, 2);
 
-            // 1. Dessiner le fond (bg-layer)
-            const bgImg = new Image();
-            bgImg.crossOrigin = "anonymous";
-            bgImg.src = bgLayer.src;
-            await new Promise(resolve => { bgImg.onload = resolve; bgImg.onerror = resolve; });
-            ctx.drawImage(bgImg, 0, 0, rect.width, rect.height);
+            // 1. Dessiner le fond (bg-layer) s'il est présent
+            if (bgLayer.src) {
+                const bgImg = new Image();
+                bgImg.crossOrigin = "anonymous";
+                bgImg.src = bgLayer.src;
+                await new Promise(resolve => { bgImg.onload = resolve; bgImg.onerror = resolve; });
+                ctx.drawImage(bgImg, 0, 0, rect.width, rect.height);
+            } else {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, rect.width, rect.height);
+            }
 
             // 2. Dessiner l'image utilisateur (user-layer) avec ses filtres et mode de fusion
             if (userLayer.src && userLayer.style.display !== 'none') {
@@ -728,7 +741,7 @@
                 ctx.save();
                 ctx.globalAlpha = parseFloat(window.getComputedStyle(userLayer).opacity);
                 ctx.globalCompositeOperation = getCanvasBlendMode(userLayer.style.mixBlendMode);
-                ctx.filter = userLayer.style.filter; // Applique les filtres de colorimétrie et blur directement !
+                ctx.filter = userLayer.style.filter; 
                 
                 ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
                 ctx.restore();
@@ -740,7 +753,6 @@
                 const elRect = el.getBoundingClientRect();
                 const wrapperRect = wrapper.getBoundingClientRect();
                 
-                // Position relative par rapport au wrapper
                 const x = (elRect.left - wrapperRect.left) + (elRect.width / 2);
                 const y = (elRect.top - wrapperRect.top) + (elRect.height / 2);
 
@@ -753,7 +765,6 @@
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                // Contour blanc du texte (effet fanzine)
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 4;
                 ctx.strokeText(el.innerText, 0, 0);
@@ -761,14 +772,12 @@
                 ctx.restore();
             });
 
-            // Téléchargement direct
             const link = document.createElement('a');
             link.download = 'glue-club-creation.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
 
-        // Conversion des modes de fusion CSS vers le Canvas 2D
         function getCanvasBlendMode(cssMode) {
             switch(cssMode) {
                 case 'multiply': return 'multiply';
