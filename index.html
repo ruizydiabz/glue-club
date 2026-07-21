@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glue Club - Laboratoire</title>
     
-    <!-- Google Fonts : Enfantine (Patrick Hand) & Punk (Permanent Marker, Rubik Glitch) -->
-    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Permanent+Marker&family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Polices Punk pour le texte créatif -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Permanent+Marker&family=Rubik+Glitch&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -16,30 +16,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+        /* Déclaration de votre police personnalisée */
+        @font-face {
+            font-family: 'LoveFont';
+            src: url('love.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* CSS Variables */
         :root {
             --electric-blue: #0033ff;
             --white: #ffffff;
-            --font-ui: 'Patrick Hand', cursive; /* Écriture d'enfant */
+            --win7-bg: #ece9d8;
             --font-punk-1: 'Permanent Marker', cursive;
             --font-punk-2: 'Rubik Glitch', system-ui;
-            --win7-bg: #ece9d8;
+            --font-punk-3: 'Creepster', cursive;
         }
 
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: var(--font-ui);
+            font-family: 'LoveFont', sans-serif; /* Police globale enfantine/manuscrite */
             color: var(--white);
-            /* Motif Zèbre */
-            background: repeating-linear-gradient(
-                -45deg,
-                #000,
-                #000 20px,
-                #fff 20px,
-                #fff 40px
-            );
+            background-color: var(--white); /* Fond principal du site : Blanc pur */
             overflow: hidden;
         }
 
@@ -63,7 +64,7 @@
             box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
             width: 450px;
             max-width: 90%;
-            color: #000; /* Texte noir pour l'intérieur du pop-up */
+            color: #000;
             display: none;
             flex-direction: column;
         }
@@ -100,17 +101,17 @@
             text-align: center;
         }
 
-        .logo-title {
-            font-family: var(--font-punk-2); /* Logo très marqué */
-            font-size: 5rem;
-            margin: 0 0 10px 0;
-            color: var(--electric-blue);
-            text-shadow: 2px 2px 0 #000;
+        /* Intégration du logo SVG */
+        .logo-image {
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 20px;
         }
 
         .win7-text {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 30px;
+            font-family: 'LoveFont', sans-serif;
         }
 
         .win7-buttons {
@@ -126,7 +127,7 @@
             border-bottom-color: #888;
             padding: 10px 30px;
             cursor: pointer;
-            font-family: var(--font-ui);
+            font-family: 'LoveFont', sans-serif;
             font-size: 1.5rem;
             color: #000;
         }
@@ -158,6 +159,7 @@
             justify-content: center;
             padding: 20px;
             overflow: auto;
+            background-color: var(--white);
         }
 
         #export-wrapper {
@@ -165,9 +167,10 @@
             width: 100%;
             max-width: 600px;
             aspect-ratio: 3/4;
-            background-color: var(--white); /* Fond du canvas Blanc Pur */
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background-color: var(--white);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* Ombre plus douce */
             overflow: hidden;
+            border-radius: 10px; /* Légèrement arrondi pour le côté moderne */
         }
 
         .layer {
@@ -188,104 +191,132 @@
             position: absolute;
             z-index: 3;
             font-size: 4rem;
-            color: #000;
-            text-shadow: 2px 2px 0 #fff;
+            color: #fff;
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
             cursor: move;
             user-select: none;
             white-space: nowrap;
         }
 
-        /* CONTROL PANEL (RIGHT) */
+        /* CONTROL PANEL (RIGHT) - MODERN & GIRLY */
         #control-panel {
-            width: 380px;
-            background-color: var(--electric-blue); /* Bleu Électrique */
-            color: var(--white); /* Texte Blanc */
-            border-left: 4px solid #000;
-            padding: 20px;
+            width: 400px;
+            background-color: var(--electric-blue);
+            color: var(--white);
+            padding: 25px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
+            box-shadow: -5px 0 25px rgba(0, 0, 255, 0.2);
+            z-index: 10;
         }
 
-        h2.panel-title {
-            font-size: 3rem;
-            margin: 0;
-            border-bottom: 3px dashed var(--white);
-            padding-bottom: 10px;
-            text-align: center;
-        }
-
+        /* Style moderne des menus (bulles) */
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid var(--white);
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
         }
 
         .control-group label {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         input[type="file"], select, input[type="text"] {
-            font-family: var(--font-ui);
-            font-size: 1.1rem;
-            padding: 8px;
-            border: 2px solid #000;
-            background: #fff;
-            color: #000;
+            font-family: inherit;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--electric-blue);
             width: 100%;
             box-sizing: border-box;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Stylisation des curseurs (Sliders) */
+        /* Curseurs Modernes & Girly */
         input[type="range"] {
+            -webkit-appearance: none;
             width: 100%;
-            accent-color: #000;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            outline: none;
         }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--white);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
         .slider-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+            font-size: 1.2rem;
+            margin-bottom: 2px;
         }
 
         button {
-            font-family: var(--font-ui);
-            font-size: 1.3rem;
+            font-family: 'LoveFont', sans-serif;
+            font-size: 1.4rem;
             background: var(--white);
             color: var(--electric-blue);
-            border: 3px solid #000;
-            padding: 10px;
+            border: none;
+            border-radius: 15px;
+            padding: 12px;
             cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.1s, box-shadow 0.1s;
-            box-shadow: 3px 3px 0 #000;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         button:hover { 
-            transform: translate(-2px, -2px);
-            box-shadow: 5px 5px 0 #000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
         button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0 #000;
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Toggle Checkbox */
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--electric-blue);
+            cursor: pointer;
         }
 
         /* Background Library Grid */
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            max-height: 160px;
+            gap: 8px;
+            max-height: 180px;
             overflow-y: auto;
-            border: 2px solid #000;
-            padding: 5px;
-            background: #fff;
+            border-radius: 12px;
+            padding: 8px;
+            background: rgba(255,255,255,0.2);
         }
 
         .bg-thumb {
@@ -293,24 +324,30 @@
             aspect-ratio: 1;
             object-fit: cover;
             cursor: pointer;
+            border-radius: 8px;
             border: 2px solid transparent;
+            transition: border-color 0.2s, transform 0.2s;
         }
-        .bg-thumb:hover { border-color: var(--electric-blue); }
+        .bg-thumb:hover { 
+            border-color: var(--white);
+            transform: scale(1.05);
+        }
 
         /* BIG EXPORT BUTTON */
         .btn-export {
-            background: #000;
-            color: #fff;
+            background: #ff007f; /* Touche rose néon pour contraster joliment */
+            color: var(--white);
             font-size: 1.8rem;
-            padding: 20px;
+            padding: 18px;
             margin-top: auto;
-            border: 4px solid var(--white);
+            border-radius: 25px;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid rgba(255,255,255,0.5);
         }
         .btn-export:hover {
             background: var(--white);
-            color: #000;
-            border-color: #000;
+            color: #ff007f;
         }
 
         /* RESPONSIVE MOBILE */
@@ -321,8 +358,7 @@
             #control-panel {
                 width: 100%;
                 height: 50vh;
-                border-left: none;
-                border-top: 4px solid #000;
+                border-radius: 30px 30px 0 0;
             }
             #canvas-area {
                 height: 50vh;
@@ -356,11 +392,12 @@
         <!-- POP-UP 1 : ACCUEIL -->
         <div id="popup-1" class="win7-window active">
             <div class="win7-titlebar">
-                <span>GLUEOS.exe</span>
+                <span>Système Glue</span>
                 <div class="win7-close">X</div>
             </div>
             <div class="win7-content">
-                <h1 class="logo-title">GLUE CLUB</h1>
+                <!-- Utilisation du logo SVG demandé -->
+                <img src="glue-club-logo.svg" alt="GLUE CLUB" class="logo-image" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<h1 style=\'font-family: var(--font-punk-2); color: var(--electric-blue); font-size: 4rem;\'>GLUE CLUB</h1>');">
                 <div class="win7-text">T'as ramené ta colle ?</div>
                 <div class="win7-buttons">
                     <button class="win7-btn" id="btn-oui">Oui</button>
@@ -398,26 +435,25 @@
 
         <!-- CONTROL PANEL (RIGHT) -->
         <div id="control-panel">
-            <h2 class="panel-title">Laboratoire</h2>
-
-            <!-- 1. Importation -->
+            
+            <!-- 1. Importation & Détourage -->
             <div class="control-group">
-                <label>1. Ton image</label>
+                <label>✨ Mon Image</label>
                 <input type="file" id="upload-user" accept="image/*">
                 <button id="btn-remove-bg">✂️ Détourage Magique</button>
             </div>
 
-            <!-- 3. Bibliothèque -->
+            <!-- 2. Bibliothèque -->
             <div class="control-group">
-                <label>2. Fonds de magazines (13)</label>
+                <label>📖 Fonds de magazines (13)</label>
                 <div class="bg-grid" id="bg-library">
                     <!-- Généré par JS -->
                 </div>
             </div>
 
-            <!-- 4. Modes de fusion & Intensité -->
+            <!-- 3. Modes de fusion & Intensité -->
             <div class="control-group">
-                <label>3. Masque de Fusion</label>
+                <label>🎭 Masque de Fusion</label>
                 <select id="blend-mode">
                     <option value="normal">Normal</option>
                     <option value="multiply">Produit (Multiply)</option>
@@ -435,25 +471,9 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
-            <!-- 5. Effets Destructifs -->
+            <!-- 4. Colorimétrie -->
             <div class="control-group">
-                <label>4. Effets Destructifs</label>
-                <div class="slider-row"><span>Pixelisation / Flou</span></div>
-                <input type="range" id="pixel-slider" min="0" max="20" value="0">
-                
-                <div class="slider-row" style="margin-top:10px;">
-                    <label style="display:flex; align-items:center; gap:10px; font-size:1.1rem; cursor:pointer;">
-                        <input type="checkbox" id="bitmap-toggle" style="width:20px;height:20px;"> 
-                        Activer Effet Bitmap (Seuil PP)
-                    </label>
-                </div>
-                <div class="slider-row"><span>Intensité Bitmap (Contraste)</span></div>
-                <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
-            </div>
-
-            <!-- 6. Colorimétrie -->
-            <div class="control-group">
-                <label>5. Colorimétrie</label>
+                <label>🌈 Colorimétrie</label>
                 <div class="slider-row"><span>Luminosité</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
                 
@@ -464,28 +484,44 @@
                 <input type="range" id="sat-slider" min="0" max="200" value="100">
                 
                 <label style="margin-top:10px; display:flex; align-items:center; gap:10px; cursor:pointer;">
-                    <input type="checkbox" id="bw-toggle" style="width:20px;height:20px;"> Filtre Noir & Blanc
+                    <input type="checkbox" id="bw-toggle"> <span>Filtre Noir & Blanc</span>
                 </label>
             </div>
 
-            <!-- 7. Outils Créatifs -->
+            <!-- 5. Effets Destructifs -->
             <div class="control-group">
-                <label>6. Outils Créatifs</label>
+                <label>💥 Effets Destructifs</label>
+                <div class="slider-row"><span>Pixelisation / Flou</span></div>
+                <input type="range" id="pixel-slider" min="0" max="20" value="0">
+                
+                <label style="margin-top:10px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <input type="checkbox" id="bitmap-toggle"> 
+                    <span>Effet Bitmap (Seuil PP)</span>
+                </label>
+                
+                <div class="slider-row"><span>Intensité Bitmap</span></div>
+                <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
+            </div>
+
+            <!-- 6. Outils Créatifs -->
+            <div class="control-group">
+                <label>🎨 Outils Créatifs</label>
                 <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:10px;">
                     <input type="text" id="text-input" placeholder="Taper un texte...">
                     <select id="font-selector">
                         <option value="var(--font-punk-1)">Police : Permanent Marker</option>
                         <option value="var(--font-punk-2)">Police : Rubik Glitch</option>
-                        <option value="var(--font-ui)">Police : Enfantine</option>
+                        <option value="var(--font-punk-3)">Police : Creepster</option>
+                        <option value="'LoveFont', sans-serif">Police : Enfantine (Love)</option>
                     </select>
                     <button id="btn-add-text">Ajouter Texte</button>
                 </div>
                 <button id="btn-crop">Recadrer l'image (Crop)</button>
-                <button id="btn-crop-validate" style="display:none; background:#e04343; color:#fff;">Valider Recadrage</button>
+                <button id="btn-crop-validate" style="display:none; background:#ff007f; color:#fff;">Valider Recadrage</button>
             </div>
 
             <!-- EXPORT -->
-            <button class="btn-export" id="btn-export">Exporter l'image 💾</button>
+            <button class="btn-export" id="btn-export">Exporter l'image 💖</button>
         </div>
     </div>
 
@@ -589,7 +625,6 @@
 
             // Gestion de l'effet Bitmap
             if (bitmapToggle.checked) {
-                // Application du filtre SVG + contraste poussé pour l'intensité
                 filterString += `url(#bitmap-filter) contrast(${bitmapIntensity.value}%) `;
             }
 
@@ -630,11 +665,23 @@
             textDiv.addEventListener("mousedown", dragStart);
             document.addEventListener("mouseup", dragEnd);
             document.addEventListener("mousemove", drag);
+            
+            // Touch support pour le mobile
+            textDiv.addEventListener("touchstart", dragStart, {passive: false});
+            document.addEventListener("touchend", dragEnd);
+            document.addEventListener("touchmove", drag, {passive: false});
 
             function dragStart(e) {
-                initialX = e.clientX - xOffset;
-                initialY = e.clientY - yOffset;
-                if (e.target === textDiv) isDragging = true;
+                if (e.type === "touchstart") {
+                    initialX = e.touches[0].clientX - xOffset;
+                    initialY = e.touches[0].clientY - yOffset;
+                } else {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                }
+                if (e.target === textDiv) {
+                    isDragging = true;
+                }
             }
             function dragEnd() {
                 initialX = currentX;
@@ -644,8 +691,13 @@
             function drag(e) {
                 if (isDragging) {
                     e.preventDefault();
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
+                    if (e.type === "touchmove") {
+                        currentX = e.touches[0].clientX - initialX;
+                        currentY = e.touches[0].clientY - initialY;
+                    } else {
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+                    }
                     xOffset = currentX;
                     yOffset = currentY;
                     textDiv.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
@@ -710,7 +762,7 @@
                 scale: 2, 
                 useCORS: true, 
                 allowTaint: true,
-                backgroundColor: null // Garde la transparence si besoin
+                backgroundColor: null // Garde la transparence
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'glue-club-creation.png';
