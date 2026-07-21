@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Glue Club - Tri-Blend Aesthetic</title>
+    <title>Glue Club - Ultimate Mix</title>
     
-    <!-- Google Fonts : Syne (Large/Éditorial), Inter (Suisse), Playfair -->
+    <!-- Google Fonts : Syne, Inter, Playfair -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
@@ -16,12 +16,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* CSS Variables - Fusion des 3 palettes */
         :root {
-            --scribble-pink: #ff3399; /* Rappel du fond gribouillis */
-            --riso-red: #e0241b;      /* Riso Zine */
-            --riso-green: #3ea055;    /* Riso Zine */
-            --swiss-yellow: #f4c522;  /* Affiche */
+            --riso-red: #e0241b;
+            --riso-green: #3ea055;
+            --swiss-yellow: #f4c522;
             --white: #ffffff;
             --black: #050505;
             
@@ -30,7 +28,7 @@
             --font-serif: 'Playfair Display', serif;
         }
 
-        /* VERROUILLAGE GLOBAL & FOND GRIBOUILLAGE ROSE */
+        /* VERROUILLAGE GLOBAL & FOND COLLAGE/TAGS */
         body, html {
             margin: 0;
             padding: 0;
@@ -40,19 +38,20 @@
             color: var(--black);
             overflow: hidden; 
             
-            background-color: var(--scribble-pink);
-            background-image: url('db9e33eacb1625b33e4698956d249e67_2.webp');
+            background-color: var(--white);
+            /* Votre image de collage urbain et tags en arrière-plan global */
+            background-image: url('0012dd4013c5c9a464147e60b9053cf5.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
 
-        /* --- POP-UPS FAÇON AFFICHE SUISSE/PUNK --- */
+        /* --- POP-UPS FAÇON ZINE CUT-OUT --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
             z-index: 999;
             display: flex;
             align-items: center;
@@ -101,6 +100,7 @@
             letter-spacing: 1px;
             margin-bottom: 25px;
             text-transform: uppercase;
+            border: 2px solid var(--black);
         }
 
         .modal-italic {
@@ -146,10 +146,9 @@
             transition: filter 0.4s ease;
         }
 
-        #app-container.active {
-            filter: blur(0);
-        }
+        #app-container.active { filter: blur(0); }
 
+        /* ZONE IMAGE : FIXE À GAUCHE */
         #canvas-area {
             flex: 1; 
             height: 100%;
@@ -194,6 +193,7 @@
             white-space: nowrap;
         }
 
+        /* ZONE MENU : À DROITE AVEC DÉFILEMENT INTÉGRÉ */
         #control-panel {
             width: 450px; 
             height: 100%;
@@ -369,6 +369,7 @@
             background: var(--riso-red);
         }
 
+        /* --- MEDIA QUERY MOBILE --- */
         @media (max-width: 900px) {
             #control-panel {
                 width: 55vw; 
@@ -421,7 +422,7 @@
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
                 <h1 class="modal-title">G L U E<br>C L U B</h1>
-                <div class="modal-highlight">VOL. 01 — EDITORIAL</div>
+                <div class="modal-highlight">VOL. 01 — COLLAGE MIX</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
@@ -530,7 +531,6 @@
     </div>
 
     <script>
-        // --- ONBOARDING ---
         const overlay = document.getElementById('overlay');
         const popup1 = document.getElementById('popup-1');
         const popup2 = document.getElementById('popup-2');
@@ -549,7 +549,6 @@
         document.getElementById('btn-non1').onclick = startApp;
         document.getElementById('btn-non2').onclick = startApp;
 
-        // --- APP LOGIC ---
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
