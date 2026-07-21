@@ -28,7 +28,6 @@
             --font-serif: 'Playfair Display', serif;
         }
 
-        /* VERROUILLAGE GLOBAL & FOND INTÉGRAL DE COLLAGE BRUT (0012dd4013c5c9a464147e60b9053cf5_3.jpg) */
         body, html {
             margin: 0;
             padding: 0;
@@ -45,7 +44,6 @@
             background-repeat: no-repeat;
         }
 
-        /* --- POP-UPS DANS LE STYLE COLLAGE / PUNK --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -134,7 +132,6 @@
             box-shadow: 5px 5px 0 var(--black);
         }
 
-        /* --- APP LAYOUT (SPLIT SCREEN STRICT) --- */
         #app-container {
             display: flex;
             flex-direction: row; 
@@ -146,7 +143,6 @@
 
         #app-container.active { filter: blur(0); }
 
-        /* ZONE IMAGE : FIXE À GAUCHE */
         #canvas-area {
             flex: 1; 
             height: 100%;
@@ -191,7 +187,6 @@
             white-space: nowrap;
         }
 
-        /* ZONE MENU : À DROITE (STYLE COLLAGE/GRAPHIQUE) */
         #control-panel {
             width: 450px; 
             height: 100%;
@@ -367,7 +362,6 @@
             background: var(--riso-green);
         }
 
-        /* --- MEDIA QUERY MOBILE --- */
         @media (max-width: 900px) {
             #control-panel {
                 width: 55vw; 
@@ -484,6 +478,16 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
+            <!-- NOUVELLE CATÉGORIE : EFFETS SPÉCIAUX (Cyanotype & Risographie) -->
+            <div class="control-group">
+                <span class="color-label">03-BIS. EFFETS ART</span>
+                <div class="serif-subtext">Styles d'impression</div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-ui" id="btn-cyanotype" style="flex:1; background:#0047ab; color:#fff;">💙 Cyanotype</button>
+                    <button class="btn-ui" id="btn-risographie" style="flex:1; background:#e0241b; color:#fff;">🔴 Risographie</button>
+                </div>
+            </div>
+
             <div class="control-group">
                 <span class="color-label">04. COLORS</span>
                 <div class="slider-row"><span>Luminosité</span></div>
@@ -563,6 +567,28 @@
             if(!userLayer.src) return alert("Importez d'abord une image !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
+        });
+
+        // Boutons pour les effets Cyanotype et Risographie
+        document.getElementById('btn-cyanotype').addEventListener('click', () => {
+            if(!userLayer.src) return alert("Importez d'abord une image !");
+            document.getElementById('blend-mode').value = 'difference';
+            userLayer.style.mixBlendMode = 'difference';
+            bwToggle.checked = true;
+            briSlider.value = 80;
+            contSlider.value = 150;
+            satSlider.value = 200;
+            updateFilters();
+        });
+
+        document.getElementById('btn-risographie').addEventListener('click', () => {
+            if(!userLayer.src) return alert("Importez d'abord une image !");
+            document.getElementById('blend-mode').value = 'multiply';
+            userLayer.style.mixBlendMode = 'multiply';
+            bitmapToggle.checked = true;
+            bitmapIntensity.value = 350;
+            contSlider.value = 180;
+            updateFilters();
         });
 
         const bgLibrary = document.getElementById('bg-library');
