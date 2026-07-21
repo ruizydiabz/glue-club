@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Glue Club - Riso Zine Edition</title>
     
-    <!-- Google Fonts : Syne (pour l'effet large/étiré), Inter (pour la lisibilité), Playfair (pour le côté éditorial) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
@@ -16,29 +16,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* CSS Variables - Palette Riso + Swiss */
         :root {
-            --riso-red: #e0241b;    /* Rouge vif texturé */
-            --riso-green: #3ea055;  /* Vert peinture */
-            --swiss-yellow: #f4c522;/* Jaune moutarde */
+            --riso-red: #e0241b;
+            --riso-green: #3ea055;
+            --swiss-yellow: #f4c522;
             --white: #ffffff;
             --black: #050505;
             
-            /* Polices */
-            --font-display: 'Syne', sans-serif; /* Police large et moderne */
-            --font-sans: 'Inter', sans-serif;   /* Police suisse stricte */
+            --font-display: 'Syne', sans-serif;
+            --font-sans: 'Inter', sans-serif;
             --font-serif: 'Playfair Display', serif;
         }
 
         body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
+            height: 100dvh; /* Gère parfaitement la hauteur sur mobile (barres de navigation incluses) */
             font-family: var(--font-sans);
             color: var(--black);
             overflow: hidden;
-            
-            /* Motif Halftone (Points rouges façon impression Risograph) */
             background-color: var(--white);
             background-image: 
                 radial-gradient(var(--riso-red) 15%, transparent 16%), 
@@ -47,46 +45,42 @@
             background-position: 0 0, 4px 4px;
         }
 
-        /* --- POP-UPS FAÇON ZINE --- */
+        /* --- POP-UPS --- */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
             z-index: 999;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 15px;
+            box-sizing: border-box;
         }
 
         .poster-modal {
             background: var(--white);
             border: 4px solid var(--black);
-            padding: 40px;
+            padding: 30px;
             width: 550px;
-            max-width: 90%;
+            max-width: 100%;
             display: none;
             flex-direction: column;
             position: relative;
-            box-shadow: 15px 15px 0 var(--riso-green);
+            box-shadow: 10px 10px 0 var(--riso-green);
         }
 
         .poster-modal.active {
             display: flex;
         }
 
-        .modal-content {
-            position: relative;
-            z-index: 1;
-            text-align: left;
-        }
-
         .modal-title {
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 4.5rem;
+            font-size: 3.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
             margin: 0 0 5px 0;
             line-height: 1;
         }
@@ -95,51 +89,45 @@
             background-color: var(--riso-red);
             color: var(--white);
             display: inline-block;
-            padding: 5px 15px;
-            font-size: 1.2rem;
+            padding: 4px 12px;
+            font-size: 1rem;
             font-weight: 900;
             letter-spacing: 2px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-transform: uppercase;
         }
 
         .modal-italic {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1.5rem;
-            margin-bottom: 25px;
+            font-size: 1.25rem;
+            margin-bottom: 20px;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn-bold {
             background-color: var(--black);
             color: var(--white);
             border: 2px solid var(--black);
-            padding: 12px 25px;
+            padding: 12px 20px;
             font-family: var(--font-display);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-bold:hover {
-            background-color: var(--white);
-            color: var(--black);
-            box-shadow: 4px 4px 0 var(--riso-red);
+            flex: 1;
         }
 
         /* --- APP LAYOUT --- */
         #app-container {
             display: flex;
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             filter: blur(10px);
             transition: filter 0.3s ease;
         }
@@ -148,25 +136,26 @@
             filter: blur(0);
         }
 
-        /* CANVAS AREA (LEFT) */
+        /* CANVAS AREA (LEFT / TOP) */
         #canvas-area {
             flex: 1;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            overflow: auto;
+            padding: 10px;
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         #export-wrapper {
             position: relative;
             width: 100%;
-            max-width: 650px;
+            max-width: 500px;
             aspect-ratio: 3/4;
             background-color: var(--white);
-            border: 5px solid var(--black);
-            box-shadow: 20px 20px 0 var(--black);
+            border: 4px solid var(--black);
+            box-shadow: 10px 10px 0 var(--black);
             overflow: hidden;
         }
 
@@ -178,68 +167,46 @@
         }
 
         #bg-layer { z-index: 1; }
-        
-        #user-layer {
-            z-index: 2;
-            transition: opacity 0.2s ease, filter 0.2s ease;
-        }
+        #user-layer { z-index: 2; }
 
         .text-overlay {
             position: absolute;
             z-index: 3;
-            font-size: 4rem;
+            font-size: 3rem;
             color: var(--black);
             cursor: move;
             user-select: none;
             white-space: nowrap;
         }
 
-        /* CONTROL PANEL (RIGHT) - STYLE SWISS / RISO */
+        /* CONTROL PANEL (RIGHT / BOTTOM) */
         #control-panel {
-            width: 420px;
+            width: 380px;
             background-color: var(--white);
-            border-left: 5px solid var(--black);
-            padding: 30px;
+            border-left: 4px solid var(--black);
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 35px;
-            position: relative;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-        }
-
-        /* Texte décoratif géant façon affiche */
-        .panel-bg-text {
-            position: absolute;
-            top: -20px;
-            right: 10px;
-            font-family: var(--font-sans);
-            font-weight: 900;
-            font-size: 7rem;
-            color: var(--black);
-            opacity: 0.04;
-            writing-mode: vertical-rl;
-            pointer-events: none;
-            z-index: 0;
-            letter-spacing: -5px;
+            gap: 25px;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            z-index: 1;
+            gap: 10px;
         }
 
-        /* Blocs de couleurs stricts */
         .color-label {
             display: inline-table;
-            padding: 6px 12px;
+            padding: 4px 10px;
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             align-self: flex-start;
             border: 2px solid var(--black);
         }
@@ -251,16 +218,14 @@
         .serif-subtext {
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--black);
-            margin-bottom: 5px;
         }
 
-        /* Inputs & Selects : Bruts et géométriques */
         input[type="file"], select, input[type="text"] {
             font-family: var(--font-sans);
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             padding: 10px;
             border: 2px solid var(--black);
             background: var(--white);
@@ -271,24 +236,22 @@
             outline: none;
         }
         
-        /* Sliders */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
             height: 4px;
             background: var(--black);
             outline: none;
-            margin: 15px 0;
+            margin: 10px 0;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             background: var(--white);
             border: 3px solid var(--black);
             cursor: pointer;
-            border-radius: 0;
         }
 
         .slider-row {
@@ -297,18 +260,15 @@
             align-items: center;
             font-family: var(--font-sans);
             font-weight: 900;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        /* Checkbox */
         input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             accent-color: var(--black);
             cursor: pointer;
-            border-radius: 0;
             border: 2px solid var(--black);
         }
         .checkbox-label {
@@ -317,16 +277,15 @@
             gap: 10px;
             font-family: var(--font-serif);
             font-style: italic;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
         }
 
-        /* Background Library Grid */
         .bg-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 6px;
-            max-height: 150px;
+            max-height: 130px;
             overflow-y: auto;
         }
         .bg-thumb {
@@ -335,78 +294,72 @@
             object-fit: cover;
             cursor: pointer;
             border: 2px solid var(--black);
-            filter: grayscale(100%) contrast(150%); /* Esthétique Riso/Photocopie */
-            transition: all 0.2s;
+            filter: grayscale(100%) contrast(150%);
         }
-        .bg-thumb:hover, .bg-thumb.active { 
+        .bg-thumb.active { 
             filter: grayscale(0%) contrast(100%);
             border-color: var(--riso-red);
         }
 
-        /* Boutons d'action UI */
         .btn-ui {
             background-color: var(--white);
             color: var(--black);
             border: 2px solid var(--black);
-            padding: 10px 15px;
+            padding: 10px;
             font-family: var(--font-display);
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-ui:hover {
-            background-color: var(--black);
-            color: var(--white);
         }
 
-        /* BIG EXPORT BUTTON */
         .btn-export {
             background: var(--riso-red);
             color: var(--white);
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 2rem;
-            padding: 20px;
+            font-size: 1.5rem;
+            padding: 15px;
             margin-top: 10px;
             border: 4px solid var(--black);
             text-transform: uppercase;
-            letter-spacing: 2px;
             cursor: pointer;
-            transition: all 0.2s;
-            z-index: 1;
-            box-shadow: 6px 6px 0 var(--black);
-        }
-        .btn-export:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 10px 10px 0 var(--black);
-        }
-        .btn-export:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 var(--black);
+            box-shadow: 4px 4px 0 var(--black);
         }
 
-        /* RESPONSIVE MOBILE */
+        /* --- MEDIA QUERY MOBILE (Écrans inférieurs à 900px) --- */
         @media (max-width: 900px) {
+            body, html {
+                overflow: auto; /* Permet de scroller toute la page sur mobile si besoin */
+                height: auto;
+            }
             #app-container {
                 flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+            #canvas-area {
+                height: 50vh; /* Prend la moitié haute pour voir l'image clairement */
+                min-height: 320px;
+                flex: none;
+            }
+            #export-wrapper {
+                max-width: 80vw;
             }
             #control-panel {
                 width: 100%;
-                height: 50vh;
+                height: auto;
+                max-height: none;
                 border-left: none;
-                border-top: 5px solid var(--black);
-            }
-            #canvas-area {
-                height: 50vh;
+                border-top: 4px solid var(--black);
+                padding: 15px;
+                overflow-y: visible;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- SVG Filters for complex destructive effects -->
     <svg style="display:none;">
         <defs>
             <filter id="bitmap-filter">
@@ -426,21 +379,18 @@
 
     <!-- ONBOARDING OVERLAY -->
     <div id="overlay">
-        <!-- POP-UP 1 : ACCUEIL -->
         <div id="popup-1" class="poster-modal active">
             <div class="modal-content">
                 <h1 class="modal-title">G L U E<br>C L U B</h1>
                 <div class="modal-highlight">VOL. 01 — ARCHIVE</div>
                 <div class="modal-italic">T'as ramené ta colle ?</div>
-                
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
-                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black);">J'AI ZAPPÉ</button>
+                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black); border: 2px solid var(--black);">J'AI ZAPPÉ</button>
                 </div>
             </div>
         </div>
 
-        <!-- POP-UP 2 : CONFIRMATION ABSURDE -->
         <div id="popup-2" class="poster-modal">
             <div class="modal-content">
                 <div class="modal-highlight" style="background:var(--swiss-yellow); color:var(--black);">SYS. WARNING</div>
@@ -466,106 +416,79 @@
 
         <!-- CONTROL PANEL (RIGHT) -->
         <div id="control-panel">
-            <div class="panel-bg-text">ZINE</div>
-            
-            <!-- 1. Importation & Détourage -->
             <div class="control-group">
                 <span class="color-label bg-yellow">01. IMPORT</span>
-                <div class="serif-subtext">Charge ton image perso</div>
                 <input type="file" id="upload-user" accept="image/*">
-                <button class="btn-ui" id="btn-remove-bg" style="margin-top:5px;">Auto Cut-out (Détourage)</button>
+                <button class="btn-ui" id="btn-remove-bg">Auto Cut-out (Détourage)</button>
             </div>
 
-            <!-- 2. Bibliothèque -->
             <div class="control-group">
                 <span class="color-label bg-green">02. ARCHIVE</span>
-                <div class="serif-subtext">Sélectionne un fond texturé</div>
-                <div class="bg-grid" id="bg-library">
-                    <!-- Généré par JS -->
-                </div>
+                <div class="serif-subtext">Fonds (1-13)</div>
+                <div class="bg-grid" id="bg-library"></div>
             </div>
 
-            <!-- 3. Modes de fusion & Intensité -->
             <div class="control-group">
                 <span class="color-label bg-red">03. BLEND</span>
-                <div class="serif-subtext">Algorithme de superposition</div>
                 <select id="blend-mode">
                     <option value="normal">NORMAL</option>
-                    <option value="multiply">PRODUIT (MULTIPLY)</option>
-                    <option value="screen">SUPERPOSITION (SCREEN)</option>
-                    <option value="overlay">INCRUSTATION (OVERLAY)</option>
-                    <option value="darken">OBSCURCIR (DARKEN)</option>
-                    <option value="lighten">ÉCLAIRCIR (LIGHTEN)</option>
-                    <option value="difference">DIFFÉRENCE (DIFFERENCE)</option>
+                    <option value="multiply">MULTIPLY</option>
+                    <option value="screen">SCREEN</option>
+                    <option value="overlay">OVERLAY</option>
+                    <option value="darken">DARKEN</option>
+                    <option value="lighten">LIGHTEN</option>
+                    <option value="difference">DIFFERENCE</option>
                     <option value="exclusion">EXCLUSION</option>
                 </select>
-                <div class="slider-row">
-                    <span>Opacité du masque</span>
-                </div>
+                <div class="slider-row"><span>Opacité</span></div>
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
-            <!-- 4. Colorimétrie -->
             <div class="control-group">
                 <span class="color-label bg-black">04. COLORS</span>
-                
                 <div class="slider-row"><span>Luminosité</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
-                
                 <div class="slider-row"><span>Contraste</span></div>
                 <input type="range" id="cont-slider" min="0" max="200" value="100">
-
                 <div class="slider-row"><span>Saturation</span></div>
                 <input type="range" id="sat-slider" min="0" max="200" value="100">
-                
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bw-toggle"> Forcer le Monochrome
+                    <input type="checkbox" id="bw-toggle"> Monochrome
                 </label>
             </div>
 
-            <!-- 5. Effets Destructifs -->
             <div class="control-group">
                 <span class="color-label bg-yellow">05. DESTRUCTION</span>
-                
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
-                
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Effet Bitmap (Trame Riso)
+                    <input type="checkbox" id="bitmap-toggle"> Trame Riso / Bitmap
                 </label>
-                
-                <div class="slider-row"><span>Seuil du Bitmap</span></div>
+                <div class="slider-row"><span>Seuil</span></div>
                 <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
             </div>
 
-            <!-- 6. Outils Créatifs & Textes -->
             <div class="control-group">
                 <span class="color-label bg-green">06. TYPOGRAPHY</span>
-                
-                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-                    <input type="text" id="text-input" placeholder="Taper un texte...">
-                    <select id="font-selector">
-                        <option value="var(--font-display)">Syne (Étendu / Moderne)</option>
-                        <option value="var(--font-sans)">Inter (Suisse / Strict)</option>
-                        <option value="var(--font-serif)">Playfair (Éditorial / Italique)</option>
-                    </select>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
-                        <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red); border-color:var(--riso-red);">Effacer tout</button>
-                    </div>
+                <input type="text" id="text-input" placeholder="Votre texte...">
+                <select id="font-selector">
+                    <option value="var(--font-display)">Syne (Étendu)</option>
+                    <option value="var(--font-sans)">Inter (Suisse)</option>
+                    <option value="var(--font-serif)">Playfair (Éditorial)</option>
+                </select>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-ui" id="btn-add-text" style="flex:1;">Ajouter</button>
+                    <button class="btn-ui" id="btn-clear-text" style="flex:1; color:var(--riso-red);">Effacer</button>
                 </div>
-                
-                <button class="btn-ui" id="btn-crop">Recadrer l'image</button>
-                <button class="btn-bold" id="btn-crop-validate" style="display:none; background:var(--swiss-yellow); color:var(--black);">Valider le recadrage</button>
+                <button class="btn-ui" id="btn-crop" style="margin-top:5px;">Recadrer</button>
+                <button class="btn-bold" id="btn-crop-validate" style="display:none; background:var(--swiss-yellow); color:var(--black); margin-top:5px;">Valider le crop</button>
             </div>
 
-            <!-- EXPORT -->
-            <button class="btn-export" id="btn-export">PRINT / EXPORT</button>
+            <button class="btn-export" id="btn-export">EXPORT FILE</button>
         </div>
     </div>
 
     <script>
-        // --- ONBOARDING LOGIC ---
         const overlay = document.getElementById('overlay');
         const popup1 = document.getElementById('popup-1');
         const popup2 = document.getElementById('popup-2');
@@ -581,15 +504,12 @@
             popup1.classList.remove('active');
             popup2.classList.add('active');
         };
-
         document.getElementById('btn-non1').onclick = startApp;
         document.getElementById('btn-non2').onclick = startApp;
 
-        // --- APP LOGIC ---
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
-        // 1. Importation
         document.getElementById('upload-user').addEventListener('change', function(e) {
             if (e.target.files[0]) {
                 const url = URL.createObjectURL(e.target.files[0]);
@@ -599,21 +519,19 @@
             }
         });
 
-        // 2. Détourage auto
         document.getElementById('btn-remove-bg').addEventListener('click', () => {
-            if(!userLayer.src) return alert("Importez une image d'abord !");
+            if(!userLayer.src) return alert("Importez une image !");
             document.getElementById('blend-mode').value = 'multiply';
             userLayer.style.mixBlendMode = 'multiply';
         });
 
-        // 3. Bibliothèque (1 à 13)
         const bgLibrary = document.getElementById('bg-library');
         for (let i = 1; i <= 13; i++) {
             const imgPath = `${i}.jpg`;
             const img = document.createElement('img');
             img.className = 'bg-thumb';
             img.src = imgPath;
-            if(i === 1) img.classList.add('active'); // Sélection par défaut
+            if(i === 1) img.classList.add('active');
             img.onclick = () => {
                 bgLayer.src = imgPath;
                 document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
@@ -622,7 +540,6 @@
             bgLibrary.appendChild(img);
         }
 
-        // 4. Modes de fusion & Opacité
         document.getElementById('blend-mode').addEventListener('change', (e) => {
             userLayer.style.mixBlendMode = e.target.value;
         });
@@ -630,7 +547,6 @@
             userLayer.style.opacity = e.target.value / 100;
         });
 
-        // 5 & 6. Filtres 
         const briSlider = document.getElementById('bri-slider');
         const contSlider = document.getElementById('cont-slider');
         const satSlider = document.getElementById('sat-slider');
@@ -650,7 +566,6 @@
         [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', updateFilters));
         [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', updateFilters));
 
-        // 7. Outil Texte
         const textContainer = document.getElementById('text-container');
         
         document.getElementById('btn-add-text').addEventListener('click', () => {
@@ -663,15 +578,13 @@
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
             
-            // Stylisation selon la police choisie
             if(fontSelected === 'var(--font-display)') {
                 textDiv.style.fontWeight = '800';
                 textDiv.style.textTransform = 'uppercase';
-                textDiv.style.letterSpacing = '0.2em';
+                textDiv.style.letterSpacing = '0.1em';
             } else if(fontSelected === 'var(--font-sans)') {
                 textDiv.style.fontWeight = '900';
                 textDiv.style.textTransform = 'uppercase';
-                textDiv.style.letterSpacing = '-2px';
             } else {
                 textDiv.style.fontStyle = 'italic';
             }
@@ -680,7 +593,6 @@
             textDiv.style.left = '50%';
             textDiv.style.transform = 'translate(-50%, -50%)';
             
-            // Drag Logic
             let isDragging = false;
             let initialX, initialY, xOffset = 0, yOffset = 0;
 
@@ -717,7 +629,6 @@
             textContainer.innerHTML = '';
         });
 
-        // 7b. Crop 
         let cropper = null;
         const btnCrop = document.getElementById('btn-crop');
         const btnCropValidate = document.getElementById('btn-crop-validate');
@@ -745,7 +656,6 @@
             }
         });
 
-        // 8. EXPORTATION
         document.getElementById('btn-export').addEventListener('click', () => {
             html2canvas(document.getElementById('export-wrapper'), {
                 scale: 2, useCORS: true, allowTaint: true, backgroundColor: null
