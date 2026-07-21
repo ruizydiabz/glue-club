@@ -186,10 +186,42 @@
             z-index: 3;
             font-size: 4rem;
             color: var(--black);
-            /* Ombre blanche retirée ici */
             cursor: move;
             user-select: none;
             white-space: nowrap;
+        }
+
+        /* Style des stickers positionnés */
+        .sticker-overlay {
+            position: absolute;
+            z-index: 4;
+            width: 120px;
+            height: auto;
+            cursor: move;
+            user-select: none;
+            /* Filtre CSS pour coloriser dynamiquement l'image PNG si besoin, ou manipulé par canvas */
+        }
+
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .sticker-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--white);
+            border: 2px solid var(--black);
+            object-fit: contain;
+            padding: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        .sticker-thumb:hover {
+            background: var(--swiss-yellow);
         }
 
         #control-panel {
@@ -431,6 +463,7 @@
                 <img id="bg-layer" class="layer" src="1.jpg" alt="Fond">
                 <img id="user-layer" class="layer" src="" alt="" style="display:none;">
                 <div id="text-container"></div>
+                <div id="sticker-container"></div>
             </div>
         </div>
 
@@ -449,6 +482,23 @@
                 <div class="serif-subtext">Fonds (1-13) & Option sans fond</div>
                 <div class="bg-grid" id="bg-library"></div>
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">❌ Enlever le fond</button>
+            </div>
+
+            <!-- CATÉGORIE STICKERS (GitHub : stickers-1 et stickers-2) -->
+            <div class="control-group">
+                <span class="color-label">02-BIS. STICKERS</span>
+                <div class="serif-subtext">Choisis une couleur et clique sur un sticker</div>
+                
+                <div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;">
+                    <span style="font-size:0.8rem; font-weight:900;">Teinte sticker :</span>
+                    <input type="color" id="sticker-color-picker" value="#e0241b" style="padding:0; height:32px; width:60px; cursor:pointer; border:2px solid var(--black);">
+                </div>
+
+                <div class="sticker-grid" id="sticker-library">
+                    <img src="stickers-1.png" class="sticker-thumb" data-src="stickers-1.png" alt="Sticker 1">
+                    <img src="stickers-2.png" class="sticker-thumb" data-src="stickers-2.png" alt="Sticker 2">
+                </div>
+                <button class="btn-ui" id="btn-clear-stickers" style="margin-top:5px; color:var(--riso-red); border-color:var(--riso-red);">Effacer les stickers</button>
             </div>
 
             <div class="control-group">
@@ -512,7 +562,6 @@
                 <span class="color-label">06. TYPO</span>
                 <input type="text" id="text-input" placeholder="Taper un texte...">
                 
-                <!-- Choix de couleur du texte -->
                 <div style="display:flex; gap:10px; align-items:center; margin-top:5px;">
                     <span style="font-size: 0.8rem; font-weight:900;">Couleur texte :</span>
                     <input type="color" id="text-color-picker" value="#050505" style="padding:0; height:32px; width:60px; cursor:pointer; border:2px solid var(--black);">
@@ -590,6 +639,92 @@
             bgLayer.removeAttribute('src');
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
+
+        // --- GESTION DES STICKERS ---
+        const stickerContainer = document.getElementById('sticker-container');
+        document.querySelectorAll('.sticker-thumb').forEach(thumb => {
+            thumb.addEventListener('click', async () => {
+                const src = thumb.getAttribute('data-src');
+                const color = document.getElementById('sticker-color-picker').value;
+
+                // Générer un sticker colorisé dynamiquement via un canvas temporaire
+                const coloredStickerUrl = await colorizeImage(src, color);
+
+                const stickerImg = document.createElement('img');
+                stickerImg.className = 'sticker-overlay';
+                stickerImg.src = coloredStickerUrl;
+                stickerImg.style.top = '50%';
+                stickerImg.style.left = '50%';
+                stickerImg.style.transform = 'translate(-50%, -50%)';
+
+                let isDragging = false;
+                let initialX, initialY, xOffset = 0, yOffset = 0;
+
+                const dragStart = (e) => {
+                    initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
+                    initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
+                    if (e.target === stickerImg) isDragging = true;
+                };
+                const dragEnd = () => isDragging = false;
+                const drag = (e) => {
+                    if (isDragging) {
+                        e.preventDefault();
+                        let currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
+                        let currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
+                        xOffset = currentX; yOffset = currentY;
+                        stickerImg.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
+                    }
+                };
+
+                stickerImg.addEventListener("mousedown", dragStart);
+                document.addEventListener("mouseup", dragEnd);
+                document.addEventListener("mousemove", drag);
+                stickerImg.addEventListener("touchstart", dragStart, {passive: false});
+                document.addEventListener("touchend", dragEnd);
+                document.addEventListener("touchmove", drag, {passive: false});
+
+                stickerImg.ondblclick = () => stickerImg.remove();
+
+                stickerContainer.appendChild(stickerImg);
+            });
+        });
+
+        document.getElementById('btn-clear-stickers').addEventListener('click', () => {
+            stickerContainer.innerHTML = '';
+        });
+
+        // Fonction pour teinter les stickers PNG selon la couleur choisie
+        function colorizeImage(srcUrl, hexColor) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = srcUrl;
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.width;
+                    c.height = img.height;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    const rgb = hexToRgb(hexColor);
+                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                    const data = imgData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i+3] > 10) { // Si le pixel n'est pas transparent
+                            data[i]   = rgb.r;
+                            data[i+1] = rgb.g;
+                            data[i+2] = rgb.b;
+                        }
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    resolve(c.toDataURL());
+                };
+                img.onerror = () => {
+                    // Fallback si l'image ne charge pas
+                    resolve(srcUrl);
+                };
+            });
+        }
 
         document.getElementById('btn-cyanotype').addEventListener('click', async () => {
             if(!originalUserImageUrl) return alert("Importez d'abord une image !");
@@ -772,7 +907,7 @@
             textDiv.className = 'text-overlay';
             textDiv.innerText = textVal;
             textDiv.style.fontFamily = fontSelected;
-            textDiv.style.color = textColor; // Application directe de la couleur choisie
+            textDiv.style.color = textColor;
             
             if(fontSelected.includes('Inter') || fontSelected.includes('Space Grotesk')) {
                 textDiv.style.fontWeight = '900';
@@ -858,7 +993,7 @@
             }
         });
 
-        // EXPORTATION FIDÈLE (Sans contour blanc sur les textes)
+        // EXPORTATION FIDÈLE (Inclut les stickers et les textes)
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -893,6 +1028,27 @@
                 ctx.restore();
             }
 
+            // Dessiner les stickers positionnés
+            const stickerElements = stickerContainer.querySelectorAll('.sticker-overlay');
+            for (let el of stickerElements) {
+                const elRect = el.getBoundingClientRect();
+                const wrapperRect = wrapper.getBoundingClientRect();
+                
+                const x = (elRect.left - wrapperRect.left) + (elRect.width / 2);
+                const y = (elRect.top - wrapperRect.top) + (elRect.height / 2);
+
+                const stickerImg = new Image();
+                stickerImg.crossOrigin = "anonymous";
+                stickerImg.src = el.src;
+                await new Promise(resolve => { stickerImg.onload = resolve; stickerImg.onerror = resolve; });
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.drawImage(stickerImg, -elRect.width / 2, -elRect.height / 2, elRect.width, elRect.height);
+                ctx.restore();
+            }
+
+            // Dessiner les textes
             const textElements = textContainer.querySelectorAll('.text-overlay');
             textElements.forEach(el => {
                 const elRect = el.getBoundingClientRect();
@@ -906,11 +1062,10 @@
                 
                 const computedStyle = window.getComputedStyle(el);
                 ctx.font = `${computedStyle.fontWeight} ${parseFloat(computedStyle.fontSize)}px ${el.style.fontFamily || 'Inter'}`;
-                ctx.fillStyle = computedStyle.color; // Couleur personnalisée du texte
+                ctx.fillStyle = computedStyle.color;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                // Ombre blanche supprimée à l'exportation
                 ctx.fillText(el.innerText, 0, 0);
                 ctx.restore();
             });
