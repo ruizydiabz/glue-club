@@ -459,17 +459,18 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
+            <!-- FILTRES PHOTO INDÉPENDANTS (Cyanotype & Risographie) -->
             <div class="control-group">
-                <span class="color-label">03-BIS. EFFETS ART</span>
-                <div class="serif-subtext">Cyanotype & Risographie</div>
+                <span class="color-label">03-BIS. FILTRES PHOTO</span>
+                <div class="serif-subtext">Effets appliqués directement sur la photo</div>
                 
-                <button class="btn-ui" id="btn-cyanotype" style="background:#0f2b5c; color:#fff; margin-bottom:5px;">💙 Cyanotype (Ton Bleu UV)</button>
+                <button class="btn-ui" id="btn-cyanotype" style="background:#0f2b5c; color:#fff; margin-bottom:5px;">💙 Cyanotype (Bleu Profond UV)</button>
                 
                 <div style="display:flex; flex-direction:column; gap:5px; margin-top:5px; border-top: 2px dashed var(--black); padding-top:8px;">
-                    <span style="font-size: 0.8rem; font-weight:900;">🔴 Risographie (Aplat couleur) :</span>
+                    <span style="font-size: 0.8rem; font-weight:900;">🔴 Risographie (Teinte aplat) :</span>
                     <div style="display:flex; gap:5px; align-items:center;">
                         <input type="color" id="riso-color-picker" value="#e0241b" style="padding:0; height:36px; width:50px; cursor:pointer;">
-                        <button class="btn-ui" id="btn-risographie" style="flex:1; background:var(--riso-red); color:#fff;">Appliquer l'aplat Riso</button>
+                        <button class="btn-ui" id="btn-risographie" style="flex:1; background:var(--riso-red); color:#fff;">Appliquer Risographie</button>
                     </div>
                 </div>
             </div>
@@ -492,7 +493,7 @@
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 <label class="checkbox-label" style="margin-top:5px;">
-                    <input type="checkbox" id="bitmap-toggle"> Trame Riso
+                    <input type="checkbox" id="bitmap-toggle"> Trame Pixellisée
                 </label>
                 <div class="slider-row"><span>Seuil</span></div>
                 <input type="range" id="bitmap-intensity" min="100" max="500" value="100">
@@ -540,15 +541,16 @@
         const userLayer = document.getElementById('user-layer');
         const bgLayer = document.getElementById('bg-layer');
         
-        let customRisoColor = null;
-        let isCyanotypeActive = false; // Drapeau pour identifier le mode cyanotype
+        // États des filtres photo indépendants
+        let activePhotoFilter = null; // 'cyanotype' ou 'riso'
+        let risoTintColor = '#e0241b';
 
         document.getElementById('upload-user').addEventListener('change', function(e) {
             if (e.target.files[0]) {
                 const url = URL.createObjectURL(e.target.files[0]);
                 userLayer.src = url;
                 userLayer.style.display = 'block';
-                isCyanotypeActive = false;
+                activePhotoFilter = null;
                 updateFilters(); 
             }
         });
@@ -564,29 +566,18 @@
             document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
-        // EFFET CYANOTYPE UV (Bleu de Prusse intense, style tirage chimique)
+        // Application Cyanotype (Filtre photo pur sans toucher au fond)
         document.getElementById('btn-cyanotype').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importez d'abord une image !");
-            customRisoColor = null;
-            isCyanotypeActive = true;
-            document.getElementById('blend-mode').value = 'normal';
-            userLayer.style.mixBlendMode = 'normal';
-            bwToggle.checked = true;
-            briSlider.value = 85;
-            contSlider.value = 170;
-            satSlider.value = 100;
+            activePhotoFilter = 'cyanotype';
             updateFilters();
         });
 
+        // Application Risographie (Filtre photo pur sans toucher au fond)
         document.getElementById('btn-risographie').addEventListener('click', () => {
             if(!userLayer.src) return alert("Importez d'abord une image !");
-            isCyanotypeActive = false;
-            customRisoColor = document.getElementById('riso-color-picker').value;
-            document.getElementById('blend-mode').value = 'multiply';
-            userLayer.style.mixBlendMode = 'multiply';
-            bitmapToggle.checked = true;
-            bitmapIntensity.value = 350;
-            contSlider.value = 180;
+            activePhotoFilter = 'riso';
+            risoTintColor = document.getElementById('riso-color-picker').value;
             updateFilters();
         });
 
@@ -621,18 +612,25 @@
         const bitmapIntensity = document.getElementById('bitmap-intensity');
 
         function updateFilters() {
-            let filterString = `brightness(${briSlider.value}%) contrast(${contSlider.value}%) saturate(${satSlider.value}%) `;
-            if (bwToggle.checked) filterString += "grayscale(100%) ";
-            if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
-            userLayer.style.filter = filterString;
+            // Si un filtre artistique est actif, on gère l'affichage visuel en direct via un canvas interne ou des filtres CSS
+            if (activePhotoFilter === 'cyanotype') {
+                userLayer.style.filter = 'grayscale(100%) brightness(90%) contrast(190%)';
+            } else if (activePhotoFilter === 'riso') {
+                userLayer.style.filter = 'grayscale(100%) contrast(200%)';
+            } else {
+                let filterString = `brightness(${briSlider.value}%) contrast(${contSlider.value}%) saturate(${satSlider.value}%) `;
+                if (bwToggle.checked) filterString += "grayscale(100%) ";
+                if (pixelSlider.value > 0) filterString += `blur(${pixelSlider.value}px) `;
+                userLayer.style.filter = filterString;
+            }
         }
 
         [briSlider, contSlider, satSlider, pixelSlider, bitmapIntensity].forEach(s => s.addEventListener('input', () => {
-            isCyanotypeActive = false; // Désactive le mode strict si l'utilisateur retouche les curseurs
+            activePhotoFilter = null; // Désactive l'effet spécial si on touche aux curseurs manuels
             updateFilters();
         }));
         [bwToggle, bitmapToggle].forEach(t => t.addEventListener('change', () => {
-            isCyanotypeActive = false;
+            activePhotoFilter = null;
             updateFilters();
         }));
 
@@ -727,7 +725,7 @@
             }
         });
 
-        // EXPORTATION ROBUSTE : Applique fidèlement Cyanotype et Riso personnalisé
+        // EXPORTATION ROBUSTE : Traitement par pixels sur Canvas pour appliquer fidèlement les filtres de photo
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -738,7 +736,7 @@
             const ctx = canvas.getContext('2d');
             ctx.scale(2, 2);
 
-            // 1. Dessiner le fond
+            // 1. Dessiner le fond (bg-layer)
             if (bgLayer.src) {
                 const bgImg = new Image();
                 bgImg.crossOrigin = "anonymous";
@@ -750,7 +748,7 @@
                 ctx.fillRect(0, 0, rect.width, rect.height);
             }
 
-            // 2. Dessiner l'image utilisateur
+            // 2. Dessiner l'image utilisateur avec application des filtres de pixels si Cyanotype ou Riso actifs
             if (userLayer.src && userLayer.style.display !== 'none') {
                 const userImg = new Image();
                 userImg.crossOrigin = "anonymous";
@@ -760,28 +758,51 @@
                 ctx.save();
                 ctx.globalAlpha = parseFloat(window.getComputedStyle(userLayer).opacity);
                 ctx.globalCompositeOperation = getCanvasBlendMode(userLayer.style.mixBlendMode);
-                ctx.filter = userLayer.style.filter; 
                 
-                ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
+                if (activePhotoFilter === null) {
+                    ctx.filter = userLayer.style.filter;
+                    ctx.drawImage(userImg, 0, 0, rect.width, rect.height);
+                } else {
+                    // Création d'un sous-canvas pour manipuler les pixels de la photo uniquement
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = rect.width;
+                    tempCanvas.height = rect.height;
+                    const tempCtx = tempCanvas.getContext('2d');
+                    tempCtx.drawImage(userImg, 0, 0, rect.width, rect.height);
+                    
+                    const imgData = tempCtx.getImageData(0, 0, rect.width, rect.height);
+                    const data = imgData.data;
+
+                    if (activePhotoFilter === 'cyanotype') {
+                        // Transformation rigoureuse en Cyanotype (Blanc & Bleu de Prusse profond)
+                        for (let i = 0; i < data.length; i += 4) {
+                            let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
+                            // Contraste UV fort
+                            gray = gray < 100 ? gray * 0.5 : Math.min(255, gray * 1.3);
+                            
+                            // Colorisation Cyanotype (#081d3a à #eaf2f8)
+                            let factor = gray / 255;
+                            data[i]   = Math.floor(8 + factor * 226);   // Rouge
+                            data[i+1] = Math.floor(29 + factor * 210);  // Vert
+                            data[i+2] = Math.floor(75 + factor * 165);  // Bleu
+                        }
+                    } else if (activePhotoFilter === 'riso') {
+                        // Conversion en teinte Riso unie avec la couleur choisie
+                        const rgb = hexToRgb(risoTintColor);
+                        for (let i = 0; i < data.length; i += 4) {
+                            let gray = data[i] * 0.3 + data[i+1] * 0.59 + data[i+2] * 0.11;
+                            let factor = gray / 255; // 0 = noir, 1 = blanc
+                            
+                            // Fond blanc, l'encre Riso s'applique sur les zones sombres
+                            data[i]   = Math.floor(255 - (1 - factor) * (255 - rgb.r));
+                            data[i+1] = Math.floor(255 - (1 - factor) * (255 - rgb.g));
+                            data[i+2] = Math.floor(255 - (1 - factor) * (255 - rgb.b));
+                        }
+                    }
+                    tempCtx.putImageData(imgData, 0, 0);
+                    ctx.drawImage(tempCanvas, 0, 0);
+                }
                 ctx.restore();
-
-                // Application rigoureuse du Cyanotype pur (Teinte Bleue profonde sans négatif)
-                if (isCyanotypeActive) {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'source-in';
-                    ctx.fillStyle = '#0a2342'; // Bleu de Prusse profond style cyanotype
-                    ctx.fillRect(0, 0, rect.width, rect.height);
-                    ctx.restore();
-                }
-
-                // Application de l'aplat Riso personnalisé
-                if (customRisoColor && bitmapToggle.checked) {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'source-in';
-                    ctx.fillStyle = customRisoColor;
-                    ctx.fillRect(0, 0, rect.width, rect.height);
-                    ctx.restore();
-                }
             }
 
             // 3. Dessiner les textes
@@ -826,6 +847,14 @@
                 case 'exclusion': return 'exclusion';
                 default: return 'source-over';
             }
+        }
+
+        function hexToRgb(hex) {
+            let bigint = parseInt(hex.replace("#", ""), 16);
+            let r = (bigint >> 16) & 255;
+            let g = (bigint >> 8) & 255;
+            let b = bigint & 255;
+            return {r, g, b};
         }
     </script>
 </body>
