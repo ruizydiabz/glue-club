@@ -41,7 +41,6 @@
             font-family: var(--font-inter);
             color: var(--black);
             overflow: hidden; 
-            
             background-color: var(--white);
             background-image: url('0012dd4013c5c9a464147e60b9053cf5_3.jpg');
             background-size: cover;
@@ -223,7 +222,7 @@
             background-color: var(--white);
             border: 6px solid var(--black);
             box-shadow: 20px 20px 0 var(--black);
-            overflow: hidden; /* Garantit que tout ce qui dépasse est proprement contenu dans le cadre */
+            overflow: hidden; 
         }
 
         .layer {
@@ -239,17 +238,19 @@
         .text-overlay {
             position: absolute;
             z-index: 3;
-            font-size: 3.2rem; /* Taille de police légèrement ajustée pour éviter les débordements massifs sur mobile */
+            font-size: 3.2rem;
             color: var(--black);
             cursor: move;
             user-select: none;
-            white-space: nowrap;
+            white-space: nowrap; /* Maintient sur une seule ligne pour l'export canvas */
+            text-align: center;
+            transform-origin: center center;
         }
 
         .sticker-overlay {
             position: absolute;
             z-index: 4;
-            width: 120px;
+            width: 140px;
             height: auto;
             cursor: move;
             user-select: none;
@@ -430,50 +431,173 @@
             background: var(--riso-green);
         }
 
-        /* MEDIA QUERIES MOBILES AMÉLIORÉES CONTENANT PARFAITEMENT LES TYPOS */
+        /* --- ELEMENTS CACHÉS SUR DESKTOP (POUR LE MENU MOBILE) --- */
+        #mobile-menu-btn, #mobile-menu-overlay, #drawer-close-btn { 
+            display: none; 
+        }
+
+        /* --- ADAPTATION MOBILE STRICTE --- */
         @media (max-width: 900px) {
             body, html {
                 height: 100dvh;
                 overflow: hidden;
             }
-            #app-container {
-                flex-direction: row; 
-                height: 100dvh;
-                width: 100vw;
+
+            /* Bouton Menu Hamburger */
+            #mobile-menu-btn {
+                display: flex;
+                position: fixed;
+                top: 15px;
+                right: 15px;
+                background: var(--swiss-yellow);
+                color: var(--black);
+                border: 3px solid var(--black);
+                padding: 10px 15px;
+                font-family: var(--font-inter);
+                font-weight: 900;
+                font-size: 1rem;
+                z-index: 500;
+                box-shadow: 4px 4px 0 var(--black);
+                cursor: pointer;
+                text-transform: uppercase;
             }
+
+            /* Overlay Menu Mobile Complet */
+            #mobile-menu-overlay {
+                position: fixed;
+                top: 0; left: 0; width: 100vw; height: 100dvh;
+                background: rgba(5, 5, 5, 0.98);
+                z-index: 1000;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+            #mobile-menu-overlay.active { display: flex; }
+
+            #close-menu-btn {
+                position: absolute;
+                top: 20px; right: 20px;
+                background: var(--riso-red);
+                color: var(--white);
+                border: 3px solid var(--black);
+                padding: 10px 20px;
+                font-family: var(--font-inter);
+                font-weight: 900;
+                font-size: 1rem;
+                cursor: pointer;
+            }
+
+            .menu-list {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+                max-width: 350px;
+                overflow-y: auto;
+                max-height: 80vh;
+            }
+            .menu-item {
+                background: var(--white);
+                color: var(--black);
+                border: 3px solid var(--black);
+                padding: 15px;
+                font-family: var(--font-syne);
+                font-weight: 800;
+                font-size: 1.2rem;
+                text-transform: uppercase;
+                cursor: pointer;
+                box-shadow: 4px 4px 0 var(--riso-red);
+                transition: all 0.2s;
+            }
+            .menu-item:active {
+                background: var(--swiss-yellow);
+            }
+
+            #app-container {
+                flex-direction: column; 
+            }
+
+            /* Zone Canvas sur mobile (Fixe) */
             #canvas-area {
-                flex: 1;
-                height: 100dvh;
+                width: 100vw;
+                height: 100dvh; 
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 55vw;
-                padding: 10px;
-                background: rgba(255, 255, 255, 0.4);
-                backdrop-filter: blur(2px);
-                overflow: hidden; /* Empêche les éléments de s'échapper visuellement du cadre de l'écran */
+                padding: 15px;
+                padding-top: 70px; 
+                transition: height 0.3s ease; 
+                z-index: 10;
             }
+
+            #app-container.drawer-active #canvas-area {
+                height: 50dvh;
+                padding-top: 15px;
+            }
+
             #export-wrapper {
                 max-width: 100%;
-                max-height: 80vh;
-                box-shadow: 6px 6px 0 var(--black);
-                overflow: hidden; /* Coupe net tout texte ou sticker qui sort du poster */
+                max-height: 100%;
+                box-shadow: 8px 8px 0 var(--black);
             }
+            
+            /* Ajustement typographique initial sur mobile */
             .text-overlay {
-                font-size: 2.2rem; /* Réduction adaptative de la taille pour téléphones */
+                font-size: 2.2rem;
             }
             .sticker-overlay {
-                width: 90px; /* Redimensionnement proportionnel sur mobile */
+                width: 90px; 
             }
+
+            /* Panneau de contrôle devient un tiroir (Bottom Drawer) */
             #control-panel {
-                position: absolute;
-                right: 0;
-                top: 0;
-                width: 45vw; 
-                height: 100dvh;
-                border-left: 4px solid var(--black);
-                padding: 15px 10px;
-                gap: 20px;
+                position: fixed;
+                bottom: -100%; 
+                left: 0;
+                width: 100vw; 
+                height: 50dvh; 
+                border-left: none;
+                border-top: 4px solid var(--black);
+                padding: 15px;
+                gap: 15px;
+                z-index: 100;
+                transition: bottom 0.3s ease;
+                background-color: var(--white);
+            }
+            #control-panel.drawer-open {
+                bottom: 0;
+            }
+
+            #drawer-close-btn {
+                display: block;
+                background: var(--black);
+                color: var(--white);
+                border: 2px solid var(--black);
+                padding: 10px;
+                text-align: center;
+                font-family: var(--font-inter);
+                font-weight: 900;
+                font-size: 0.9rem;
+                cursor: pointer;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+            }
+
+            /* Masque toutes les catégories par défaut dans le tiroir mobile */
+            .control-group, #btn-export { 
+                display: none; 
+            }
+            /* Affiche uniquement la catégorie active */
+            .control-group.active-group { 
+                display: flex; 
+            }
+            #btn-export.active-group { 
+                display: block; 
+                width: 100%; 
+                margin-top: 0; 
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -535,9 +659,28 @@
         </div>
     </div>
 
+    <!-- BOUTON MENU MOBILE -->
+    <button id="mobile-menu-btn">☰ Menu</button>
+
+    <!-- MENU OVERLAY MOBILE -->
+    <div id="mobile-menu-overlay">
+        <button id="close-menu-btn">Fermer</button>
+        <div class="menu-list">
+            <button class="menu-item" data-target="group-import">01. Import</button>
+            <button class="menu-item" data-target="group-archive">02. Archive</button>
+            <button class="menu-item" data-target="group-stickers">03. Stickers</button>
+            <button class="menu-item" data-target="group-blend">04. Blend</button>
+            <button class="menu-item" data-target="group-filters">05. Filtres Photo</button>
+            <button class="menu-item" data-target="group-colors">06. Colors</button>
+            <button class="menu-item" data-target="group-destruct">07. Destruct</button>
+            <button class="menu-item" data-target="group-typo">08. Typo</button>
+            <button class="menu-item" data-target="btn-export" style="background:var(--riso-red); color:var(--white);">Export File</button>
+        </div>
+    </div>
+
     <!-- APP CONTAINER -->
     <div id="app-container">
-        <!-- CANVAS (GAUCHE - FIXE) -->
+        <!-- CANVAS -->
         <div id="canvas-area">
             <div id="export-wrapper">
                 <img id="bg-layer" class="layer" src="1.jpg" alt="Fond">
@@ -547,33 +690,33 @@
             </div>
         </div>
 
-        <!-- CONTROL PANEL (DROITE - DÉFILABLE) -->
+        <!-- CONTROL PANEL -->
         <div id="control-panel">
+            <div id="drawer-close-btn">Fermer le réglage</div>
             
-            <div class="control-group">
+            <div class="control-group" id="group-import">
                 <span class="color-label">01. IMPORT</span>
                 <div class="serif-subtext">Charge ton image perso</div>
                 <input type="file" id="upload-user" accept="image/*">
                 <button class="btn-ui" id="btn-remove-bg">Auto Cut-out</button>
             </div>
 
-            <div class="control-group">
+            <div class="control-group" id="group-archive">
                 <span class="color-label">02. ARCHIVE</span>
                 <div class="serif-subtext">Fonds (1-13) & Option sans fond</div>
                 <div class="bg-grid" id="bg-library"></div>
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">Enlever le fond</button>
             </div>
 
-            <div class="control-group">
-                <span class="color-label">02-BIS. STICKERS</span>
+            <div class="control-group" id="group-stickers">
+                <span class="color-label">03. STICKERS</span>
                 <div class="serif-subtext">Crée ton sticker personnalisé</div>
-                
-                <button class="btn-bold" id="btn-open-sticker-maker" style="background: var(--swiss-yellow); color: var(--black); margin-bottom: 5px; font-size: 0.9rem; padding: 10px;">Crée ton stickers</button>
+                <button class="btn-bold" id="btn-open-sticker-maker" style="background: var(--swiss-yellow); color: var(--black); margin-bottom: 5px; font-size: 0.9rem; padding: 10px;">Crée ton sticker</button>
                 <button class="btn-ui" id="btn-clear-stickers" style="margin-top:5px; color:var(--riso-red); border-color:var(--riso-red);">Effacer les stickers</button>
             </div>
 
-            <div class="control-group">
-                <span class="color-label">03. BLEND</span>
+            <div class="control-group" id="group-blend">
+                <span class="color-label">04. BLEND</span>
                 <select id="blend-mode">
                     <option value="normal">NORMAL</option>
                     <option value="multiply">PRODUIT (MULTIPLY)</option>
@@ -588,8 +731,8 @@
                 <input type="range" id="opacity-slider" min="0" max="100" value="100">
             </div>
 
-            <div class="control-group">
-                <span class="color-label">03-BIS. FILTRES PHOTO</span>
+            <div class="control-group" id="group-filters">
+                <span class="color-label">05. FILTRES PHOTO</span>
                 <div class="serif-subtext">Cyanotype & Risographie</div>
                 
                 <button class="btn-ui" id="btn-cyanotype" style="background:#1b4965; color:#fff; margin-bottom:5px;">Cyanotype (Bleu Vif UV)</button>
@@ -603,8 +746,8 @@
                 </div>
             </div>
 
-            <div class="control-group">
-                <span class="color-label">04. COLORS</span>
+            <div class="control-group" id="group-colors">
+                <span class="color-label">06. COLORS</span>
                 <div class="slider-row"><span>Luminosité</span></div>
                 <input type="range" id="bri-slider" min="0" max="200" value="100">
                 <div class="slider-row"><span>Contraste</span></div>
@@ -616,8 +759,8 @@
                 </label>
             </div>
 
-            <div class="control-group">
-                <span class="color-label">05. DESTRUCT</span>
+            <div class="control-group" id="group-destruct">
+                <span class="color-label">07. DESTRUCT</span>
                 <div class="slider-row"><span>Pixelisation</span></div>
                 <input type="range" id="pixel-slider" min="0" max="20" value="0">
                 
@@ -629,8 +772,8 @@
                 <input type="range" id="bitmap-intensity" min="0" max="255" value="128">
             </div>
 
-            <div class="control-group">
-                <span class="color-label">06. TYPO</span>
+            <div class="control-group" id="group-typo">
+                <span class="color-label">08. TYPO</span>
                 <input type="text" id="text-input" placeholder="Taper un texte...">
                 
                 <div style="display:flex; gap:10px; align-items:center; margin-top:5px;">
@@ -669,6 +812,51 @@
         const popup2 = document.getElementById('popup-2');
         const appContainer = document.getElementById('app-container');
 
+        // --- GESTION DU MENU MOBILE ET DU TIROIR ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const controlPanel = document.getElementById('control-panel');
+        const drawerCloseBtn = document.getElementById('drawer-close-btn');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const controlGroups = document.querySelectorAll('.control-group, #btn-export');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuOverlay.classList.add('active');
+            controlPanel.classList.remove('drawer-open');
+            appContainer.classList.remove('drawer-active');
+        });
+
+        closeMenuBtn.addEventListener('click', () => {
+            mobileMenuOverlay.classList.remove('active');
+        });
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetId = item.getAttribute('data-target');
+                
+                // Cacher tous les groupes
+                controlGroups.forEach(g => g.classList.remove('active-group'));
+                
+                // Afficher uniquement le groupe ciblé
+                const targetGroup = document.getElementById(targetId);
+                if(targetGroup) {
+                    targetGroup.classList.add('active-group');
+                }
+                
+                // Fermer le menu et ouvrir le tiroir
+                mobileMenuOverlay.classList.remove('active');
+                controlPanel.classList.add('drawer-open');
+                appContainer.classList.add('drawer-active'); 
+            });
+        });
+
+        drawerCloseBtn.addEventListener('click', () => {
+            controlPanel.classList.remove('drawer-open');
+            appContainer.classList.remove('drawer-active'); 
+        });
+
+        // --- INITIALISATION APP ---
         function startApp() {
             overlay.style.display = 'none';
             appContainer.classList.add('active');
@@ -708,7 +896,6 @@
 
         document.getElementById('btn-remove-bg-layer').addEventListener('click', () => {
             bgLayer.removeAttribute('src');
-            document.querySelectorAll('.bg-thumb').forEach(el => el.classList.remove('active'));
         });
 
         // --- ATELIER DE DESSIN DE STICKERS ---
@@ -803,9 +990,11 @@
             const dataUrl = paintCanvas.toDataURL('image/png');
             stickerModal.classList.remove('active');
             addStickerToCanvas(dataUrl);
+            
+            controlPanel.classList.remove('drawer-open');
+            appContainer.classList.remove('drawer-active');
         });
 
-        // --- GESTION DES STICKERS SUR L'AFFICHE ---
         const stickerContainer = document.getElementById('sticker-container');
 
         function addStickerToCanvas(imgSrc) {
@@ -1052,6 +1241,18 @@
             textDiv.style.left = '50%';
             textDiv.style.transform = 'translate(-50%, -50%)';
             
+            textContainer.appendChild(textDiv);
+
+            // AUTO-RÉDUCTION DE LA POLICE POUR NE PAS DÉPASSER LE CADRE DE L'AFFICHE
+            const wrapper = document.getElementById('export-wrapper');
+            let currentFontSize = parseFloat(window.getComputedStyle(textDiv).fontSize);
+            // Tant que le texte est plus grand que 90% de l'affiche, on réduit la police
+            while (textDiv.offsetWidth > wrapper.clientWidth * 0.9 && currentFontSize > 10) {
+                currentFontSize -= 1;
+                textDiv.style.fontSize = currentFontSize + 'px';
+            }
+            
+            // GESTION DU DRAG DU TEXTE
             let isDragging = false;
             let initialX, initialY, xOffset = 0, yOffset = 0;
 
@@ -1080,8 +1281,11 @@
 
             textDiv.ondblclick = () => textDiv.remove();
 
-            textContainer.appendChild(textDiv);
             document.getElementById('text-input').value = ''; 
+            
+            // Fermer le tiroir pour replacer le texte (uniquement sur mobile)
+            controlPanel.classList.remove('drawer-open');
+            appContainer.classList.remove('drawer-active');
         });
 
         document.getElementById('btn-clear-text').addEventListener('click', () => {
