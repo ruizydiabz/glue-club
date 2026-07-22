@@ -242,7 +242,7 @@
             color: var(--black);
             cursor: move;
             user-select: none;
-            white-space: nowrap; /* Maintient sur une seule ligne pour l'export canvas */
+            white-space: nowrap; 
             text-align: center;
             transform-origin: center center;
         }
@@ -429,6 +429,60 @@
             transform: translate(-2px, -2px);
             box-shadow: 8px 8px 0 var(--black);
             background: var(--riso-green);
+        }
+
+        /* --- BOUTON COEUR "CRÉE TON STICKER" --- */
+        .btn-heart {
+            position: relative;
+            width: 130px;
+            height: 110px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            margin: 10px auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            outline: none;
+            transition: transform 0.2s;
+        }
+        .btn-heart:hover {
+            transform: translate(-2px, -2px) scale(1.05) rotate(-3deg);
+        }
+        .heart-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            filter: drop-shadow(4px 4px 0px var(--black));
+            transition: all 0.2s;
+        }
+        .heart-bg path {
+            fill: var(--swiss-yellow);
+            stroke: var(--black);
+            stroke-width: 4;
+            stroke-linejoin: round;
+            transition: fill 0.2s;
+        }
+        .btn-heart:hover .heart-bg path {
+            fill: var(--riso-red);
+        }
+        .heart-text {
+            position: relative;
+            z-index: 2;
+            font-family: var(--font-syne);
+            font-weight: 800;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--black);
+            line-height: 1.1;
+            margin-top: -15px;
+            text-align: center;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .btn-heart:hover .heart-text {
+            color: var(--white);
         }
 
         /* --- ELEMENTS CACHÉS SUR DESKTOP (POUR LE MENU MOBILE) --- */
@@ -708,11 +762,19 @@
                 <button class="btn-ui" id="btn-remove-bg-layer" style="margin-top:5px; background:var(--black); color:var(--white);">Enlever le fond</button>
             </div>
 
-            <div class="control-group" id="group-stickers">
-                <span class="color-label">03. STICKERS</span>
-                <div class="serif-subtext">Crée ton sticker personnalisé</div>
-                <button class="btn-bold" id="btn-open-sticker-maker" style="background: var(--swiss-yellow); color: var(--black); margin-bottom: 5px; font-size: 0.9rem; padding: 10px;">Crée ton sticker</button>
-                <button class="btn-ui" id="btn-clear-stickers" style="margin-top:5px; color:var(--riso-red); border-color:var(--riso-red);">Effacer les stickers</button>
+            <div class="control-group" id="group-stickers" style="align-items: center;">
+                <span class="color-label" style="align-self: flex-start;">03. STICKERS</span>
+                <div class="serif-subtext" style="align-self: flex-start;">Crée ton sticker personnalisé</div>
+                
+                <!-- BOUTON COEUR "CRÉE TON STICKER" -->
+                <button id="btn-open-sticker-maker" class="btn-heart">
+                    <svg viewBox="0 0 100 100" class="heart-bg" preserveAspectRatio="none">
+                        <path d="M 50,90 C 50,90 10,60 10,30 C 10,10 40,10 50,30 C 60,10 90,10 90,30 C 90,60 50,90 50,90 Z" />
+                    </svg>
+                    <span class="heart-text">Crée ton<br>sticker</span>
+                </button>
+
+                <button class="btn-ui" id="btn-clear-stickers" style="width:100%; margin-top:5px; color:var(--riso-red); border-color:var(--riso-red);">Effacer les stickers</button>
             </div>
 
             <div class="control-group" id="group-blend">
@@ -991,6 +1053,7 @@
             stickerModal.classList.remove('active');
             addStickerToCanvas(dataUrl);
             
+            // Fermer le tiroir pour laisser l'utilisateur placer son sticker
             controlPanel.classList.remove('drawer-open');
             appContainer.classList.remove('drawer-active');
         });
@@ -1243,16 +1306,14 @@
             
             textContainer.appendChild(textDiv);
 
-            // AUTO-RÉDUCTION DE LA POLICE POUR NE PAS DÉPASSER LE CADRE DE L'AFFICHE
+            // AUTO-REDUCTION DE LA POLICE (Ne dépasse pas du cadre)
             const wrapper = document.getElementById('export-wrapper');
             let currentFontSize = parseFloat(window.getComputedStyle(textDiv).fontSize);
-            // Tant que le texte est plus grand que 90% de l'affiche, on réduit la police
             while (textDiv.offsetWidth > wrapper.clientWidth * 0.9 && currentFontSize > 10) {
                 currentFontSize -= 1;
                 textDiv.style.fontSize = currentFontSize + 'px';
             }
             
-            // GESTION DU DRAG DU TEXTE
             let isDragging = false;
             let initialX, initialY, xOffset = 0, yOffset = 0;
 
@@ -1283,7 +1344,7 @@
 
             document.getElementById('text-input').value = ''; 
             
-            // Fermer le tiroir pour replacer le texte (uniquement sur mobile)
+            // Fermer le tiroir pour replacer le texte
             controlPanel.classList.remove('drawer-open');
             appContainer.classList.remove('drawer-active');
         });
