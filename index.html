@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Glue Club - Ultimate Collage Mix</title>
     
-    <!-- Google Fonts : Sélection large de polices Zine, Brutaliste, Suisse, Riso & Éditoriales -->
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Abril+Fatface&family=Bungee&family=Changa+One&family=DM+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&family=Oswald:wght@700&family=Permanent+Marker&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts : Syne, Inter, Playfair, Anton, Space Grotesk, DM Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     
     <!-- Cropper.js pour le recadrage -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -14,9 +14,10 @@
 
     <style>
         :root {
-            --riso-red: #e0241b;
+            /* Nouvelle DA inspirée des affiches : Cyber Acid (Jaune fluo, Magenta électrique, Noir brut) */
+            --riso-red: #ff007f;
             --riso-green: #3ea055;
-            --swiss-yellow: #f4c522;
+            --swiss-yellow: #ccff00;
             --white: #ffffff;
             --black: #050505;
             
@@ -26,11 +27,6 @@
             --font-space: 'Space Grotesk', sans-serif;
             --font-mono: 'DM Mono', monospace;
             --font-anton: 'Anton', sans-serif;
-            --font-changa: 'Changa One', cursive;
-            --font-oswald: 'Oswald', sans-serif;
-            --font-marker: 'Permanent Marker', cursive;
-            --font-bungee: 'Bungee', cursive;
-            --font-abril: 'Abril Fatface', serif;
         }
 
         body, html {
@@ -38,21 +34,19 @@
             padding: 0;
             width: 100vw;
             height: 100dvh; 
-            font-family: var(--font-inter);
+            font-family: var(--font-space);
             color: var(--black);
             overflow: hidden; 
-            background-color: var(--white);
-            background-image: url('0012dd4013c5c9a464147e60b9053cf5_3.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            background-color: var(--swiss-yellow); /* Fond jaune fluo inspiré de l'affiche 1 */
+            background-image: radial-gradient(rgba(255, 0, 127, 0.15) 15%, transparent 16%);
+            background-size: 16px 16px;
         }
 
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(10px);
             z-index: 999;
             display: flex;
             align-items: center;
@@ -72,7 +66,7 @@
             display: none;
             flex-direction: column;
             position: relative;
-            box-shadow: 14px 14px 0 var(--riso-red);
+            box-shadow: 16px 16px 0 var(--riso-red);
             box-sizing: border-box;
         }
 
@@ -82,8 +76,8 @@
         #sticker-modal-canvas {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(6px);
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(8px);
             z-index: 1000;
             display: none;
             align-items: center;
@@ -137,13 +131,14 @@
         }
 
         .modal-title {
-            font-family: var(--font-syne);
-            font-weight: 800;
-            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-family: var(--font-anton);
+            font-weight: 400;
+            font-size: clamp(3rem, 12vw, 5rem);
             text-transform: uppercase;
             letter-spacing: -2px;
             margin: 0 0 10px 0;
-            line-height: 0.9;
+            line-height: 0.85;
+            color: var(--black);
         }
 
         .modal-highlight {
@@ -177,8 +172,8 @@
             color: var(--white);
             border: 3px solid var(--black);
             padding: 12px 20px;
-            font-family: var(--font-syne);
-            font-weight: 800;
+            font-family: var(--font-space);
+            font-weight: 700;
             text-transform: uppercase;
             font-size: 1rem;
             cursor: pointer;
@@ -186,8 +181,8 @@
             transition: all 0.2s;
         }
         .btn-bold:hover {
-            background-color: var(--swiss-yellow);
-            color: var(--black);
+            background-color: var(--riso-red);
+            color: var(--white);
             box-shadow: 4px 4px 0 var(--black);
         }
 
@@ -259,7 +254,7 @@
         #control-panel {
             width: 450px; 
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(4px);
             border-left: 6px solid var(--black);
             padding: 35px 25px;
@@ -270,8 +265,8 @@
             box-sizing: border-box;
             -webkit-overflow-scrolling: touch; 
             position: relative;
-            background-image: radial-gradient(rgba(224, 36, 27, 0.12) 15%, transparent 16%);
-            background-size: 10px 10px;
+            background-image: radial-gradient(rgba(5, 5, 5, 0.05) 15%, transparent 16%);
+            background-size: 12px 12px;
         }
 
         .control-group {
@@ -286,12 +281,12 @@
         }
 
         .color-label {
-            background-color: var(--swiss-yellow);
-            color: var(--black);
+            background-color: var(--riso-red);
+            color: var(--white);
             display: inline-table;
             padding: 6px 12px;
-            font-family: var(--font-inter);
-            font-weight: 900;
+            font-family: var(--font-space);
+            font-weight: 700;
             font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -310,7 +305,7 @@
         }
 
         input[type="file"], select, input[type="text"] {
-            font-family: var(--font-inter);
+            font-family: var(--font-space);
             font-weight: 700;
             font-size: 0.95rem;
             padding: 10px;
@@ -347,8 +342,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: var(--font-inter);
-            font-weight: 900;
+            font-family: var(--font-space);
+            font-weight: 700;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -357,7 +352,7 @@
         input[type="checkbox"] {
             width: 20px;
             height: 20px;
-            accent-color: var(--riso-green);
+            accent-color: var(--riso-red);
             cursor: pointer;
             border-radius: 0;
             border: 2px solid var(--black);
@@ -398,8 +393,8 @@
             color: var(--black);
             border: 2px solid var(--black);
             padding: 10px;
-            font-family: var(--font-inter);
-            font-weight: 900;
+            font-family: var(--font-space);
+            font-weight: 700;
             text-transform: uppercase;
             font-size: 0.85rem;
             cursor: pointer;
@@ -411,10 +406,10 @@
         }
 
         .btn-export {
-            background: var(--riso-red);
-            color: var(--white);
-            font-family: var(--font-syne);
-            font-weight: 800;
+            background: var(--black);
+            color: var(--swiss-yellow);
+            font-family: var(--font-anton);
+            font-weight: 400;
             font-size: 1.8rem;
             padding: 15px;
             margin-top: 5px;
@@ -422,13 +417,14 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
-            box-shadow: 6px 6px 0 var(--black);
+            box-shadow: 6px 6px 0 var(--riso-red);
             transition: all 0.2s;
         }
         .btn-export:hover {
             transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0 var(--black);
-            background: var(--riso-green);
+            box-shadow: 8px 8px 0 var(--riso-red);
+            background: var(--riso-red);
+            color: var(--white);
         }
 
         /* --- BOUTON COEUR "CRÉE TON STICKER" --- */
@@ -470,8 +466,8 @@
         .heart-text {
             position: relative;
             z-index: 2;
-            font-family: var(--font-syne);
-            font-weight: 800;
+            font-family: var(--font-space);
+            font-weight: 700;
             font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--black);
@@ -485,7 +481,7 @@
             color: var(--white);
         }
 
-        /* --- ELEMENTS CACHÉS SUR DESKTOP (POUR LE MENU MOBILE) --- */
+        /* --- ELEMENTS CACHÉS SUR DESKTOP --- */
         #mobile-menu-btn, #mobile-menu-overlay, #drawer-close-btn { 
             display: none; 
         }
@@ -497,26 +493,24 @@
                 overflow: hidden;
             }
 
-            /* Bouton Menu Hamburger */
             #mobile-menu-btn {
                 display: flex;
                 position: fixed;
                 top: 15px;
                 right: 15px;
-                background: var(--swiss-yellow);
-                color: var(--black);
+                background: var(--black);
+                color: var(--swiss-yellow);
                 border: 3px solid var(--black);
                 padding: 10px 15px;
-                font-family: var(--font-inter);
-                font-weight: 900;
+                font-family: var(--font-space);
+                font-weight: 700;
                 font-size: 1rem;
                 z-index: 500;
-                box-shadow: 4px 4px 0 var(--black);
+                box-shadow: 4px 4px 0 var(--riso-red);
                 cursor: pointer;
                 text-transform: uppercase;
             }
 
-            /* Overlay Menu Mobile Complet */
             #mobile-menu-overlay {
                 position: fixed;
                 top: 0; left: 0; width: 100vw; height: 100dvh;
@@ -537,8 +531,8 @@
                 color: var(--white);
                 border: 3px solid var(--black);
                 padding: 10px 20px;
-                font-family: var(--font-inter);
-                font-weight: 900;
+                font-family: var(--font-space);
+                font-weight: 700;
                 font-size: 1rem;
                 cursor: pointer;
             }
@@ -557,9 +551,10 @@
                 color: var(--black);
                 border: 3px solid var(--black);
                 padding: 15px;
-                font-family: var(--font-syne);
-                font-weight: 800;
-                font-size: 1.2rem;
+                font-family: var(--font-anton);
+                font-weight: 400;
+                font-size: 1.4rem;
+                letter-spacing: 1px;
                 text-transform: uppercase;
                 cursor: pointer;
                 box-shadow: 4px 4px 0 var(--riso-red);
@@ -573,7 +568,6 @@
                 flex-direction: column; 
             }
 
-            /* Zone Canvas sur mobile (Fixe) */
             #canvas-area {
                 width: 100vw;
                 height: 100dvh; 
@@ -597,7 +591,6 @@
                 box-shadow: 8px 8px 0 var(--black);
             }
             
-            /* Ajustement typographique initial sur mobile */
             .text-overlay {
                 font-size: 2.2rem;
             }
@@ -605,7 +598,6 @@
                 width: 90px; 
             }
 
-            /* Panneau de contrôle devient un tiroir (Bottom Drawer) */
             #control-panel {
                 position: fixed;
                 bottom: -100%; 
@@ -627,23 +619,21 @@
             #drawer-close-btn {
                 display: block;
                 background: var(--black);
-                color: var(--white);
+                color: var(--swiss-yellow);
                 border: 2px solid var(--black);
                 padding: 10px;
                 text-align: center;
-                font-family: var(--font-inter);
-                font-weight: 900;
+                font-family: var(--font-space);
+                font-weight: 700;
                 font-size: 0.9rem;
                 cursor: pointer;
                 margin-bottom: 10px;
                 text-transform: uppercase;
             }
 
-            /* Masque toutes les catégories par défaut dans le tiroir mobile */
             .control-group, #btn-export { 
                 display: none; 
             }
-            /* Affiche uniquement la catégorie active */
             .control-group.active-group { 
                 display: flex; 
             }
@@ -667,7 +657,7 @@
                 <div class="modal-italic">T'as ramené ta colle ?</div>
                 <div class="modal-buttons">
                     <button class="btn-bold" id="btn-oui">OUI</button>
-                    <button class="btn-bold" id="btn-zappe" style="background:var(--white); color:var(--black);">J'AI ZAPPÉ</button>
+                    <button class="btn-bold" id="btn-zappe" style="background:var(--swiss-yellow); color:var(--black);">J'AI ZAPPÉ</button>
                 </div>
             </div>
         </div>
@@ -687,7 +677,7 @@
     <!-- POPUP DE CRÉATION DE STICKER (ATELIER DESSIN) -->
     <div id="sticker-modal-canvas">
         <div class="drawing-popup-box">
-            <span style="font-family: var(--font-syne); font-weight: 800; font-size: 1.1rem; text-transform: uppercase;">Atelier Sticker Personnalisé</span>
+            <span style="font-family: var(--font-space); font-weight: 700; font-size: 1.1rem; text-transform: uppercase;">Atelier Sticker Personnalisé</span>
             
             <div class="drawing-canvas-container">
                 <canvas id="paint-canvas"></canvas>
@@ -700,8 +690,8 @@
                     <button class="btn-ui brush-btn" data-brush="spray" style="font-size:0.75rem; padding:8px;">Spray</button>
                 </div>
                 <div style="display:flex; gap:5px; align-items:center;">
-                    <span style="font-size:0.75rem; font-weight:900;">Couleur :</span>
-                    <input type="color" id="draw-color" value="#e0241b" style="padding:0; height:32px; width:45px; cursor:pointer; border:2px solid var(--black);">
+                    <span style="font-size:0.75rem; font-weight:700;">Couleur :</span>
+                    <input type="color" id="draw-color" value="#ff007f" style="padding:0; height:32px; width:45px; cursor:pointer; border:2px solid var(--black);">
                 </div>
             </div>
 
@@ -800,9 +790,9 @@
                 <button class="btn-ui" id="btn-cyanotype" style="background:#1b4965; color:#fff; margin-bottom:5px;">Cyanotype (Bleu Vif UV)</button>
                 
                 <div style="display:flex; flex-direction:column; gap:5px; margin-top:5px; border-top: 2px dashed var(--black); padding-top:8px;">
-                    <span style="font-size: 0.8rem; font-weight:900;">Risographie (Teinte aplat) :</span>
+                    <span style="font-size: 0.8rem; font-weight:700;">Risographie (Teinte aplat) :</span>
                     <div style="display:flex; gap:5px; align-items:center;">
-                        <input type="color" id="riso-color-picker" value="#e0241b" style="padding:0; height:36px; width:50px; cursor:pointer;">
+                        <input type="color" id="riso-color-picker" value="#ff007f" style="padding:0; height:36px; width:50px; cursor:pointer;">
                         <button class="btn-ui" id="btn-risographie" style="flex:1; background:var(--riso-red); color:#fff;">Appliquer Risographie</button>
                     </div>
                 </div>
@@ -839,17 +829,17 @@
                 <input type="text" id="text-input" placeholder="Taper un texte...">
                 
                 <div style="display:flex; gap:10px; align-items:center; margin-top:5px;">
-                    <span style="font-size: 0.8rem; font-weight:900;">Couleur texte :</span>
+                    <span style="font-size: 0.8rem; font-weight:700;">Couleur texte :</span>
                     <input type="color" id="text-color-picker" value="#050505" style="padding:0; height:32px; width:60px; cursor:pointer; border:2px solid var(--black);">
                 </div>
 
                 <select id="font-selector" style="margin-top:5px;">
-                    <option value="'Inter', sans-serif">Inter (Suisse - Block)</option>
-                    <option value="'Syne', sans-serif">Syne (Étendu)</option>
                     <option value="'Space Grotesk', sans-serif">Space Grotesk (Moderne)</option>
+                    <option value="'Syne', sans-serif">Syne (Étendu)</option>
+                    <option value="'Anton', sans-serif">Anton (Impact Brut)</option>
                     <option value="'Playfair Display', serif">Playfair (Éditorial)</option>
                     <option value="'DM Mono', monospace">DM Mono (Technique)</option>
-                    <option value="'Anton', sans-serif">Anton (Impact Brut)</option>
+                    <option value="'Inter', sans-serif">Inter (Suisse - Block)</option>
                     <option value="'Oswald', sans-serif">Oswald (Condensed)</option>
                     <option value="'Changa One', cursive">Changa One (Street/Cartoon)</option>
                     <option value="'Permanent Marker', cursive">Permanent Marker (Gribouillage)</option>
@@ -936,7 +926,7 @@
         const bgLayer = document.getElementById('bg-layer');
         
         let activePhotoFilter = null; 
-        let risoTintColor = '#e0241b';
+        let risoTintColor = '#ff007f';
         let originalUserImageUrl = null;
 
         document.getElementById('upload-user').addEventListener('change', function(e) {
@@ -1053,7 +1043,6 @@
             stickerModal.classList.remove('active');
             addStickerToCanvas(dataUrl);
             
-            // Fermer le tiroir pour laisser l'utilisateur placer son sticker
             controlPanel.classList.remove('drawer-open');
             appContainer.classList.remove('drawer-active');
         });
@@ -1344,7 +1333,6 @@
 
             document.getElementById('text-input').value = ''; 
             
-            // Fermer le tiroir pour replacer le texte
             controlPanel.classList.remove('drawer-open');
             appContainer.classList.remove('drawer-active');
         });
@@ -1383,7 +1371,7 @@
             }
         });
 
-        // EXPORTATION FIDÈLE (Inclut les stickers créés et les textes)
+        // EXPORTATION FIDÈLE
         document.getElementById('btn-export').addEventListener('click', async () => {
             const wrapper = document.getElementById('export-wrapper');
             const rect = wrapper.getBoundingClientRect();
@@ -1409,7 +1397,7 @@
                 const userImg = new Image();
                 userImg.crossOrigin = "anonymous";
                 userImg.src = userLayer.src;
-                await new Promise(resolve => { userImg.onload = resolve; userImg.onerror = resolve; });
+                await new Response(resolve => { userImg.onload = resolve; userImg.onerror = resolve; });
 
                 ctx.save();
                 ctx.globalAlpha = parseFloat(window.getComputedStyle(userLayer).opacity);
@@ -1418,7 +1406,6 @@
                 ctx.restore();
             }
 
-            // Dessiner les stickers positionnés
             const stickerElements = stickerContainer.querySelectorAll('.sticker-overlay');
             for (let el of stickerElements) {
                 const elRect = el.getBoundingClientRect();
@@ -1438,7 +1425,6 @@
                 ctx.restore();
             }
 
-            // Dessiner les textes
             const textElements = textContainer.querySelectorAll('.text-overlay');
             textElements.forEach(el => {
                 const elRect = el.getBoundingClientRect();
@@ -1451,7 +1437,7 @@
                 ctx.translate(x, y);
                 
                 const computedStyle = window.getComputedStyle(el);
-                ctx.font = `${computedStyle.fontWeight} ${parseFloat(computedStyle.fontSize)}px ${el.style.fontFamily || 'Inter'}`;
+                ctx.font = `${computedStyle.fontWeight} ${parseFloat(computedStyle.fontSize)}px ${el.style.fontFamily || 'Space Grotesk'}`;
                 ctx.fillStyle = computedStyle.color;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
